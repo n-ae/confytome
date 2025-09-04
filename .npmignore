@@ -1,0 +1,35 @@
+# Test files
+test/
+coverage/
+*.test.js
+jest.config.js
+
+# Development files
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation generation output
+docs/
+api-docs/
+confytome-cache/
+
+# Development logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Analysis files
+PERFORMANCE_ANALYSIS.md
+
+# Claude Code specific
+.claude/
+
+# Development configs
+.eslintrc*
+.prettierrc*

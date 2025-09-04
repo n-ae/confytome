@@ -137,3 +137,33 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Generated documentation (should be created by users)
+docs/
+api-docs/
+confytome-cache/
+
+# OS generated files
+**/.DS_Store
+**/.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+test-output/
+coverage/
+
+# Log files
+*.log
+
+# Claude Code specific
+.claude/

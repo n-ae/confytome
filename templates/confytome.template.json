@@ -1,0 +1,43 @@
+{
+  "_comment": "Confytome Configuration - Pure OpenAPI Standards",
+  "_description": "This configuration uses 100% pure OpenAPI standards. Server overrides are defined directly in JSDoc comments using standard OpenAPI 'servers' field.",
+  
+  "serverConfig": "serverConfig.json",
+  "routeFiles": [
+    "example-auth-routes.js",
+    "example-router.js"
+  ],
+  
+  "_usage": {
+    "description": "Pure OpenAPI server overrides using standard 'servers' field in JSDoc",
+    "how_it_works": {
+      "default_routes": "Most routes use default server from serverConfig.json (no override needed)",
+      "jsdoc_servers": "Override by adding 'servers:' field in @swagger JSDoc comments",
+      "openapi_standard": "Uses standard OpenAPI 3.0+ operation.servers field",
+      "no_custom_fields": "Zero custom extensions - 100% OpenAPI compliant"
+    },
+    "jsdoc_examples": {
+      "default_route": {
+        "description": "Standard route using default server",
+        "code": "@swagger\n/api/users:\n  get:\n    summary: Get users\n    # No servers field = uses serverConfig.json server"
+      },
+      "override_route": {
+        "description": "Route with server override",
+        "code": "@swagger\n/auth/login:\n  post:\n    servers:\n      - url: http://localhost:3000\n        description: Auth Server"
+      }
+    },
+    "examples": {
+      "auth_vs_api": "Auth: http://localhost:3000/auth/login vs API: http://localhost:3000/api/v1/users",
+      "microservices": "Different services on different ports via JSDoc servers",
+      "environments": "Override production with local development servers in JSDoc"
+    },
+    "network_files": {
+      "description": "Route files support local paths, absolute paths, or network URLs",
+      "examples": [
+        "example-router.js",
+        "/absolute/path/to/routes.js", 
+        "https://raw.githubusercontent.com/user/repo/main/routes.js"
+      ]
+    }
+  }
+}

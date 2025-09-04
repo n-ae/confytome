@@ -1,0 +1,106 @@
+{{/* Main template for API documentation - handles overall document structure */}}
+# {{=data.api.info && data.api.info.title}} {{=data.version}}
+
+{{? data.api.info && data.api.info.description}}{{=data.api.info.description}}
+
+{{?}}
+{{? data.api.servers }}
+## Base URLs
+
+| Environment | Base URL |
+|-------------|----------|
+{{~data.api.servers :s}}| {{=s.description}} | {{=s.url}} |
+{{~}}
+
+{{?}}
+{{? data.api.info && data.api.info.contact}}**Contact:** {{=data.api.info.contact.name || 'Support'}}{{? data.api.info.contact.email}} <{{=data.api.info.contact.email}}>{{?}}
+
+{{?}}
+{{? data.api.info && data.api.info.license}}**License:** {{=data.api.info.license.name}}{{? data.api.info.license.url}} ({{=data.api.info.license.url}}){{?}}
+
+{{?}}
+{{? data.api.components && data.api.components.securitySchemes }}
+{{~data.api.components.securitySchemes :v:k}}
+{{? v.type === 'http' && v.scheme === 'bearer'}}
+This API uses JWT Bearer token authentication.
+
+**Header Example:**
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+{{?}}
+{{~}}
+
+{{?}}
+
+## Quick Reference
+
+{{ for (var r in data.resources) { }}
+{{ data.resource = data.resources[r]; }}
+{{ for (var m in data.resource.methods) { }}
+{{ data.method = data.resource.methods[m]; }}
+{{ data.operation = data.method.operation; }}
+{{ data.methodUpper = data.method.verb.toUpperCase(); }}
+- [{{=data.methodUpper}} {{=data.method.path}}](#{{=(data.operation.summary || data.operationUniqueName || '').toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-çğışüöıİ]/g, '').replace(/-+/g, '-').replace(/^-+|-+$/g, '')}}) - {{=data.operation.summary || data.operationUniqueName}}
+{{ } }}
+{{ } }}
+
+{{ for (var r in data.resources) { }}
+{{ data.resource = data.resources[r]; }}
+
+# {{= r}}
+
+{{? data.resource.description }}{{= data.resource.description}}
+
+{{?}}
+
+{{ for (var m in data.resource.methods) { }}
+{{ data.operationUniqueName = m; }}
+{{ data.method = data.resource.methods[m]; }}
+{{ data.operationUniqueSlug = data.method.slug; }}
+{{ data.operation = data.method.operation; }}
+{{= data.templates.operation(data) }}
+
+---
+
+{{ } }}
+
+{{ } }}
+
+{{? data.api.components && data.api.components.schemas }}
+# Schemas
+
+{{ for (var s in data.components.schemas) { }}
+{{ var origSchema = data.components.schemas[s]; }}
+{{ var schema = data.api.components.schemas[s]; }}
+
+## {{=s}}
+
+{{? schema.description}}{{=schema.description}}
+
+{{?}}
+```json
+{{=data.utils.safejson(data.utils.getSample(schema,data.options,{quiet:true},data.api),null,2)}}
+```
+
+{{ var blocks = data.utils.schemaToArray(origSchema,-1,{trim:true,join:true},data); }}
+{{~ blocks :block}}
+{{? block.title }}**{{= block.title}}**
+
+{{?}}
+{{? block.rows.length}}
+| Property | Type | Description |
+|----------|------|-------------|
+{{~block.rows :p}}
+| {{=p.displayName}} | {{=p.safeType}} | {{=p.description || ''}} |
+{{~}}
+
+{{?}}
+{{~}}
+
+{{ } }}
+
+{{?}}
+
+*Generated: {{= new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}*

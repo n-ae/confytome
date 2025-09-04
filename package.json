@@ -1,0 +1,64 @@
+{
+    "name": "confytome",
+    "version": "1.0.0",
+    "description": "A modern CLI tool to generate comprehensive API documentation from JSDoc comments. Create OpenAPI specs, Markdown docs, Swagger UI, HTML, and Postman collections with pure OpenAPI standards.",
+    "main": "generate-openapi.js",
+    "bin": {
+        "confytome": "./bin.js"
+    },
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/n-ae/confytome.git"
+    },
+    "bugs": {
+        "url": "https://github.com/n-ae/confytome/issues"
+    },
+    "homepage": "https://github.com/n-ae/confytome#readme",
+    "keywords": [
+        "cli",
+        "api",
+        "documentation",
+        "openapi",
+        "swagger",
+        "postman",
+        "confluence",
+        "markdown",
+        "docs",
+        "generator",
+        "jsdoc",
+        "pure-openapi",
+        "api-docs",
+        "documentation-generator"
+    ],
+    "author": "n-ae balii@pm.me",
+    "license": "MIT",
+    "files": [
+        "bin.js",
+        "generate-*.js",
+        "utils/",
+        "templates/",
+        "widdershins-templates/",
+        "README.md",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "SECURITY.md"
+    ],
+    "scripts": {
+        "prepublishOnly": "npm test && npm run security:check",
+        "preversion": "npm test",
+        "version": "git add -A src",
+        "postversion": "git push && git push --tags",
+        "docs:openapi": "node generate-openapi.js",
+        "docs:markdown": "node generate-markdown.js",
+        "docs:swagger": "node generate-swagger-ui.js",
+        "docs:html": "node generate-simple-docs.js",
+        "docs:postman": "node generate-postman.js",
+        "clean": "rm -rf docs/*",
+        "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+        "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
+        "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+        "security:check": "npm audit",
+        "security:fix": "npm audit fix"
+    }
+}

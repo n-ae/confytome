@@ -1,0 +1,78 @@
+{{/* Operation template - handles individual API endpoint documentation */}}
+## {{= data.operation.summary || data.operationUniqueName}}
+
+{{ data.methodUpper = data.method.verb.toUpperCase(); }}
+{{ data.url = data.utils.slashes(data.baseUrl + data.method.path); }}
+{{ data.parameters = data.operation.parameters; }}
+{{ data.enums = []; }}
+{{ data.utils.fakeProdCons(data); }}
+{{ data.utils.fakeBodyParameter(data); }}
+{{ data.utils.mergePathParameters(data); }}
+{{ data.utils.getParameters(data); }}
+
+```
+{{= data.methodUpper}} {{=data.method.path}}
+```
+
+{{? data.operation.description}}{{= data.operation.description }}
+
+{{?}}
+
+{{? data.parameters && data.parameters.length }}
+**Parameters:**
+
+| Name | In | Type | Required | Description |
+|------|----|----|----------|-------------|
+{{~ data.parameters :p}}| {{=p.name}} | {{=p.in}} | {{=p.safeType}} | {{=p.required ? 'Yes' : 'No'}} | {{=p.shortDesc || 'none'}} |
+{{~}}
+{{?}}
+
+{{? data.operation.requestBody}}
+**Request Body:**
+
+{{? data.bodyParameter.exampleValues.description }}
+{{= data.bodyParameter.exampleValues.description }}
+
+{{?}}
+{{= data.utils.getBodyParameterExamples(data) }}
+{{?}}
+
+**Responses:**
+
+{{ data.responses = data.utils.getResponses(data); }}
+{{~ data.responses :r}}
+**`{{=r.status}}`** - {{=r.description || 'Response'}}
+
+{{? r.content && r.content['application/json'] && r.content['application/json'].schema}}{{ var schema = r.content['application/json'].schema; var exampleObj = {}; if (schema.properties) { for (var prop in schema.properties) { if (schema.properties[prop].example !== undefined) { exampleObj[prop] = schema.properties[prop].example; } } } }}{{? Object.keys(exampleObj).length > 0}}
+```json
+{{=JSON.stringify(exampleObj, null, 2)}}
+```
+
+{{??}}{{? schema.example}}
+```json
+{{=JSON.stringify(schema.example, null, 2)}}
+```
+
+{{?}}{{?}}{{??}}{{? r.content && r.content['application/json'] && r.content['application/json'].examples}}{{~ r.content['application/json'].examples :example:exampleKey}}
+```json
+{{=JSON.stringify(example.value, null, 2)}}
+```
+
+{{~}}{{?}}{{?}}{{~}}
+
+**Code Sample:**
+
+{{ var serverUrl = data.baseUrl; }}
+{{ var hasOpServers = data.operation.servers && data.operation.servers.length > 0; }}
+{{ if (hasOpServers) { 
+     serverUrl = data.operation.servers[0].url; 
+   } else if (data.api.servers && data.api.servers.length > 0) { 
+     serverUrl = data.api.servers[data.api.servers.length - 1].url; 
+   } }}
+```shell
+curl -X {{= data.method.verb.toUpperCase()}} {{=data.utils.slashes(serverUrl + data.method.path)}}{{=data.requiredQueryString}}{{? data.method.path.indexOf('/login') !== -1}} \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json'{{??}}{{~data.allHeaders :p:index}} \
+  -H '{{=p.name}}: {{=p.exampleValues.object}}'{{~}}{{?}}{{? data.bodyParameter && data.bodyParameter.exampleValues && data.bodyParameter.exampleValues.object}} \
+  -d '{{=data.utils.safejson(data.bodyParameter.exampleValues.object,null,0)}}'{{?}}
+```
