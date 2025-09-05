@@ -117,9 +117,9 @@ program
     'confytome generates OpenAPI 3.0.3 specifications from JSDoc-annotated code.\n' +
     'Use individual generator packages for other formats:\n' +
     '• @confytome/markdown - Confluence-friendly Markdown docs\n' +
-    '• @confytome/swagger - Interactive Swagger UI (coming soon)\n' +
-    '• @confytome/postman - Postman collections (coming soon)\n' +
-    '• @confytome/html - Professional HTML docs (coming soon)\n\n' +
+    '• @confytome/swagger - Interactive Swagger UI\n' +
+    '• @confytome/postman - Postman collections\n' +
+    '• @confytome/html - Professional HTML docs\n\n' +
     'Quick Start:\n' +
     '  1. confytome init                    # Set up project structure\n' +
     '  2. Edit confytome.json              # Configure routes and servers\n' +

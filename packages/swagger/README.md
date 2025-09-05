@@ -54,5 +54,5 @@ Part of the [Confytome](https://github.com/n-ae/confytome) documentation ecosyst
 - **@confytome/core** - OpenAPI spec generator
 - **@confytome/markdown** - Confluence-friendly Markdown docs
 - **@confytome/swagger** - Interactive Swagger UI (this package)
-- **@confytome/postman** - Postman collections (coming soon)
-- **@confytome/html** - Professional HTML docs (coming soon)
+- **@confytome/postman** - Postman collections
+- **@confytome/html** - Professional HTML docs

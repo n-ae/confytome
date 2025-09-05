@@ -111,7 +111,7 @@ try {
 
 2. **Add CLI Command**
    ```javascript
-   // bin.js
+   // packages/core/cli.js
    program
      .command('format')
      .description('Generate {format} documentation')

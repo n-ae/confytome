@@ -50,12 +50,12 @@ npx @confytome/core init
 
 ```bash
 # Clone and install
-git clone https://github.com/n-ae/confytome.git
+git clone https://github.com/n-ae/confytome
 cd confytome
 npm install
 
-# Use locally (workspace development)
-node packages/core/cli.js --help
+# Use locally
+./packages/core/cli.js --help
 ```
 
 ## 🚀 Quick Start
@@ -622,32 +622,38 @@ confytome openapi -c config.json -f routes/*.js
 - **Maintainable**: Centralized utilities and error handling
 - **Multi-Format**: Single source, multiple outputs
 
-### Project Structure
+### Core Package Structure
+
+```
+@confytome/core/
+├── 📁 cli.js                      # CLI entry point
+├── 📁 generate-openapi.js         # OpenAPI generation
+├── 📁 package.json               # Package configuration
+├── 📁 utils/                      # Shared utilities
+│   ├── base-generator.js        # Generator patterns
+│   ├── cli-validator.js         # Input validation
+│   ├── error-handler-simple.js  # Error handling
+│   ├── file-manager.js          # File operations
+│   └── template-manager.js      # Template management
+└── 📁 templates/                 # Project templates
+    ├── confytome.template.json  # Config template
+    ├── serverConfig.template.json # Server template
+    ├── example-router.js        # Example JSDoc
+    └── example-auth-routes.js   # Auth examples
+```
+
+### Ecosystem Structure
+
+This package is part of the larger confytome workspace:
 
 ```
 confytome/ (workspace)
-├── 📦 package.json                 # Workspace configuration
-├── 📦 package-lock.json            # Dependency lockfile
-└── 📁 packages/                    # Modular packages
-    ├── 🏗️ core/                   # @confytome/core
-    │   ├── cli.js                  # CLI entry point
-    │   ├── generate-openapi.js     # OpenAPI generation
-    │   ├── utils/                  # Shared utilities
-    │   └── templates/              # Project templates
-    ├── 📝 markdown/                # @confytome/markdown
-    │   ├── cli.js
-    │   ├── generate-markdown.js
-    │   ├── utils/template-manager.js
-    │   └── widdershins-templates/  # Custom templates
-    ├── 🎨 swagger/                 # @confytome/swagger
-    │   ├── cli.js
-    │   └── generate-swagger.js
-    ├── 🌐 html/                    # @confytome/html
-    │   ├── cli.js
-    │   └── generate-html.js
-    └── 📮 postman/                 # @confytome/postman
-        ├── cli.js
-        └── generate-postman.js
+└── packages/
+    ├── core/      # @confytome/core (this package)
+    ├── markdown/  # @confytome/markdown
+    ├── swagger/   # @confytome/swagger
+    ├── html/      # @confytome/html
+    └── postman/   # @confytome/postman
 ```
 
 ## 🤝 Contributing

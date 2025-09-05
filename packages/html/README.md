@@ -67,4 +67,4 @@ Part of the [Confytome](https://github.com/n-ae/confytome) documentation ecosyst
 - **@confytome/markdown** - Confluence-friendly Markdown docs
 - **@confytome/swagger** - Interactive Swagger UI
 - **@confytome/html** - Professional HTML docs (this package)
-- **@confytome/postman** - Postman collections (coming soon)
+- **@confytome/postman** - Postman collections
