@@ -110,11 +110,11 @@ async function startWatchMode(configPath, files, outputDir) {
 }
 
 // Simplified helper functions - no complex plugin system initialization needed
-// All generators are directly imported in cli-helpers.js
+// All generators are dynamically discovered by the plugin registry system
 
 program
   .name('confytome')
-  .description('🍃 Core OpenAPI specification generator from JSDoc comments\n\n' +
+  .description('🔌 Plugin-based API documentation generator with OpenAPI-first architecture\n\n' +
     'confytome generates OpenAPI 3.0.3 specifications from JSDoc-annotated code.\n' +
     'Use individual generator packages for other formats:\n' +
     '• @confytome/markdown - Confluence-friendly Markdown docs\n' +
@@ -137,7 +137,7 @@ program
 
 program
   .command('generate')
-  .description('Generate documentation using confytome.json configuration\n\n' +
+  .description('Generate documentation using confytome.json configuration (plugin system)\n\n' +
     'Uses a simple confytome.json file to specify server config and route files.\n' +
     'Supports server overrides for specific route files (useful for auth routes).\n\n' +
     'Examples:\n' +
@@ -395,5 +395,101 @@ Examples:
       process.exit(1);
     }
   });
+
+// Import plugin management functions
+import {
+  listGenerators,
+  showGeneratorInfo,
+  showRecommendedGenerators,
+  validateGenerators,
+  executeGenerators,
+  executeAllSpecConsumers
+} from './utils/cli-plugins.js';
+
+// Plugin management commands
+program
+  .command('generators')
+  .alias('list')
+  .description(`List all available generators from plugin registry
+
+Shows all generators found in the workspace and external plugins,
+including their availability, compatibility, and dependency status.
+
+Examples:
+  confytome generators              # List all generators
+  confytome generators --json       # JSON output for scripting`)
+  .option('--json', 'output in JSON format')
+  .action(listGenerators);
+
+program
+  .command('info <generator>')
+  .description(`Show detailed plugin information and compatibility status
+
+Displays comprehensive information including dependencies, metadata,
+compatibility status, and troubleshooting information.
+
+Examples:
+  confytome info generate-html      # Show HTML generator details
+  confytome info generate-markdown  # Show Markdown generator details`)
+  .option('--json', 'output in JSON format')
+  .action(showGeneratorInfo);
+
+program
+  .command('recommended')
+  .description(`Show compatible generators based on current system
+
+Lists generators that are ready to use with your current setup,
+helping you choose the best options for your project.
+
+Examples:
+  confytome recommended             # Show recommended generators
+  confytome recommended --json      # JSON output`)
+  .option('--json', 'output in JSON format')
+  .action(showRecommendedGenerators);
+
+program
+  .command('validate [generators...]')
+  .description(`Validate plugin compatibility and dependencies
+
+Checks if specified generators (or all generators if none specified)
+are properly configured and have all required dependencies.
+
+Examples:
+  confytome validate                # Validate all generators
+  confytome validate generate-html  # Validate specific generator
+  confytome validate generate-html generate-markdown`)
+  .option('--json', 'output in JSON format')
+  .action(validateGenerators);
+
+program
+  .command('run <generators...>')
+  .description(`Execute specific plugins from the generator registry
+
+Runs the specified generators in dependency order, ensuring that
+OpenAPI spec generators run before documentation generators.
+
+Examples:
+  confytome run generate-html       # Run HTML generator
+  confytome run generate-html generate-markdown generate-swagger
+  confytome run generate-html --no-brand  # Run without branding`)
+  .option('-o, --output-dir <dir>', 'output directory (default: ./docs)')
+  .option('--fail-fast', 'stop on first generator failure')
+  .option('--no-brand', 'exclude confytome branding from output')
+  .action(executeGenerators);
+
+program
+  .command('run-all')
+  .description(`Execute all available spec consumer plugins
+
+Runs all generators that consume OpenAPI specifications (HTML, Markdown,
+Swagger UI, etc.) but skips spec creation generators.
+
+Examples:
+  confytome run-all                 # Run all spec consumers
+  confytome run-all --no-brand      # Run without branding`)
+  .option('-o, --output-dir <dir>', 'output directory (default: ./docs)')
+  .option('--fail-fast', 'stop on first generator failure')
+  .option('--no-brand', 'exclude confytome branding from output')
+  .action(executeAllSpecConsumers);
 
 program.parse();

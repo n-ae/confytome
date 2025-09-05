@@ -193,29 +193,15 @@ class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
   }
 
   async generate() {
-    // Initialize services if not injected
-    const services = this.getServices(import.meta.url, 'swagger');
-    
-    // Load OpenAPI spec
-    const openApiSpec = this.loadOpenAPISpec();
-    
-    // Generate Swagger UI HTML
     console.log('🎨 Generating Swagger UI HTML...');
-    const html = this.generateSwaggerUI(openApiSpec, services);
     
-    // Write HTML file
-    const outputPath = path.join(this.outputDir, 'api-swagger.html');
-    this.writeOutputFile(outputPath, html, 'Swagger UI static HTML created');
+    const result = await this.generateDocument('swagger', 'api-swagger.html', (openApiSpec, services) => {
+      return this.generateSwaggerUI(openApiSpec, services);
+    });
     
-    // Calculate stats
-    this.calculateStats(openApiSpec, outputPath);
+    console.log(`\n🌐 You can open the file in browser: file://${path.resolve(result.outputPath)}`);
     
-    console.log(`\n🌐 You can open the file in browser: file://${path.resolve(outputPath)}`);
-    
-    return {
-      outputPath,
-      size: Buffer.byteLength(html, 'utf8')
-    };
+    return result;
   }
 
   generateSwaggerUI(openApiSpec, services) {
@@ -227,15 +213,6 @@ class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
     });
   }
 
-  calculateStats(spec, outputPath) {
-    const pathCount = Object.keys(spec.paths || {}).length;
-    const endpointCount = Object.values(spec.paths || {})
-      .reduce((acc, methods) => acc + Object.keys(methods).length, 0);
-    
-    this.addStat('Unique paths', `${pathCount}`);
-    this.addStat('Endpoints', `${endpointCount}`);
-    this.addStat('HTML with Swagger UI', `${(fs.statSync(outputPath).size / 1024).toFixed(1)} KB`);
-  }
 
   getSuccessMessage() {
     return 'Swagger UI static HTML generation completed';

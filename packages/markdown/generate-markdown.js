@@ -20,52 +20,39 @@ class MarkdownGenerator extends SpecConsumerGeneratorBase {
   }
 
   async generate() {
-    // Initialize services if not injected
-    const services = this.getServices(import.meta.url, 'markdown');
-    
-    // Load OpenAPI spec
-    const openApiSpec = this.loadOpenAPISpec();
-    
-    const markdownPath = path.join(this.outputDir, 'api-docs.md');
-    const specPath = path.join(this.outputDir, 'api-spec.json');
-    const templateDir = services.template.getWiddershinsPath();
-    
-    // Generate markdown using custom widdershins template
     console.log('📝 Generating Markdown with custom widdershins template...');
     
-    // Find local widdershins binary
-    let widdershinsPath;
-    try {
-      widdershinsPath = require.resolve('widdershins/widdershins.js');
-    } catch (error) {
-      throw new Error('widdershins dependency not found. Please install it: npm install widdershins');
-    }
-    
-    // Prepare template data instead of environment variables
-    const templateData = services.branding.getMarkdownTemplateData();
-    
-    // Process the main template to inject branding data
-    await this.processWiddershinsTemplate(templateDir, templateData);
-    
-    // Use custom template for clean Confluence-friendly markdown  
-    const widdershinsCommand = `node ${widdershinsPath} ${specPath} ${markdownPath} --user_templates ${templateDir} --language_tabs 'shell:cURL' --omitHeader true --summary --code true --httpsnippet false`;
-    
-    try {
-      execSync(widdershinsCommand, { stdio: 'inherit' });
-    } catch (error) {
-      throw new Error(`Failed to generate Markdown documentation: ${error.message}`);
-    }
-    
-    // Write output file and calculate stats
-    this.writeOutputFile(markdownPath, fs.readFileSync(markdownPath, 'utf8'), 'Confluence-ready Markdown documentation created');
-    
-    // Calculate stats
-    this.calculateStats(openApiSpec, markdownPath);
-    
-    return {
-      outputPath: markdownPath,
-      size: fs.statSync(markdownPath).size
-    };
+    return this.generateWithExternalTool('markdown', 'api-docs.md', async (openApiSpec, services, outputPath) => {
+      const specPath = path.join(this.outputDir, 'api-spec.json');
+      const templateDir = services.template.getWiddershinsPath();
+      
+      // Find local widdershins binary
+      let widdershinsPath;
+      try {
+        widdershinsPath = require.resolve('widdershins/widdershins.js');
+      } catch (error) {
+        throw new Error('widdershins dependency not found. Please install it: npm install widdershins');
+      }
+      
+      // Prepare template data
+      const templateData = services.branding.getMarkdownTemplateData();
+      
+      // Process the main template to inject branding data
+      await this.processWiddershinsTemplate(templateDir, templateData);
+      
+      // Use custom template for clean Confluence-friendly markdown  
+      const widdershinsCommand = `node ${widdershinsPath} ${specPath} ${outputPath} --user_templates ${templateDir} --language_tabs 'shell:cURL' --omitHeader true --summary --code true --httpsnippet false`;
+      
+      try {
+        execSync(widdershinsCommand, { stdio: 'inherit' });
+      } catch (error) {
+        throw new Error(`Failed to generate Markdown documentation: ${error.message}`);
+      }
+
+      // Write output file for standard handling
+      const content = fs.readFileSync(outputPath, 'utf8');
+      this.writeOutputFile(outputPath, content, 'Confluence-ready Markdown documentation created');
+    }, 'Confluence-ready Markdown documentation created');
   }
 
   /**
@@ -88,12 +75,10 @@ class MarkdownGenerator extends SpecConsumerGeneratorBase {
     }
   }
 
-  calculateStats(spec, markdownPath) {
-    const specStats = fs.statSync(path.join(this.outputDir, 'api-spec.json'));
-    const markdownStats = fs.statSync(markdownPath);
-    
-    this.addStat('OpenAPI spec', `${(specStats.size / 1024).toFixed(1)} KB`);
-    this.addStat('Generated Markdown', `${(markdownStats.size / 1024).toFixed(1)} KB`);
+  calculateDocumentStats(openApiSpec, outputPath) {
+    // Use the standard stats calculation
+    super.calculateDocumentStats(openApiSpec, outputPath);
+    // Add custom stat for this generator
     this.addStat('Generator', 'widdershins (custom template)');
   }
 

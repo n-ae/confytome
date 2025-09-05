@@ -1,14 +1,14 @@
 /**
- * Simplified CLI Helper Functions
+ * Registry-based CLI Helper Functions
  * 
- * Replaces the complex plugin system initialization with simple, direct functions.
- * This approach prioritizes clarity and maintainability over abstraction.
+ * Updated version that uses the new generator registry system
+ * while maintaining backward compatibility with existing CLI functions.
  */
 
 import fs from 'fs';
 import path from 'path';
-import { GeneratorOrchestrator, GENERATOR_SETS } from './generator-orchestrator.js';
-import { ConfigurationFactory } from './config-builder-simplified.js';
+import { registryOrchestrator } from '../services/RegistryOrchestrator.js';
+import { GeneratorFactory } from '../services/GeneratorFactory.js';
 import { ConfytomeConfig } from './confytome-config.js';
 
 /**
@@ -19,8 +19,17 @@ import { ConfytomeConfig } from './confytome-config.js';
  * @returns {Promise<Object>} Generation result
  */
 export async function generateOpenAPI(configPath, files, outputDir = './docs') {
-  const config = ConfigurationFactory.create('openapi', { configPath, jsdocFiles: files, outputDir });
-  return await GeneratorOrchestrator.runSingle('openapi', config);
+  await GeneratorFactory.initialize();
+  
+  // For OpenAPI generation, we need to use the core OpenAPI generator
+  // This is handled by the existing generate-openapi.js directly
+  const { main } = await import('../generate-openapi.js');
+  
+  // Set up environment for the generator
+  process.argv = ['node', 'generate-openapi.js', configPath, ...files];
+  process.env.OUTPUT_DIR = outputDir;
+  
+  return await main();
 }
 
 /**
@@ -31,8 +40,16 @@ export async function generateOpenAPI(configPath, files, outputDir = './docs') {
  * @returns {Promise<Array<Object>>} Array of generation results
  */
 export async function generateAllDocs(configPath, files, outputDir = './docs', options = {}) {
-  const config = ConfigurationFactory.create('openapi', { configPath, jsdocFiles: files, outputDir, ...options });
-  return await GeneratorOrchestrator.runAll(config);
+  // First generate OpenAPI spec
+  await generateOpenAPI(configPath, files, outputDir);
+  
+  // Then run all spec consumer generators
+  const results = await registryOrchestrator.executeAllSpecConsumers(outputDir, {
+    excludeBrand: options.excludeBrand || false,
+    contextUrl: import.meta.url
+  });
+
+  return results;
 }
 
 /**
@@ -42,8 +59,11 @@ export async function generateAllDocs(configPath, files, outputDir = './docs', o
  * @returns {Promise<Object>} Generation result
  */
 export async function generateFromSpec(generatorName, outputDir = './docs') {
-  const config = ConfigurationFactory.create('spec-consumer', { outputDir });
-  return await GeneratorOrchestrator.runSingle(generatorName, config);
+  const result = await registryOrchestrator.executeGenerator(generatorName, outputDir, {
+    contextUrl: import.meta.url
+  });
+  
+  return result;
 }
 
 /**
@@ -53,8 +73,11 @@ export async function generateFromSpec(generatorName, outputDir = './docs') {
  * @returns {Promise<Array<Object>>} Array of generation results
  */
 export async function generateMultipleFromSpec(generatorNames, outputDir = './docs') {
-  const config = ConfigurationFactory.create('spec-consumer', { outputDir });
-  return await GeneratorOrchestrator.runMultiple(generatorNames, config);
+  const results = await registryOrchestrator.executeGenerators(generatorNames, outputDir, {
+    contextUrl: import.meta.url
+  });
+  
+  return results;
 }
 
 /**
@@ -63,28 +86,39 @@ export async function generateMultipleFromSpec(generatorNames, outputDir = './do
  * @returns {Promise<Object>} Generation result
  */
 export async function generateDemo(outputDir = './docs') {
-  const config = ConfigurationFactory.create('demo', { outputDir });
-  return await GeneratorOrchestrator.runAll(config);
+  // For demo, we need the example files to exist first
+  const exampleRouter = './example-router.js';
+  const exampleConfig = './serverConfig.json';
+  
+  if (fs.existsSync(exampleRouter) && fs.existsSync(exampleConfig)) {
+    return await generateAllDocs(exampleConfig, [exampleRouter], outputDir);
+  } else {
+    throw new Error('Demo files not found. Run "confytome init" first.');
+  }
 }
 
 /**
- * Get helpful information about generators (replaces complex registry metadata)
+ * Get helpful information about generators
  * @param {string} generatorName - Optional specific generator name
  * @returns {Object|Array} Generator information
  */
-export function getGeneratorInfo(generatorName = null) {
+export async function getGeneratorInfo(generatorName = null) {
+  await GeneratorFactory.initialize();
+  
   if (generatorName) {
-    return GeneratorOrchestrator.getGeneratorInfo(generatorName);
+    return await registryOrchestrator.getGeneratorInfo(generatorName);
   }
-  return GeneratorOrchestrator.listGenerators();
+  
+  return await registryOrchestrator.listGeneratorsWithStatus();
 }
 
 /**
  * Get predefined generator sets for CLI commands
  * @returns {Object} Available generator sets
  */
-export function getGeneratorSets() {
-  return GENERATOR_SETS;
+export async function getGeneratorSets() {
+  await GeneratorFactory.initialize();
+  return await registryOrchestrator.getGeneratorSets();
 }
 
 /**
@@ -92,12 +126,17 @@ export function getGeneratorSets() {
  * @param {Array<string>} generatorNames - Generator names to validate
  * @throws {Error} If validation fails
  */
-export function validateGenerators(generatorNames) {
-  GeneratorOrchestrator.validateGeneratorNames(generatorNames);
+export async function validateGenerators(generatorNames) {
+  await GeneratorFactory.initialize();
+  
+  const results = await registryOrchestrator.validateGenerators(generatorNames);
+  const invalid = results.filter(r => !r.available);
+  
+  if (invalid.length > 0) {
+    const errors = invalid.map(r => `${r.name}: ${r.validation.errors.join(', ')}`);
+    throw new Error(`Generator validation failed:\\n${errors.join('\\n')}`);
+  }
 }
-
-// Server overrides now handled directly via JSDoc @swagger servers: field
-// Pure OpenAPI standards - no custom processing needed!
 
 /**
  * Generate documentation using confytome.json configuration
@@ -124,9 +163,6 @@ export async function generateFromConfytomeConfig(configPath = './confytome.json
   try {
     // Use the modified configuration to run all generators
     const result = await generateAllDocs(tempConfigPath, routeFileNames, outputDir, options);
-    
-    // Server overrides are now handled directly via JSDoc @swagger servers: field
-    // No post-processing needed - pure OpenAPI standards!
     
     return result;
   } finally {

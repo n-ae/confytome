@@ -5,6 +5,7 @@
  * to reduce duplication and improve maintainability
  */
 
+import fs from 'fs';
 import path from 'path';
 import { SimpleErrorHandler } from './error-handler-simple.js';
 import { FileManager } from './file-manager.js';
@@ -231,6 +232,77 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
     this.addStat('File size', FileManager.getFileSize(filePath));
     
     return result;
+  }
+
+  /**
+   * Template method for standard document generation workflow
+   * Eliminates code duplication across all generators
+   */
+  async generateDocument(generatorType, outputFileName, generateContent) {
+    // Initialize services if not injected
+    const services = this.getServices(import.meta.url, generatorType);
+    
+    // Load OpenAPI spec
+    const openApiSpec = this.loadOpenAPISpec();
+    
+    // Generate content using provided function
+    const content = await generateContent(openApiSpec, services);
+    
+    // Write output file
+    const outputPath = path.join(this.outputDir, outputFileName);
+    this.writeOutputFile(outputPath, content, `${generatorType} documentation created`);
+    
+    // Calculate stats
+    this.calculateDocumentStats(openApiSpec, outputPath);
+    
+    return {
+      outputPath,
+      size: Buffer.byteLength(content, 'utf8')
+    };
+  }
+
+  /**
+   * Template method for external tool-based generation workflow
+   * For generators that use external tools like widdershins
+   */
+  async generateWithExternalTool(generatorType, outputFileName, toolProcess, description) {
+    // Initialize services if not injected
+    const services = this.getServices(import.meta.url, generatorType);
+    
+    // Load OpenAPI spec
+    const openApiSpec = this.loadOpenAPISpec();
+    
+    // Run external tool process
+    const outputPath = path.join(this.outputDir, outputFileName);
+    await toolProcess(openApiSpec, services, outputPath);
+    
+    // Calculate stats
+    this.calculateDocumentStats(openApiSpec, outputPath);
+    
+    return {
+      outputPath,
+      size: fs.statSync(outputPath).size
+    };
+  }
+
+  /**
+   * Standard stats calculation for document generators
+   * Override in subclasses if needed
+   */
+  calculateDocumentStats(openApiSpec, outputPath) {
+    const specStats = fs.statSync(path.join(this.outputDir, 'api-spec.json'));
+    const outputStats = fs.statSync(outputPath);
+    
+    this.addStat('OpenAPI spec', `${(specStats.size / 1024).toFixed(1)} KB`);
+    this.addStat('Generated output', `${(outputStats.size / 1024).toFixed(1)} KB`);
+    
+    // Count paths and endpoints
+    const pathCount = Object.keys(openApiSpec.paths || {}).length;
+    const endpointCount = Object.values(openApiSpec.paths || {})
+      .reduce((acc, methods) => acc + Object.keys(methods).length, 0);
+    
+    this.addStat('Unique paths', `${pathCount}`);
+    this.addStat('Total endpoints', `${endpointCount}`);
   }
 }
 

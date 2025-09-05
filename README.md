@@ -1,30 +1,42 @@
-# 🍃 confytome
+# 🔌 confytome
 
 [![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
 [![Code Style: ESM](https://img.shields.io/badge/code%20style-ESM-blue)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 
-Core OpenAPI 3.0.3 specification generator from JSDoc comments. Foundation for the modular @confytome/* generator ecosystem.
+**Plugin-based API documentation generator** with OpenAPI-first architecture. Generates multiple formats from JSDoc comments through an extensible generator registry system.
 
-## 🏗️ Modular Architecture
+## 🔌 Plugin-First Architecture
 
-confytome uses a **modular approach** - install only what you need:
+confytome uses a **plugin-based approach** with automatic discovery and dependency injection:
 
-- **`@confytome/core`** (this package) - Core OpenAPI spec generator
+### Core System
+- **`@confytome/core`** - Plugin registry, service layer, and OpenAPI generator
+  - 🔍 **Generator Registry**: Automatic plugin discovery from workspace and npm
+  - 🏗️ **Service Layer**: Dependency injection with branding, versioning, templates
+  - ⚙️ **CLI Commands**: Plugin management (`generators`, `info`, `validate`, `run`)
+
+### Available Plugins
 - **`@confytome/markdown`** - Confluence-friendly Markdown docs ✅ [Available](https://npmjs.com/package/@confytome/markdown)
 - **`@confytome/swagger`** - Interactive Swagger UI ✅ [Available](https://npmjs.com/package/@confytome/swagger)
 - **`@confytome/postman`** - Postman collections ✅ [Available](https://npmjs.com/package/@confytome/postman)
 - **`@confytome/html`** - Professional HTML docs ✅ [Available](https://npmjs.com/package/@confytome/html)
 
+### External Plugin Support
+- **Custom Plugins**: Follow `confytome-plugin-*` naming convention
+- **Auto-Discovery**: Automatic loading and validation
+- **Service Integration**: Access to core services through dependency injection
+
 ## ✨ Core Features
 
+- 🔌 **Plugin Registry System** - Automatic discovery and dependency injection
 - 📝 **OpenAPI 3.0.3 specification** generation with validation
 - 🌍 **Server overrides** via standard JSDoc `servers:` field
-- 🔧 **Fully configurable** - works with any server config and JSDoc files
-- ⚡ **CLI interface** with comprehensive validation and error handling
-- 🏗️ **Clean architecture** - foundation for generator ecosystem
-- 🔄 **Pure OpenAPI standards** - no custom fields, works with all tools
+- ⚙️ **Plugin Management CLI** - List, validate, and execute generators
+- 🏗️ **Service Layer** - Shared branding, versioning, and template services
+- 🔧 **Extensible Architecture** - Easy plugin development with base classes
+- 🔄 **Pure OpenAPI standards** - No custom fields, works with all tools
 
 ## 📦 Installation
 
@@ -63,11 +75,15 @@ node packages/core/cli.js --help
 Want to see confytome in action? Generate complete demo documentation in seconds:
 
 ```bash
-# Generate demo documentation with example API
+# Generate demo with plugin system
 confytome demo
 
-# Or specify custom output directory
+# Or specify custom output directory  
 confytome demo --output ./my-demo
+
+# Plugin management commands
+confytome generators      # List all available plugins
+confytome validate        # Check plugin compatibility
 ```
 
 This creates a complete API documentation suite with:
@@ -97,18 +113,18 @@ docs/
 
 ## 🚀 Quick Start
 
-### Option 1: Simple Approach (Recommended) 🌟
+### Option 1: Plugin System Approach (Recommended) 🌟
 
 #### 1. Initialize Your Project
 
 ```bash
-# Create project structure and config templates
+# Create project structure with plugin support
 confytome init
 
 # This creates:
 # - docs/ directory
-# - confytome.json (simplified config)
-# - serverConfig.json (detailed OpenAPI config)
+# - confytome.json (plugin system config)
+# - serverConfig.json (OpenAPI config)
 # - example-router.js (JSDoc examples)
 ```
 
@@ -120,24 +136,37 @@ Edit the generated `confytome.json`:
 {
   "serverConfig": "serverConfig.json",
   "routeFiles": [
-    "routes/auth.js",
+    "routes/auth.js", 
     "routes/users.js",
     "routes/orders.js"
   ]
 }
 ```
 
-#### 3. Generate All Documentation
+#### 3. Manage Plugins
 
 ```bash
-# Generate all documentation formats at once
+# List available generators
+confytome generators
+
+# Validate plugin compatibility
+confytome validate
+
+# Get detailed plugin information
+confytome info generate-html
+```
+
+#### 4. Generate All Documentation
+
+```bash
+# Generate all documentation using plugin system
 confytome generate
 
 # Or with custom config
 confytome generate --config my-confytome.json --output ./api-docs
 ```
 
-### Option 2: Advanced Approach
+### Option 2: Granular Plugin Control
 
 #### 1. Configure Your API
 
@@ -244,33 +273,43 @@ Only use server overrides when a route needs a different server (like auth route
 router.post('/auth/login', loginHandler);
 ```
 
-### 4. Generate Documentation
+### 4. Generate with Individual Plugins
 
 ```bash
-# Generate all documentation formats
-confytome all -c serverConfig.json -f routes/users.js routes/auth.js
+# First generate OpenAPI spec
+confytome openapi -c serverConfig.json -f routes/users.js routes/auth.js
 
-# Or step by step
-confytome openapi -c serverConfig.json -f routes/*.js
-confytome swagger
-confytome html
-confytome markdown
-confytome postman
+# Then run specific plugins
+confytome run generate-html generate-markdown
+confytome run generate-swagger generate-postman
+
+# Or run all spec consumers
+confytome run-all
 ```
 
 ## 📚 Command Reference
 
-### Global Commands
+### Plugin System Commands
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `demo` | 🎯 Generate demo with example API | `confytome demo` |
-| `init` | Initialize project structure | `confytome init` |
-| `generate` | 🌟 Generate docs using confytome.json | `confytome generate` |
-| `openapi` | Generate OpenAPI specification | `confytome openapi -c config.json -f file1.js file2.js` |
-| `all` | Generate all documentation formats | `confytome all -c config.json -f file1.js file2.js` |
+| `generators` | List available plugins | `confytome generators` |
+| `info <plugin>` | Show plugin details | `confytome info generate-html` |
+| `validate` | Check plugin compatibility | `confytome validate` |
+| `run <plugins>` | Execute specific plugins | `confytome run generate-html generate-markdown` |
+| `run-all` | Execute all spec consumers | `confytome run-all` |
 
-### Individual Format Commands
+### Core Commands
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `demo` | 🎯 Generate demo with plugin system | `confytome demo` |
+| `init` | Initialize project structure | `confytome init` |
+| `generate` | 🌟 Generate using confytome.json | `confytome generate` |
+| `openapi` | Generate OpenAPI specification | `confytome openapi -c config.json -f file1.js file2.js` |
+| `all` | Legacy: Generate all formats | `confytome all -c config.json -f file1.js file2.js` |
+
+### Legacy Individual Commands
 
 | Command | Description | Prerequisites |
 |---------|-------------|---------------|
@@ -591,13 +630,13 @@ confytome openapi -c config.json -f $(pwd)/routes/users.js
 grep -n "@swagger" routes/users.js
 ```
 
-#### "OpenAPI spec not found"
+#### "OpenAPI spec not found" 
 ```bash
 # Generate OpenAPI spec first
 confytome openapi -c config.json -f routes/*.js
 
-# Then run other commands
-confytome swagger
+# Then run plugins
+confytome run generate-swagger generate-html
 ```
 
 #### "Invalid JSON in config file"
@@ -634,30 +673,34 @@ chmod 755 docs/
 Enable debug output for troubleshooting:
 
 ```bash
-# Enable debug mode
-DEBUG=confytome* confytome all -c config.json -f routes/*.js
+# Enable debug mode for plugin system
+DEBUG=confytome* confytome generate
 
-# Or set environment variable
-export DEBUG=confytome*
-confytome openapi -c config.json -f routes/*.js
+# Or for individual commands
+DEBUG=confytome* confytome openapi -c config.json -f routes/*.js
+DEBUG=confytome* confytome run-all
 ```
 
 ### Getting Help
 
 1. **Check command help**: `confytome <command> --help`
-2. **Validate your config**: Use a JSON validator
-3. **Check JSDoc syntax**: Ensure YAML is valid in comments
-4. **File permissions**: Ensure files are readable
-5. **Node.js version**: Requires Node.js 18 or higher
+2. **List available plugins**: `confytome generators`
+3. **Validate plugins**: `confytome validate`
+4. **Plugin information**: `confytome info <generator-name>`
+5. **Validate your config**: Use a JSON validator
+6. **Check JSDoc syntax**: Ensure YAML is valid in comments
+7. **File permissions**: Ensure files are readable
+8. **Node.js version**: Requires Node.js 18 or higher
 
 ## 🏗️ Architecture
 
 ### Design Principles
 
+- **Plugin-First**: Extensible generator registry with automatic discovery
 - **OpenAPI-First**: All generators consume OpenAPI specification
-- **Parametric**: No hardcoded file references
-- **Template-Based**: Customizable output via templates
-- **Maintainable**: Centralized utilities and error handling
+- **Service Layer**: Dependency injection for shared functionality
+- **Template-Based**: Customizable output via templates and services
+- **Maintainable**: Clean separation of concerns and error handling
 - **Multi-Format**: Single source, multiple outputs
 
 ### Project Structure

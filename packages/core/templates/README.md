@@ -1,26 +1,51 @@
-# Confytome Templates
+# Confytome Project Templates
 
-This directory contains template files used by the `confytome init` command to set up new projects.
+This directory contains template files used by the `confytome init` command to set up new projects with the plugin-based architecture.
 
-## Files
+## Template Files
 
-- **serverConfig.template.json** - Template for server configuration with API info and authentication settings
-- **confytome.template.json** - Simplified project configuration with server override examples
-- **example-router.js** - Example JSDoc-documented API router showing best practices  
-- **example-auth-routes.js** - Example auth routes demonstrating server overrides
-- **README.md** - This file
+- **serverConfig.template.json** - OpenAPI server configuration with API metadata and authentication settings
+- **confytome.template.json** - Simplified project configuration with server override examples for plugin system
+- **example-router.js** - Example JSDoc-documented API router demonstrating best practices  
+- **example-auth-routes.js** - Example authentication routes showing server overrides
+- **README.md** - This documentation file
 
-## Usage
+## Plugin System Usage
 
-### Option 1: Simple Configuration (Recommended)
-Run `confytome init` and use the confytome.json approach:
-1. Edit `confytome.json` with your route files and server overrides
-2. Run `confytome generate --config confytome.json` to generate all documentation
+### Recommended: Unified Configuration (Plugin System)
+```bash
+# Initialize project structure
+confytome init
 
-### Option 2: Advanced Configuration  
-Use individual files for more control:
-1. Edit `serverConfig.json` with your API details
-2. Run `confytome all --config serverConfig.json --files your-router.js` to generate documentation
+# Edit confytome.json with your route files and server overrides
+# Generate all documentation using plugin registry
+confytome generate
+```
+
+### Alternative: Advanced Configuration  
+For more granular control over individual generators:
+```bash
+# Generate OpenAPI spec first
+confytome openapi -c serverConfig.json -f your-router.js
+
+# Run specific plugins
+confytome run generate-html generate-markdown
+
+# Or run all spec consumer plugins
+confytome run-all
+```
+
+### Plugin Management Commands
+```bash
+# List available generators
+confytome generators
+
+# Get detailed plugin information
+confytome info generate-html
+
+# Validate plugin compatibility
+confytome validate
+```
 
 ## Server Override Examples
 
@@ -93,6 +118,50 @@ Route files support:
 - **Absolute paths**: `/full/path/to/routes.js`  
 - **Network URLs**: `https://raw.githubusercontent.com/user/repo/main/routes.js`
 
-## Customization
+## Plugin Development
 
-You can customize these templates for your organization's needs. The templates are used by the init command to create starting files for new projects.
+These templates also serve as examples for plugin developers:
+
+### Generator Plugin Structure
+```javascript
+// Example from template files
+import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+
+class CustomGenerator extends SpecConsumerGeneratorBase {
+  constructor(outputDir = './docs', services = null) {
+    super('generate-custom', 'Custom format generator', outputDir, services);
+  }
+  
+  async generate() {
+    return this.generateDocument('custom', 'output.custom', (spec, services) => {
+      // Use spec and services to generate custom format
+      return this.processOpenAPISpec(spec, services);
+    });
+  }
+}
+
+export default CustomGenerator;
+```
+
+### External Plugin Development
+For creating external plugins as npm packages:
+- Follow `confytome-plugin-*` naming convention
+- Use `@confytome/core` as peer dependency
+- Implement generator discovery pattern
+- See [PLUGIN-SYSTEM.md](../../../PLUGIN-SYSTEM.md) for comprehensive guide
+
+## Template Customization
+
+Organizations can customize these templates:
+- Fork the repository and modify templates
+- Create custom `confytome init` workflows
+- Develop organization-specific plugins
+- Templates are used by init command for project scaffolding
+
+## Integration with Plugin System
+
+Templates work seamlessly with the plugin registry:
+1. **Project Init**: `confytome init` creates template files
+2. **Plugin Discovery**: Templates work with both workspace and external plugins  
+3. **Service Integration**: Templates support dependency injection and service layer
+4. **Validation**: Templates include plugin compatibility validation

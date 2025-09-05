@@ -5,6 +5,47 @@ All notable changes to confytome will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-09-05
+
+### Added
+- **🔌 Plugin System**: Complete generator registry and plugin architecture
+  - Automatic generator discovery from workspace packages
+  - External plugin support via npm (`confytome-plugin-*`)
+  - Dynamic generator loading with dependency injection
+  - Plugin validation and compatibility checks
+- **New CLI Commands**:
+  - `confytome generators` - List all available generators
+  - `confytome info <generator>` - Show detailed generator information
+  - `confytome recommended` - Show compatible generators
+  - `confytome validate` - Validate generator dependencies
+  - `confytome run <generators>` - Execute specific generators
+  - `confytome run-all` - Execute all spec consumer generators
+- **Developer Tools**:
+  - `GeneratorRegistry` for plugin discovery and management
+  - `GeneratorFactory` for clean generator instantiation
+  - `PluginInterface` for external plugin development
+  - Plugin development utilities and templates
+- **Service Layer Improvements**:
+  - Enhanced dependency injection system
+  - Centralized branding and version services
+  - Template method patterns for code deduplication
+
+### Changed
+- **Architecture**: Evolved from simple orchestration to full plugin system
+- **Code Organization**: Eliminated code duplication across generators
+- **CLI Interface**: Enhanced with plugin management commands
+- **Generator Base Classes**: Improved template method patterns
+
+### Removed
+- **Legacy Systems**: Old generator orchestrator and simplified config builder
+- **Redundant Code**: Duplicate generator patterns and utilities
+- **Test Files**: Temporary test directories and sample code
+
+### Fixed
+- **Service Integration**: Consistent service injection across all generators
+- **Error Handling**: Improved validation and error reporting
+- **Documentation**: Updated all docs to reflect plugin system
+
 ## [1.1.2] - 2025-09-05
 
 ### Changed

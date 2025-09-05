@@ -1,7 +1,7 @@
 {
   "name": "confytome-workspace",
   "version": "1.1.2",
-  "description": "confytome workspace - modular API documentation generation ecosystem",
+  "description": "Plugin-based API documentation generator with OpenAPI-first architecture. Generates Swagger UI, HTML, Markdown, and Postman collections from JSDoc comments.",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -31,10 +31,17 @@
   },
   "homepage": "https://github.com/n-ae/confytome#readme",
   "keywords": [
-    "workspace",
     "api-documentation",
     "openapi",
     "swagger",
+    "jsdoc",
+    "markdown",
+    "html",
+    "postman",
+    "plugin-system",
+    "generator",
+    "cli",
+    "workspace",
     "confytome"
   ],
   "author": "nae",

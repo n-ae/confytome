@@ -1,7 +1,7 @@
 {
   "name": "@confytome/html",
-  "version": "1.2.0",
-  "description": "HTML documentation generator for confytome - generates professional styled HTML documentation from OpenAPI specs",
+  "version": "1.3.0",
+  "description": "Plugin for @confytome/core - generates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
   "main": "generate-html.js",
   "bin": {
     "html": "cli.js"
@@ -17,14 +17,16 @@
   },
   "homepage": "https://github.com/n-ae/confytome/tree/main/packages/html#readme",
   "keywords": [
-    "confytome",
+    "confytome-plugin",
     "html",
-    "documentation",
-    "openapi",
-    "api-docs",
-    "generator",
+    "responsive",
+    "professional",
     "styled",
-    "professional"
+    "navigation",
+    "openapi",
+    "api-documentation",
+    "generator",
+    "confytome"
   ],
   "author": "nae",
   "license": "MIT",
@@ -41,6 +43,6 @@
     "commander": "^14.0.0"
   },
   "peerDependencies": {
-    "@confytome/core": "^1.1.2"
+    "@confytome/core": "^1.2.0"
   }
 }

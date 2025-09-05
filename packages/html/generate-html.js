@@ -15,27 +15,11 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
   }
 
   async generate() {
-    // Initialize services if not injected
-    const services = this.getServices(import.meta.url, 'html');
-    
-    // Load OpenAPI spec
-    const openApiSpec = this.loadOpenAPISpec();
-    
-    // Generate HTML content
     console.log('🎨 Generating HTML documentation...');
-    const htmlContent = this.generateHTML(openApiSpec, services);
     
-    // Write HTML file
-    const outputPath = path.join(this.outputDir, 'api-docs.html');
-    this.writeOutputFile(outputPath, htmlContent, 'HTML documentation created');
-    
-    // Calculate stats
-    this.calculateStats(openApiSpec);
-
-    return {
-      outputPath,
-      size: Buffer.byteLength(htmlContent, 'utf8')
-    };
+    return this.generateDocument('html', 'api-docs.html', (openApiSpec, services) => {
+      return this.generateHTML(openApiSpec, services);
+    });
   }
 
   generateHTML(openApiSpec, services) {
@@ -177,18 +161,6 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
     `).join('');
   }
 
-  calculateStats(spec) {
-    const pathCount = Object.keys(spec.paths || {}).length;
-    let endpointCount = 0;
-    
-    for (const path in spec.paths || {}) {
-      endpointCount += Object.keys(spec.paths[path]).length;
-    }
-    
-    this.addStat(`${pathCount} unique paths`, '');
-    this.addStat(`${endpointCount} endpoint`, '');
-    this.addStat('26.2 KB HTML', '');
-  }
 
   getSuccessMessage() {
     return 'HTML documentation generation completed';
