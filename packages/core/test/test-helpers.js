@@ -13,7 +13,7 @@ import os from 'os';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.dirname(__dirname);
-const binPath = path.join(projectRoot, 'bin.js');
+const binPath = path.join(projectRoot, 'cli.js');
 
 export class TestEnvironment {
   constructor(testName = 'confytome-test') {

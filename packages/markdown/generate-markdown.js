@@ -8,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
-import { SpecConsumerGeneratorBase, BaseGenerator } from './utils/base-generator.js';
+import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
 import { TemplateManager } from './utils/template-manager.js';
 
 class MarkdownGenerator extends SpecConsumerGeneratorBase {

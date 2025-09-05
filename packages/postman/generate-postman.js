@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { SpecConsumerGeneratorBase, BaseGenerator } from './utils/base-generator.js';
+import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
 
 // Create Postman environment from OpenAPI spec
 function createPostmanEnvironment(openApiSpec) {

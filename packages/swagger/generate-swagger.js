@@ -9,7 +9,7 @@
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
-import { CliValidator } from './utils/cli-validator.js';
+import { CliValidator } from '@confytome/core/utils/cli-validator.js';
 const require = createRequire(import.meta.url);
 
 function generateSwaggerUI(openApiSpec) {
@@ -181,11 +181,11 @@ function generateSwaggerUI(openApiSpec) {
   return html;
 }
 
-import { SpecConsumerGeneratorBase, BaseGenerator } from './utils/base-generator.js';
+import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
 
 class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
   constructor() {
-    super('generate-swagger-ui', 'Generating Swagger UI static HTML (OpenAPI spec agnostic)');
+    super('generate-swagger', 'Generating Swagger UI static HTML (OpenAPI spec agnostic)');
   }
 
   async generate() {

@@ -15,12 +15,12 @@ This directory contains template files used by the `confytome init` command to s
 ### Option 1: Simple Configuration (Recommended)
 Run `confytome init` and use the confytome.json approach:
 1. Edit `confytome.json` with your route files and server overrides
-2. Run `confytome generate -c confytome.json` to generate all documentation
+2. Run `confytome generate --config confytome.json` to generate all documentation
 
 ### Option 2: Advanced Configuration  
 Use individual files for more control:
 1. Edit `serverConfig.json` with your API details
-2. Run `confytome all -c serverConfig.json -f your-router.js` to generate documentation
+2. Run `confytome all --config serverConfig.json --files your-router.js` to generate documentation
 
 ## Server Override Examples
 

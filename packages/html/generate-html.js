@@ -6,11 +6,11 @@
  */
 
 import path from 'path';
-import { SpecConsumerGeneratorBase, BaseGenerator } from './utils/base-generator.js';
+import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
 
 class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir = './docs') {
-    super('generate-simple-docs', 'Generating HTML documentation (OpenAPI spec agnostic)', outputDir);
+    super('generate-html', 'Generating HTML documentation (OpenAPI spec agnostic)', outputDir);
   }
 
   async generate() {

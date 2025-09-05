@@ -1,0 +1,47 @@
+{
+  "name": "@confytome/postman",
+  "version": "1.1.1",
+  "description": "Postman collection generator for Confytome - generates Postman collections and environment variables from OpenAPI specs",
+  "main": "generate-postman.js",
+  "bin": {
+    "postman": "cli.js"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-ae/confytome.git",
+    "directory": "packages/postman"
+  },
+  "bugs": {
+    "url": "https://github.com/n-ae/confytome/issues"
+  },
+  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/postman#readme",
+  "keywords": [
+    "confytome",
+    "postman",
+    "api-testing",
+    "collection",
+    "documentation",
+    "openapi",
+    "api-docs",
+    "generator",
+    "environment"
+  ],
+  "author": "n-ae balii@pm.me",
+  "license": "MIT",
+  "files": [
+    "cli.js",
+    "generate-postman.js",
+    "utils/",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "echo \"Tests in main confytome package\" && exit 0"
+  },
+  "dependencies": {
+    "commander": "^14.0.0"
+  },
+  "peerDependencies": {
+    "@confytome/core": "^1.1.1"
+  }
+}

@@ -1,24 +1,30 @@
 # 🍃 Confytome
 
-[![npm version](https://badge.fury.io/js/confytome.svg)](https://badge.fury.io/js/confytome)
+[![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
 [![Code Style: ESM](https://img.shields.io/badge/code%20style-ESM-blue)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 
-> A modern CLI tool to generate comprehensive API documentation from JSDoc comments. Create OpenAPI specs, Markdown docs, Swagger UI, HTML, and Postman collections from a single source with custom templates and multilingual support.
+Core OpenAPI 3.0.3 specification generator from JSDoc comments. Foundation for the modular @confytome/* generator ecosystem.
 
-## ✨ Features
+## 🏗️ Modular Architecture
 
-- 🚀 **Generate 6 documentation formats** from JSDoc comments
+Confytome now uses a **modular approach** - install only what you need:
+
+- **`@confytome/core`** (this package) - Core OpenAPI spec generator
+- **`@confytome/markdown`** - Confluence-friendly Markdown docs ✅ [Available](https://npmjs.com/package/@confytome/markdown)
+- **`@confytome/swagger`** - Interactive Swagger UI ✅ [Available](https://npmjs.com/package/@confytome/swagger)
+- **`@confytome/postman`** - Postman collections ✅ [Available](https://npmjs.com/package/@confytome/postman)
+- **`@confytome/html`** - Professional HTML docs ✅ [Available](https://npmjs.com/package/@confytome/html)
+
+## ✨ Core Features
+
 - 📝 **OpenAPI 3.0.3 specification** generation with validation
-- 🎨 **Beautiful HTML documentation** with professional styling  
-- 📖 **Clean Markdown** with custom Widdershins templates
-- 🔍 **Interactive Swagger UI** as static HTML
-- 📮 **Postman collections** with environment variables
-- 🌍 **Multilingual support** (Turkish, English, Unicode characters)
-- 🔧 **Fully parametric** - works with any config and JSDoc files
+- 🌍 **Server overrides** via standard JSDoc `servers:` field
+- 🔧 **Fully configurable** - works with any server config and JSDoc files
 - ⚡ **CLI interface** with comprehensive validation and error handling
-- 🏗️ **Maintainable architecture** with centralized utilities
+- 🏗️ **Clean architecture** - foundation for generator ecosystem
+- 🔄 **Pure OpenAPI standards** - no custom fields, works with all tools
 
 ## 📦 Installation
 
@@ -26,7 +32,7 @@
 
 ```bash
 # Install globally for CLI access
-npm install -g confytome
+npm install -g @confytome/core
 
 # Verify installation
 confytome --version
@@ -36,8 +42,8 @@ confytome --version
 
 ```bash
 # Use without installing
-npx confytome --help
-npx confytome init
+npx @confytome/core --help
+npx @confytome/core init
 ```
 
 ### Local Development
@@ -102,15 +108,15 @@ Edit the generated `serverConfig.json`:
 
 ```json
 {
-  \"info\": {
-    \"title\": \"My Awesome API\",
-    \"version\": \"1.0.0\",
-    \"description\": \"A comprehensive API for my application\"
+  "info": {
+    "title": "My Awesome API",
+    "version": "1.0.0",
+    "description": "A comprehensive API for my application"
   },
-  \"servers\": [
+  "servers": [
     {
-      \"url\": \"https://api.example.com/v1\",
-      \"description\": \"Production server\"
+      "url": "https://api.example.com/v1",
+      "description": "Production server"
     }
   ]
 }
@@ -199,7 +205,6 @@ Only use server overrides when a route needs a different server (like auth route
  *                   type: object
  */
 router.post('/auth/login', loginHandler);
-```
 ```
 
 ### 4. Generate Documentation
@@ -398,7 +403,7 @@ confytome postman    # API testing collection
 # docs-generate.sh
 set -e
 
-echo \"📚 Generating API documentation...\"
+echo "📚 Generating API documentation..."
 
 # Install dependencies
 npm ci
@@ -406,7 +411,7 @@ npm ci
 # Generate all documentation formats
 confytome all -c api-config.json -f src/routes/*.js
 
-echo \"✅ Documentation generated in docs/\"
+echo "✅ Documentation generated in docs/"
 
 # Optional: Deploy to documentation site
 # rsync -avz docs/ user@docs-server:/var/www/api-docs/
@@ -456,57 +461,57 @@ Complete configuration example:
 
 ```json
 {
-  \"openapi\": \"3.0.3\",
-  \"info\": {
-    \"title\": \"My API\",
-    \"version\": \"2.1.0\",
-    \"description\": \"A comprehensive REST API with authentication\",
-    \"contact\": {
-      \"name\": \"API Support\",
-      \"email\": \"api@company.com\",
-      \"url\": \"https://company.com/support\"
+  "openapi": "3.0.3",
+  "info": {
+    "title": "My API",
+    "version": "2.1.0",
+    "description": "A comprehensive REST API with authentication",
+    "contact": {
+      "name": "API Support",
+      "email": "api@company.com",
+      "url": "https://company.com/support"
     },
-    \"license\": {
-      \"name\": \"MIT\",
-      \"url\": \"https://opensource.org/licenses/MIT\"
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
     }
   },
-  \"servers\": [
+  "servers": [
     {
-      \"url\": \"https://api.company.com/v2\",
-      \"description\": \"Production server\"
+      "url": "https://api.company.com/v2",
+      "description": "Production server"
     },
     {
-      \"url\": \"https://staging.company.com/v2\",
-      \"description\": \"Staging server\"
+      "url": "https://staging.company.com/v2",
+      "description": "Staging server"
     },
     {
-      \"url\": \"http://localhost:3000/api/v2\",
-      \"description\": \"Local development\"
+      "url": "http://localhost:3000/api/v2",
+      "description": "Local development"
     }
   ],
-  \"security\": [
-    { \"bearerAuth\": [] }
+  "security": [
+    { "bearerAuth": [] }
   ],
-  \"components\": {
-    \"securitySchemes\": {
-      \"bearerAuth\": {
-        \"type\": \"http\",
-        \"scheme\": \"bearer\",
-        \"bearerFormat\": \"JWT\",
-        \"description\": \"JWT authentication. Get token from /auth/login\"
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT authentication. Get token from /auth/login"
       }
     },
-    \"parameters\": {
-      \"PaginationLimit\": {
-        \"name\": \"limit\",
-        \"in\": \"query\",
-        \"description\": \"Number of items per page\",
-        \"schema\": {
-          \"type\": \"integer\",
-          \"minimum\": 1,
-          \"maximum\": 100,
-          \"default\": 20
+    "parameters": {
+      "PaginationLimit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Number of items per page",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
         }
       }
     }
@@ -528,7 +533,7 @@ Modify these templates to customize your Markdown output format.
 
 ### Common Issues
 
-#### \"Config file not found\"
+#### "Config file not found"
 ```bash
 # Solution: Create config from template
 confytome init
@@ -536,7 +541,7 @@ confytome init
 cp serverConfig.template.json serverConfig.json
 ```
 
-#### \"JSDoc files not found\"
+#### "JSDoc files not found"
 ```bash
 # Check file paths are correct
 ls -la routes/users.js
@@ -545,10 +550,10 @@ ls -la routes/users.js
 confytome openapi -c config.json -f $(pwd)/routes/users.js
 
 # Verify files contain @swagger comments
-grep -n \"@swagger\" routes/users.js
+grep -n "@swagger" routes/users.js
 ```
 
-#### \"OpenAPI spec not found\"
+#### "OpenAPI spec not found"
 ```bash
 # Generate OpenAPI spec first
 confytome openapi -c config.json -f routes/*.js
@@ -557,16 +562,16 @@ confytome openapi -c config.json -f routes/*.js
 confytome swagger
 ```
 
-#### \"Invalid JSON in config file\"
+#### "Invalid JSON in config file"
 ```bash
 # Validate JSON syntax
-node -e \"JSON.parse(require('fs').readFileSync('serverConfig.json', 'utf8'))\"
+node -e "JSON.parse(require('fs').readFileSync('serverConfig.json', 'utf8'))"
 
 # Or use online JSON validator
 # Fix syntax errors and try again
 ```
 
-#### \"Widdershins not found\"
+#### "Widdershins not found"
 ```bash
 # Reinstall widdershins
 npm uninstall widdershins
@@ -576,7 +581,7 @@ npm install widdershins@4.0.1
 npm install -g widdershins
 ```
 
-#### \"Permission denied\" errors
+#### "Permission denied" errors
 ```bash
 # Fix file permissions
 chmod 644 serverConfig.json
@@ -708,7 +713,7 @@ git checkout -b feature/new-output-format
 
 # Make your changes and commit
 git add .
-git commit -m \"feat: add PDF output format generator\"
+git commit -m "feat: add PDF output format generator"
 
 # Push and create pull request
 git push origin feature/new-output-format

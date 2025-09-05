@@ -12,10 +12,6 @@
  */
 
 import { OpenAPIGenerator } from '../generate-openapi.js';
-import { SimpleDocsGenerator } from '../generate-simple-docs.js';
-import { SwaggerUIGenerator } from '../generate-swagger-ui.js';
-import { MarkdownGenerator } from '../generate-markdown.js';
-import { PostmanGenerator } from '../generate-postman.js';
 
 /**
  * Generator definitions with clear dependencies and metadata
@@ -29,38 +25,6 @@ const GENERATORS = {
     description: 'Generate OpenAPI 3.0.3 specification from JSDoc comments',
     outputFiles: ['api-spec.json'],
     requiresJSDocFiles: true
-  },
-  html: {
-    name: 'html',
-    class: SimpleDocsGenerator,
-    dependencies: ['openapi'],
-    description: 'Generate professional HTML documentation',
-    outputFiles: ['api-docs.html'],
-    requiresJSDocFiles: false
-  },
-  swagger: {
-    name: 'swagger',
-    class: SwaggerUIGenerator,
-    dependencies: ['openapi'],
-    description: 'Generate interactive Swagger UI documentation',
-    outputFiles: ['api-swagger.html'],
-    requiresJSDocFiles: false
-  },
-  markdown: {
-    name: 'markdown',
-    class: MarkdownGenerator,
-    dependencies: ['openapi'],
-    description: 'Generate Confluence-friendly Markdown documentation',
-    outputFiles: ['api-docs.md'],
-    requiresJSDocFiles: false
-  },
-  postman: {
-    name: 'postman',
-    class: PostmanGenerator,
-    dependencies: ['openapi'],
-    description: 'Generate Postman collection and environment variables',
-    outputFiles: ['api-postman.json', 'api-postman-env.json'],
-    requiresJSDocFiles: false
   }
 };
 
@@ -69,10 +33,8 @@ const GENERATORS = {
  * Much simpler than the previous GeneratorSets system
  */
 export const GENERATOR_SETS = {
-  ALL: ['openapi', 'html', 'swagger', 'markdown', 'postman'],
-  SPEC_CONSUMERS: ['html', 'swagger', 'markdown', 'postman'],
-  WEB_DOCS: ['html', 'swagger'],
-  TEXT_DOCS: ['markdown']
+  ALL: ['openapi'],
+  SPEC_CONSUMERS: []
 };
 
 /**

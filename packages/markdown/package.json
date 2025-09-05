@@ -1,0 +1,49 @@
+{
+  "name": "@confytome/markdown",
+  "version": "1.1.1",
+  "description": "Markdown documentation generator for Confytome - generates Confluence-friendly docs from OpenAPI specs using custom Widdershins templates",
+  "main": "generate-markdown.js",
+  "bin": {
+    "markdown": "cli.js"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-ae/confytome.git",
+    "directory": "packages/markdown"
+  },
+  "bugs": {
+    "url": "https://github.com/n-ae/confytome/issues"
+  },
+  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/markdown#readme",
+  "keywords": [
+    "confytome",
+    "markdown",
+    "documentation",
+    "openapi",
+    "widdershins",
+    "confluence",
+    "api-docs",
+    "generator"
+  ],
+  "author": "n-ae balii@pm.me",
+  "license": "MIT",
+  "files": [
+    "cli.js",
+    "generate-markdown.js",
+    "utils/",
+    "widdershins-templates/",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "echo \"Tests in main confytome package\" && exit 0"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "widdershins": "4.0.1"
+  },
+  "peerDependencies": {
+    "@confytome/core": "^1.1.1"
+  }
+}
+

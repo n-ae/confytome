@@ -1,0 +1,48 @@
+{
+  "name": "@confytome/swagger",
+  "version": "1.1.1",
+  "description": "Swagger UI generator for Confytome - generates interactive Swagger UI documentation from OpenAPI specs",
+  "main": "generate-swagger.js",
+  "bin": {
+    "swagger": "cli.js"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-ae/confytome.git",
+    "directory": "packages/swagger"
+  },
+  "bugs": {
+    "url": "https://github.com/n-ae/confytome/issues"
+  },
+  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/swagger#readme",
+  "keywords": [
+    "confytome",
+    "swagger",
+    "swagger-ui",
+    "documentation",
+    "openapi",
+    "api-docs",
+    "generator",
+    "interactive"
+  ],
+  "author": "n-ae balii@pm.me",
+  "license": "MIT",
+  "files": [
+    "cli.js",
+    "generate-swagger.js",
+    "utils/",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "echo \"Tests in main confytome package\" && exit 0"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "swagger-ui-dist": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@confytome/core": "^1.1.1"
+  }
+}
+

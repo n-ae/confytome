@@ -1,0 +1,66 @@
+{
+    "name": "@confytome/core",
+    "version": "1.1.1",
+    "description": "Core OpenAPI 3.0.3 specification generator from JSDoc comments. Foundation for the modular @confytome/* generator ecosystem.",
+    "main": "generate-openapi.js",
+    "exports": {
+        ".": "./generate-openapi.js",
+        "./utils/*": "./utils/*"
+    },
+    "bin": {
+        "confytome": "cli.js"
+    },
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/n-ae/confytome.git"
+    },
+    "bugs": {
+        "url": "https://github.com/n-ae/confytome/issues"
+    },
+    "homepage": "https://github.com/n-ae/confytome#readme",
+    "keywords": [
+        "cli",
+        "api",
+        "documentation",
+        "openapi",
+        "swagger",
+        "jsdoc",
+        "api-spec",
+        "generator",
+        "core",
+        "foundation",
+        "modular"
+    ],
+    "author": "n-ae balii@pm.me",
+    "license": "MIT",
+    "files": [
+        "cli.js",
+        "generate-openapi.js",
+        "utils/",
+        "templates/",
+        "README.md",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "SECURITY.md"
+    ],
+    "scripts": {
+        "prepublishOnly": "npm test",
+        "preversion": "npm test",
+        "version": "git add -A .",
+        "postversion": "git push && git push --tags",
+        "clean": "rm -rf docs/*",
+        "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+        "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
+        "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+        "security:check": "npm audit",
+        "security:fix": "npm audit fix"
+    },
+    "dependencies": {
+        "commander": "^14.0.0",
+        "swagger-jsdoc": "^6.2.8"
+    },
+    "devDependencies": {
+        "jest": "^30.1.3"
+    }
+}
