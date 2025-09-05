@@ -1,5 +1,5 @@
 {
-  "_comment": "Confytome Configuration - Pure OpenAPI Standards",
+  "_comment": "confytome Configuration - Pure OpenAPI Standards",
   "_description": "This configuration uses 100% pure OpenAPI standards. Server overrides are defined directly in JSDoc comments using standard OpenAPI 'servers' field.",
   
   "serverConfig": "serverConfig.json",

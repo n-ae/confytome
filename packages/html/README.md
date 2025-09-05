@@ -1,6 +1,6 @@
 # @confytome/html
 
-Professional styled HTML documentation generator for Confytome - generates clean, responsive HTML documentation from OpenAPI specifications.
+Professional styled HTML documentation generator for confytome - generates clean, responsive HTML documentation from OpenAPI specifications.
 
 ## Installation
 

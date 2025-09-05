@@ -1,6 +1,6 @@
 # @confytome/postman
 
-Postman collection generator for Confytome - generates Postman collections and environment variables from OpenAPI specifications for API testing.
+Postman collection generator for confytome - generates Postman collections and environment variables from OpenAPI specifications for API testing.
 
 ## Installation
 

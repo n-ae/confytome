@@ -1,7 +1,7 @@
 {
   "name": "confytome-workspace",
-  "version": "1.0.0",
-  "description": "Confytome workspace - modular API documentation generation ecosystem",
+  "version": "1.1.2",
+  "description": "confytome workspace - modular API documentation generation ecosystem",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -37,7 +37,7 @@
     "swagger",
     "confytome"
   ],
-  "author": "n-ae balii@pm.me",
+  "author": "nae",
   "license": "MIT",
   "devDependencies": {
     "@confytome/core": "workspace:*",

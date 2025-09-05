@@ -1,7 +1,7 @@
 {
   "name": "@confytome/swagger",
-  "version": "1.1.1",
-  "description": "Swagger UI generator for Confytome - generates interactive Swagger UI documentation from OpenAPI specs",
+  "version": "1.1.2",
+  "description": "Swagger UI generator for confytome - generates interactive Swagger UI documentation from OpenAPI specs",
   "main": "generate-swagger.js",
   "bin": {
     "swagger": "cli.js"
@@ -26,7 +26,7 @@
     "generator",
     "interactive"
   ],
-  "author": "n-ae balii@pm.me",
+  "author": "nae",
   "license": "MIT",
   "files": [
     "cli.js",
@@ -45,4 +45,3 @@
     "@confytome/core": "^1.1.1"
   }
 }
-

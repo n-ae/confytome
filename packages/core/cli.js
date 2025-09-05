@@ -114,7 +114,7 @@ async function startWatchMode(configPath, files, outputDir) {
 program
   .name('confytome')
   .description('🍃 Core OpenAPI specification generator from JSDoc comments\n\n' +
-    'Confytome generates OpenAPI 3.0.3 specifications from JSDoc-annotated code.\n' +
+    'confytome generates OpenAPI 3.0.3 specifications from JSDoc-annotated code.\n' +
     'Use individual generator packages for other formats:\n' +
     '• @confytome/markdown - Confluence-friendly Markdown docs\n' +
     '• @confytome/swagger - Interactive Swagger UI (coming soon)\n' +
@@ -185,7 +185,7 @@ program
 
 program
   .command('init')
-  .description(`Initialize complete Confytome project structure
+  .description(`Initialize complete confytome project structure
 
 Sets up everything you need to start generating documentation:
 • Creates docs/ directory (or custom --output location)
@@ -281,7 +281,7 @@ program
   .description(`Generate demo documentation using example files
 
 Quick demo using bundled example-router.js and serverConfig.json.
-Perfect for testing Confytome or seeing what the output looks like.
+Perfect for testing confytome or seeing what the output looks like.
 Automatically runs the complete documentation pipeline.
 
 Examples:
@@ -291,7 +291,7 @@ Examples:
   .action(async (options) => {
     const outputDir = options.output || './docs';
 
-    console.log('🚀 Running Confytome demo with example files...');
+    console.log('🚀 Running confytome demo with example files...');
     console.log('');
     console.log(`📂 Output directory: ${outputDir}`);
     console.log('');

@@ -15,8 +15,8 @@ Thank you for your interest in contributing to Confytome! This document provides
 ```bash
 # Fork the repository on GitHub
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/portfolio
-cd portfolio/confytome
+git clone https://github.com/n-ae/confytome
+cd confytome
 
 # Install dependencies
 npm install
@@ -40,7 +40,7 @@ npm run security:check
 
 ```
 confytome/
-├── bin.js                     # CLI entry point
+├── cli.js                    # CLI entry point
 ├── generate-*.js             # Individual format generators
 ├── utils/                    # Shared utilities
 │   ├── base-generator.js     # Common generator patterns
@@ -314,7 +314,6 @@ Contributors will be recognized in:
 
 - 💬 **Discussions**: GitHub Discussions
 - 🐛 **Issues**: GitHub Issues
-- 📧 **Direct Contact**: balii@pm.me
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "name": "@confytome/markdown",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Markdown documentation generator for Confytome - generates Confluence-friendly docs from OpenAPI specs using custom Widdershins templates",
   "main": "generate-markdown.js",
   "bin": {
@@ -26,7 +26,7 @@
     "api-docs",
     "generator"
   ],
-  "author": "n-ae balii@pm.me",
+  "author": "nae",
   "license": "MIT",
   "files": [
     "cli.js",
@@ -46,4 +46,3 @@
     "@confytome/core": "^1.1.1"
   }
 }
-

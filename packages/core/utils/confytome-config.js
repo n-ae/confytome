@@ -1,5 +1,5 @@
 /**
- * Simple Confytome Configuration Utility
+ * Simple confytome Configuration Utility
  * 
  * Reads confytome.json and provides a simple way to configure server and routes
  * without complex JSDoc manipulation.
@@ -33,13 +33,13 @@ export class ConfytomeConfig {
   static async fetchNetworkFile(url) {
     return new Promise((resolve, reject) => {
       const client = url.startsWith('https:') ? https : http;
-      
+
       client.get(url, (response) => {
         if (response.statusCode !== 200) {
           reject(new Error(`Failed to fetch ${url}: HTTP ${response.statusCode}`));
           return;
         }
-        
+
         let data = '';
         response.on('data', chunk => data += chunk);
         response.on('end', () => resolve(data));
@@ -59,13 +59,13 @@ export class ConfytomeConfig {
       fs.mkdirSync(cacheDir, { recursive: true });
       console.log(`📁 Created cache directory: ${cacheDir}`);
     }
-    
+
     // Generate cache filename from URL
     const urlHash = Buffer.from(url).toString('base64').replace(/[/+=]/g, '-');
     const cacheFile = path.join(cacheDir, `${urlHash}.js`);
-    
+
     console.log(`📡 Downloading: ${url}`);
-    
+
     try {
       const content = await this.fetchNetworkFile(url);
       fs.writeFileSync(cacheFile, content);
@@ -83,46 +83,46 @@ export class ConfytomeConfig {
    */
   static async load(configPath = './confytome.json') {
     if (!fs.existsSync(configPath)) {
-      throw new Error(`Confytome config not found: ${configPath}`);
+      throw new Error(`confytome config not found: ${configPath}`);
     }
 
     try {
       const configContent = fs.readFileSync(configPath, 'utf8');
       const config = JSON.parse(configContent);
-      
+
       // Validate required fields
       if (!config.serverConfig) {
         throw new Error('serverConfig is required in confytome.json');
       }
-      
+
       if (!config.routeFiles || !Array.isArray(config.routeFiles)) {
         throw new Error('routeFiles array is required in confytome.json');
       }
-      
+
       // Validate files exist
       const serverConfigPath = config.serverConfig;
       if (!fs.existsSync(serverConfigPath)) {
         throw new Error(`Server config file not found: ${serverConfigPath}`);
       }
-      
+
       // All route files are now simple strings
       const routeFileNames = config.routeFiles;
-      
+
       // Separate network paths from local paths
       const networkFiles = routeFileNames.filter(file => this.isNetworkPath(file));
       const localFiles = routeFileNames.filter(file => !this.isNetworkPath(file));
-      
+
       // Validate local files exist
       const missingLocalFiles = localFiles.filter(file => !fs.existsSync(file));
       if (missingLocalFiles.length > 0) {
         throw new Error(`Local route files not found: ${missingLocalFiles.join(', ')}`);
       }
-      
+
       // Download and cache network files
       const cachedNetworkFiles = {};
       if (networkFiles.length > 0) {
         console.log(`📡 Found ${networkFiles.length} network route file(s)`);
-        
+
         for (const url of networkFiles) {
           try {
             const cachedPath = await this.cacheNetworkFile(url);
@@ -132,17 +132,17 @@ export class ConfytomeConfig {
           }
         }
       }
-      
+
       // Update route files with cached paths for network files
       config.routeFiles = config.routeFiles.map(route => {
         return this.isNetworkPath(route) ? cachedNetworkFiles[route] : route;
       });
-      
+
       console.log('✅ Loaded confytome.json configuration');
       console.log(`   Server config: ${serverConfigPath}`);
       console.log(`   Route files: ${config.routeFiles.length} files`);
       console.log('   💡 Server overrides: Use standard OpenAPI "servers:" in JSDoc comments');
-      
+
       return config;
     } catch (error) {
       if (error instanceof SyntaxError) {
@@ -165,7 +165,7 @@ export class ConfytomeConfig {
     if (serverConfig.servers && serverConfig.servers.length > 0) {
       return serverConfig.servers[serverConfig.servers.length - 1].url;
     }
-    
+
     throw new Error('No servers configured in server config');
   }
 
@@ -185,10 +185,10 @@ export class ConfytomeConfig {
    */
   static createModifiedServerConfig(config) {
     const serverConfig = JSON.parse(fs.readFileSync(config.serverConfig, 'utf8'));
-    
+
     // Return clean server config - server overrides will be applied at operation level
     // following OpenAPI standards via operation.servers
-    
+
     return serverConfig;
   }
 }

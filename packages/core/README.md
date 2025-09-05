@@ -1,4 +1,4 @@
-# 🍃 Confytome
+# 🍃 confytome
 
 [![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,7 +9,7 @@ Core OpenAPI 3.0.3 specification generator from JSDoc comments. Foundation for t
 
 ## 🏗️ Modular Architecture
 
-Confytome now uses a **modular approach** - install only what you need:
+confytome uses a **modular approach** - install only what you need:
 
 - **`@confytome/core`** (this package) - Core OpenAPI spec generator
 - **`@confytome/markdown`** - Confluence-friendly Markdown docs ✅ [Available](https://npmjs.com/package/@confytome/markdown)
@@ -50,8 +50,8 @@ npx @confytome/core init
 
 ```bash
 # Clone and install
-git clone https://github.com/n-ae/portfolio
-cd portfolio/confytome
+git clone https://github.com/n-ae/confytome
+cd confytome
 npm install
 
 # Use locally
@@ -660,8 +660,8 @@ We welcome contributions! Here's how to get started:
 
 ```bash
 # Fork and clone the repository
-git clone https://github.com/n-ae/portfolio
-cd portfolio/confytome
+git clone https://github.com/n-ae/confytome
+cd confytome
 
 # Install dependencies
 npm install
@@ -734,8 +734,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/n-ae/portfolio/issues)
-- 📧 **Email**: balii@pm.me
+- 🐛 **Issues**: [GitHub Issues](https://github.com/n-ae/confytome/issues)
 - 📖 **Documentation**: This README and inline help (`confytome --help`)
 
 ---

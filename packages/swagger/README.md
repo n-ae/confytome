@@ -1,6 +1,6 @@
 # @confytome/swagger
 
-Interactive Swagger UI generator for Confytome - generates self-contained Swagger UI documentation from OpenAPI specifications.
+Interactive Swagger UI generator for confytome - generates self-contained Swagger UI documentation from OpenAPI specifications.
 
 ## Installation
 

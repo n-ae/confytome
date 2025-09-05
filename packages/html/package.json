@@ -1,7 +1,7 @@
 {
   "name": "@confytome/html",
-  "version": "1.1.1",
-  "description": "HTML documentation generator for Confytome - generates professional styled HTML documentation from OpenAPI specs",
+  "version": "1.1.2",
+  "description": "HTML documentation generator for confytome - generates professional styled HTML documentation from OpenAPI specs",
   "main": "generate-html.js",
   "bin": {
     "html": "cli.js"
@@ -26,7 +26,7 @@
     "styled",
     "professional"
   ],
-  "author": "n-ae balii@pm.me",
+  "author": "nae",
   "license": "MIT",
   "files": [
     "cli.js",

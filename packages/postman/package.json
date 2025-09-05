@@ -1,7 +1,7 @@
 {
   "name": "@confytome/postman",
-  "version": "1.1.1",
-  "description": "Postman collection generator for Confytome - generates Postman collections and environment variables from OpenAPI specs",
+  "version": "1.1.2",
+  "description": "Postman collection generator for confytome - generates Postman collections and environment variables from OpenAPI specs",
   "main": "generate-postman.js",
   "bin": {
     "postman": "cli.js"
@@ -27,7 +27,7 @@
     "generator",
     "environment"
   ],
-  "author": "n-ae balii@pm.me",
+  "author": "nae",
   "license": "MIT",
   "files": [
     "cli.js",
