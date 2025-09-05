@@ -30,8 +30,8 @@ export async function generateOpenAPI(configPath, files, outputDir = './docs') {
  * @param {string} outputDir - Output directory
  * @returns {Promise<Array<Object>>} Array of generation results
  */
-export async function generateAllDocs(configPath, files, outputDir = './docs') {
-  const config = ConfigurationFactory.create('openapi', { configPath, jsdocFiles: files, outputDir });
+export async function generateAllDocs(configPath, files, outputDir = './docs', options = {}) {
+  const config = ConfigurationFactory.create('openapi', { configPath, jsdocFiles: files, outputDir, ...options });
   return await GeneratorOrchestrator.runAll(config);
 }
 
@@ -105,7 +105,7 @@ export function validateGenerators(generatorNames) {
  * @param {string} outputDir - Output directory
  * @returns {Promise<Object>} Generation result
  */
-export async function generateFromConfytomeConfig(configPath = './confytome.json', outputDir = './docs') {
+export async function generateFromConfytomeConfig(configPath = './confytome.json', outputDir = './docs', options = {}) {
   const confytomeConfig = await ConfytomeConfig.load(configPath);
   
   // Extract route file names from the configuration
@@ -123,7 +123,7 @@ export async function generateFromConfytomeConfig(configPath = './confytome.json
   
   try {
     // Use the modified configuration to run all generators
-    const result = await generateAllDocs(tempConfigPath, routeFileNames, outputDir);
+    const result = await generateAllDocs(tempConfigPath, routeFileNames, outputDir, options);
     
     // Server overrides are now handled directly via JSDoc @swagger servers: field
     // No post-processing needed - pure OpenAPI standards!

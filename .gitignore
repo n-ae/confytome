@@ -167,3 +167,4 @@ coverage/
 
 # Claude Code specific
 .claude/
+CLAUDE.md

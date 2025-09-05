@@ -1,11 +1,12 @@
 {
     "name": "@confytome/core",
-    "version": "1.1.3",
+    "version": "1.2.0",
     "description": "Core OpenAPI 3.0.3 specification generator from JSDoc comments. Foundation for the modular @confytome/* generator ecosystem.",
     "main": "generate-openapi.js",
     "exports": {
         ".": "./generate-openapi.js",
-        "./utils/*": "./utils/*"
+        "./utils/*": "./utils/*",
+        "./services/*": "./services/*"
     },
     "bin": {
         "confytome": "cli.js"
@@ -38,6 +39,7 @@
         "cli.js",
         "generate-openapi.js",
         "utils/",
+        "services/",
         "templates/",
         "README.md",
         "CHANGELOG.md",

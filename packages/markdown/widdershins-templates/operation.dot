@@ -76,3 +76,5 @@ curl -X {{= data.method.verb.toUpperCase()}} {{=data.utils.slashes(serverUrl + d
   -H '{{=p.name}}: {{=p.exampleValues.object}}'{{~}}{{?}}{{? data.bodyParameter && data.bodyParameter.exampleValues && data.bodyParameter.exampleValues.object}} \
   -d '{{=data.utils.safejson(data.bodyParameter.exampleValues.object,null,0)}}'{{?}}
 ```
+
+*[↑](#quick-reference)*

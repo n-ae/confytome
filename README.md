@@ -58,6 +58,43 @@ npm install
 node packages/core/cli.js --help
 ```
 
+## 🎯 Try the Demo
+
+Want to see confytome in action? Generate complete demo documentation in seconds:
+
+```bash
+# Generate demo documentation with example API
+confytome demo
+
+# Or specify custom output directory
+confytome demo --output ./my-demo
+```
+
+This creates a complete API documentation suite with:
+- **📄 OpenAPI Spec** - Machine-readable API specification
+- **🎨 HTML Docs** - Professional styled documentation  
+- **⚡ Swagger UI** - Interactive API explorer
+- **📝 Markdown** - Confluence-friendly documentation
+- **📮 Postman** - Collection + environment for API testing
+
+The demo includes realistic API endpoints:
+- **🔐 Authentication** - Login/logout with JWT tokens (server override example)
+- **👥 User Management** - CRUD operations with pagination
+- **🌐 Multiple Environments** - Production, staging, development servers
+
+**📂 Generated Files:**
+```
+docs/
+├── api-spec.json        # OpenAPI 3.0.3 specification (20KB)
+├── api-docs.html        # Professional HTML documentation (12KB)  
+├── api-swagger.html     # Interactive Swagger UI (1.8MB self-contained)
+├── api-docs.md          # Confluence-ready Markdown (12KB)
+├── api-postman.json     # Postman collection (8KB)
+└── api-postman-env.json # Postman environment variables (4KB)
+```
+
+**🌟 Open `api-swagger.html` in your browser to explore the interactive API!**
+
 ## 🚀 Quick Start
 
 ### Option 1: Simple Approach (Recommended) 🌟
@@ -227,6 +264,7 @@ confytome postman
 
 | Command | Description | Usage |
 |---------|-------------|-------|
+| `demo` | 🎯 Generate demo with example API | `confytome demo` |
 | `init` | Initialize project structure | `confytome init` |
 | `generate` | 🌟 Generate docs using confytome.json | `confytome generate` |
 | `openapi` | Generate OpenAPI specification | `confytome openapi -c config.json -f file1.js file2.js` |

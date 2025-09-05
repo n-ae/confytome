@@ -13,6 +13,7 @@ import fs from 'fs';
 import { createRequire } from 'module';
 import { CliValidator } from './utils/cli-validator.js';
 import { SimpleErrorHandler } from './utils/error-handler-simple.js';
+import { ConfigMerger } from './utils/config-merger.js';
 import {
   generateAllDocs,
   generateOpenAPI,
@@ -145,12 +146,31 @@ program
     '  confytome generate --output ./api-docs')
   .option('-c, --config <path>', 'confytome config file (default: ./confytome.json)')
   .option('-o, --output <dir>', 'output directory (default: ./docs)')
+  .option('--no-brand', 'exclude confytome branding from generated documentation')
   .action(async (options) => {
+    let tempConfig = null;
+    
     try {
-      await generateFromConfytomeConfig(options.config || './confytome.json', options.output || './docs');
+      const configPath = options.config || './confytome.json';
+      const outputDir = options.output || './docs';
+      
+      // Extract and clean CLI options
+      const cliOptions = ConfigMerger.extractCliOptions(options);
+      
+      // Merge CLI options with config file
+      tempConfig = await ConfigMerger.mergeWithConfig(configPath, cliOptions, outputDir);
+      
+      // Generate using the merged configuration
+      await generateFromConfytomeConfig(tempConfig.configPath, outputDir);
+      
     } catch (error) {
       console.error('❌ Generate failed:', error.message);
       process.exit(1);
+    } finally {
+      // Clean up temporary config if created
+      if (tempConfig) {
+        ConfigMerger.cleanup(tempConfig.configPath, tempConfig.isTemporary);
+      }
     }
   });
 
@@ -173,13 +193,42 @@ program
       process.exit(1);
     }
 
+    let tempConfig = null;
+    
     try {
-      await generateOpenAPI(options.config, files, options.output);
+      const outputDir = options.output || './docs';
+      
+      // Extract and clean CLI options
+      const cliOptions = ConfigMerger.extractCliOptions(options);
+      
+      // Create a temporary config that includes the files and output options
+      const serverConfigContent = fs.readFileSync(options.config, 'utf8');
+      const serverConfig = JSON.parse(serverConfigContent);
+      
+      // Create a confytome-style config for consistency
+      const confytomeConfig = {
+        serverConfig: options.config,
+        routeFiles: files,
+        outputDir: outputDir,
+        ...cliOptions
+      };
+      
+      // Merge with any CLI overrides
+      tempConfig = await ConfigMerger.createTemporaryConfig(confytomeConfig, outputDir);
+      
+      // Generate using the unified configuration approach
+      await generateOpenAPI(options.config, files, outputDir);
+      
     } catch (error) {
       console.error('❌ OpenAPI generation failed:', error.message);
       console.log('');
       console.log('💡 Usage: confytome openapi -c <config.json> -f <file1.js> <file2.js> ...');
       process.exit(1);
+    } finally {
+      // Clean up temporary config if created
+      if (tempConfig) {
+        ConfigMerger.cleanup(tempConfig.configPath, tempConfig.isTemporary);
+      }
     }
   });
 

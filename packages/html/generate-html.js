@@ -6,20 +6,24 @@
  */
 
 import path from 'path';
+import fs from 'fs';
 import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
 
 class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
-  constructor(outputDir = './docs') {
-    super('generate-html', 'Generating HTML documentation (OpenAPI spec agnostic)', outputDir);
+  constructor(outputDir = './docs', services = null) {
+    super('generate-html', 'Generating HTML documentation (OpenAPI spec agnostic)', outputDir, services);
   }
 
   async generate() {
+    // Initialize services if not injected
+    const services = this.getServices(import.meta.url, 'html');
+    
     // Load OpenAPI spec
     const openApiSpec = this.loadOpenAPISpec();
     
     // Generate HTML content
     console.log('🎨 Generating HTML documentation...');
-    const htmlContent = this.generateHTML(openApiSpec);
+    const htmlContent = this.generateHTML(openApiSpec, services);
     
     // Write HTML file
     const outputPath = path.join(this.outputDir, 'api-docs.html');
@@ -34,7 +38,7 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
     };
   }
 
-  generateHTML(openApiSpec) {
+  generateHTML(openApiSpec, services) {
     const { info, servers, tags, paths, components } = openApiSpec;
     
     // Group endpoints by tags
@@ -69,18 +73,11 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
       });
     });
 
-    return this.buildHTMLDocument(info, servers, tagSections, components);
+    return this.buildHTMLDocument(info, servers, tagSections, components, services);
   }
 
-  buildHTMLDocument(info, servers, tagSections, components) {
+  buildHTMLDocument(info, servers, tagSections, components, services) {
     const serverUrls = servers ? servers.map(s => s.url).join(', ') : 'Not specified';
-    const currentDate = new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -133,7 +130,7 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
 
   <hr style="margin: 3rem 0; border: none; border-top: 1px solid #dee2e6;">
   <p style="text-align: center; color: #6c757d;">
-    <small>Generated: ${currentDate}</small>
+    ${services.branding.generateForHtml()}
   </p>
 </body>
 </html>`;

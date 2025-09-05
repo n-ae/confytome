@@ -92,8 +92,7 @@ Authorization: Bearer <your-jwt-token>
 {{? block.rows.length}}
 | Property | Type | Description |
 |----------|------|-------------|
-{{~block.rows :p}}
-| {{=p.displayName}} | {{=p.safeType}} | {{=p.description || ''}} |
+{{~block.rows :p}}| {{=p.displayName}} | {{=p.safeType}} | {{=p.description || ''}} |
 {{~}}
 
 {{?}}
@@ -103,4 +102,6 @@ Authorization: Bearer <your-jwt-token>
 
 {{?}}
 
-*Generated: {{= new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}*
+---
+
+{{? process.env.CONFYTOME_NO_BRAND }}*Generated {{= new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }) }} UTC*{{??}}*Generated {{= new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }) }} UTC by 🍃 confytome v{{= process.env.CONFYTOME_VERSION || 'unknown' }} with <3*{{?}}

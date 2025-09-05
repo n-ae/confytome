@@ -25,6 +25,7 @@ program
   .option('-c, --config <path>', 'Path to confytome.json config file', './confytome.json')
   .option('-o, --output <path>', 'Output directory for generated files', './docs')
   .option('--spec <path>', 'Path to existing OpenAPI spec (if available)')
+  .option('--no-brand', 'Exclude confytome branding from generated documentation')
   .parse(process.argv);
 
 const options = program.opts();
@@ -91,8 +92,9 @@ async function main() {
     console.log('🎨 Generating Swagger UI documentation...');
     const generator = new SwaggerUIGenerator();
     
-    // Set output directory
+    // Set output directory and brand options
     generator.outputDir = options.output;
+    generator.excludeBrand = options.brand === false;
     
     // Override spec path if provided
     if (options.spec) {

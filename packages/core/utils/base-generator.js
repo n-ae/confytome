@@ -10,15 +10,57 @@ import { SimpleErrorHandler } from './error-handler-simple.js';
 import { FileManager } from './file-manager.js';
 import { CliArgsParser } from './cli-args.js';
 import { CliValidator } from './cli-validator.js';
+import { ServiceFactory } from '../services/ServiceFactory.js';
 
 export class BaseGenerator {
-  constructor(name, description, requiresJSDocFiles = false, outputDir = './docs') {
+  constructor(name, description, requiresJSDocFiles = false, outputDir = './docs', services = null) {
     this.name = name;
     this.description = description;
     this.requiresJSDocFiles = requiresJSDocFiles;
     this.outputDir = outputDir;
     this.startTime = null;
     this.stats = {};
+    
+    // Dependency injection - services can be injected or created automatically
+    this.services = services;
+  }
+
+  /**
+   * Get or create services for this generator
+   * @param {string} contextUrl - import.meta.url from the generator
+   * @param {string} generatorType - Type of generator
+   * @param {Object} options - Generator options
+   * @returns {Object} Service container
+   */
+  getServices(contextUrl, generatorType = null, options = {}) {
+    if (!this.services) {
+      // Auto-create services if not injected
+      const opts = {
+        excludeBrand: this.excludeBrand || false,
+        ...options
+      };
+      
+      this.services = generatorType 
+        ? ServiceFactory.createGeneratorServices(contextUrl, generatorType, opts)
+        : ServiceFactory.createServices(contextUrl, opts);
+    }
+    
+    return this.services;
+  }
+
+  /**
+   * Initialize services for this generator (backward compatibility)
+   * @param {string} contextUrl - import.meta.url from the generator
+   * @param {string} generatorType - Type of generator
+   */
+  initializeServices(contextUrl, generatorType = null) {
+    const options = {
+      excludeBrand: this.excludeBrand || false
+    };
+    
+    this.services = generatorType 
+      ? ServiceFactory.createGeneratorServices(contextUrl, generatorType, options)
+      : ServiceFactory.createServices(contextUrl, options);
   }
 
   /**
@@ -139,8 +181,8 @@ export class BaseGenerator {
  * For generators that create the OpenAPI spec from JSDoc files
  */
 export class OpenAPIGeneratorBase extends BaseGenerator {
-  constructor(name, description, outputDir = './docs') {
-    super(name, description, true, outputDir); // Requires JSDoc files
+  constructor(name, description, outputDir = './docs', services = null) {
+    super(name, description, true, outputDir, services); // Requires JSDoc files
   }
 
   async validateDependencies(args) {
@@ -166,8 +208,8 @@ export class OpenAPIGeneratorBase extends BaseGenerator {
  * For generators that consume existing OpenAPI spec
  */
 export class SpecConsumerGeneratorBase extends BaseGenerator {
-  constructor(name, description, outputDir = './docs') {
-    super(name, description, false, outputDir); // Doesn't require JSDoc files
+  constructor(name, description, outputDir = './docs', services = null) {
+    super(name, description, false, outputDir, services); // Doesn't require JSDoc files
   }
 
   /**

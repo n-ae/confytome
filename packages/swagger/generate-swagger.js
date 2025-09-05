@@ -12,7 +12,7 @@ import { createRequire } from 'module';
 import { CliValidator } from '@confytome/core/utils/cli-validator.js';
 const require = createRequire(import.meta.url);
 
-function generateSwaggerUI(openApiSpec) {
+function generateSwaggerUI(openApiSpec, options = {}) {
   const swaggerUIAssetPath = require.resolve('swagger-ui-dist/package.json');
   const swaggerUIDistPath = path.dirname(swaggerUIAssetPath);
   
@@ -174,6 +174,10 @@ function generateSwaggerUI(openApiSpec) {
       window.ui = ui;
     };
   </script>
+  ${options.excludeBrand ? '' : `
+  <div style="text-align: center; margin: 2rem 0; padding: 1rem; border-top: 1px solid #e5e5e5; color: #666; font-size: 0.9em;">
+    <p style="margin: 0;">${options.branding || 'Generated with 🍃 confytome'}</p>
+  </div>`}
 </body>
 </html>
 `;
@@ -184,17 +188,20 @@ function generateSwaggerUI(openApiSpec) {
 import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
 
 class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
-  constructor() {
-    super('generate-swagger', 'Generating Swagger UI static HTML (OpenAPI spec agnostic)');
+  constructor(outputDir = './docs', services = null) {
+    super('generate-swagger', 'Generating Swagger UI static HTML (OpenAPI spec agnostic)', outputDir, services);
   }
 
   async generate() {
+    // Initialize services if not injected
+    const services = this.getServices(import.meta.url, 'swagger');
+    
     // Load OpenAPI spec
     const openApiSpec = this.loadOpenAPISpec();
     
     // Generate Swagger UI HTML
     console.log('🎨 Generating Swagger UI HTML...');
-    const html = this.generateSwaggerUI(openApiSpec);
+    const html = this.generateSwaggerUI(openApiSpec, services);
     
     // Write HTML file
     const outputPath = path.join(this.outputDir, 'api-swagger.html');
@@ -211,8 +218,13 @@ class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
     };
   }
 
-  generateSwaggerUI(openApiSpec) {
-    return generateSwaggerUI(openApiSpec);
+  generateSwaggerUI(openApiSpec, services) {
+    // Generate branding using injected services
+    const branding = services.branding.generateForSwagger();
+    return generateSwaggerUI(openApiSpec, { 
+      excludeBrand: this.excludeBrand, 
+      branding: branding
+    });
   }
 
   calculateStats(spec, outputPath) {

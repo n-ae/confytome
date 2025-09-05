@@ -14,6 +14,7 @@ import path from 'path';
 import fs from 'fs';
 import { execSync } from 'child_process';
 import { SimpleDocsGenerator } from './generate-html.js';
+import { ConfigMerger } from '@confytome/core/utils/config-merger.js';
 
 // Package info
 const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
@@ -25,6 +26,7 @@ program
   .option('-c, --config <path>', 'Path to confytome.json config file', './confytome.json')
   .option('-o, --output <path>', 'Output directory for generated files', './docs')
   .option('--spec <path>', 'Path to existing OpenAPI spec (if available)')
+  .option('--no-brand', 'Exclude confytome branding from generated documentation')
   .parse(process.argv);
 
 const options = program.opts();
@@ -91,8 +93,9 @@ async function main() {
     console.log('🎨 Generating HTML documentation...');
     const generator = new SimpleDocsGenerator();
     
-    // Set output directory
+    // Set output directory and brand options
     generator.outputDir = options.output;
+    generator.excludeBrand = options.brand === false;
     
     // Override spec path if provided
     if (options.spec) {
