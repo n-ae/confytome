@@ -15,9 +15,9 @@ export default async function() {
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir, { recursive: true });
   }
-  
+
   // Store path in global for tests to use
   global.__TEMP_DIR__ = tempDir;
-  
+
   console.log('🔧 Test environment setup complete');
 };

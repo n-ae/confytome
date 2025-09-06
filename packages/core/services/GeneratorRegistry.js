@@ -1,6 +1,6 @@
 /**
  * Generator Registry and Plugin System
- * 
+ *
  * Provides a centralized registry for all generators with plugin discovery,
  * dynamic loading, and compatibility validation.
  */
@@ -31,13 +31,13 @@ export class GeneratorRegistry {
     }
 
     console.log('🔌 Initializing generator plugin system...');
-    
+
     // Discover workspace generators
     await this.discoverWorkspaceGenerators();
-    
+
     // Discover external plugins
     await this.discoverExternalPlugins();
-    
+
     this.initialized = true;
     console.log(`✅ Generator registry initialized with ${this.generators.size} generators`);
   }
@@ -50,7 +50,7 @@ export class GeneratorRegistry {
       // Find all packages in the workspace
       const packagesRoot = path.resolve(__dirname, '../../../');
       const packageDirs = await glob('packages/*', { cwd: packagesRoot });
-      
+
       for (const packageDir of packageDirs) {
         const packagePath = path.join(packagesRoot, packageDir);
         await this.scanPackageForGenerators(packagePath);
@@ -78,7 +78,7 @@ export class GeneratorRegistry {
 
       // Look for packages that follow the confytome-plugin-* naming convention
       for (const [packageName, version] of Object.entries(dependencies)) {
-        if (packageName.startsWith('confytome-plugin-') || 
+        if (packageName.startsWith('confytome-plugin-') ||
             packageName.startsWith('@confytome/plugin-')) {
           await this.loadExternalPlugin(packageName, version);
         }
@@ -99,7 +99,7 @@ export class GeneratorRegistry {
       }
 
       const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-      
+
       // Skip core package as it doesn't contain generators
       if (packageJson.name === '@confytome/core') {
         return;
@@ -107,7 +107,7 @@ export class GeneratorRegistry {
 
       // Look for generator files
       const generatorFiles = await glob('generate-*.js', { cwd: packagePath });
-      
+
       for (const generatorFile of generatorFiles) {
         const generatorPath = path.join(packagePath, generatorFile);
         await this.loadGeneratorFromFile(generatorPath, packageJson);
@@ -125,7 +125,7 @@ export class GeneratorRegistry {
       // Convert to file URL for ES module import
       const fileUrl = `file://${filePath}`;
       const module = await import(fileUrl);
-      
+
       // Find the generator class in the module
       const generatorClass = this.findGeneratorClass(module);
       if (!generatorClass) {
@@ -134,7 +134,7 @@ export class GeneratorRegistry {
 
       // Extract metadata from the generator
       const metadata = this.extractGeneratorMetadata(generatorClass, filePath, packageJson);
-      
+
       // Register the generator
       this.registerGenerator(metadata.name, {
         class: generatorClass,
@@ -154,8 +154,8 @@ export class GeneratorRegistry {
   findGeneratorClass(module) {
     // Look for exported generator classes
     const potentialClasses = Object.values(module).filter(
-      exported => typeof exported === 'function' && 
-      exported.prototype && 
+      exported => typeof exported === 'function' &&
+      exported.prototype &&
       this.isGeneratorClass(exported)
     );
 
@@ -168,11 +168,11 @@ export class GeneratorRegistry {
    */
   isGeneratorClass(cls) {
     if (!cls.prototype) return false;
-    
+
     // Check if it has the required methods
     const hasGenerateMethod = typeof cls.prototype.generate === 'function';
     const hasGetSuccessMessage = typeof cls.prototype.getSuccessMessage === 'function';
-    
+
     // Check if it extends BaseGenerator or its subclasses
     let currentProto = cls.prototype;
     while (currentProto) {
@@ -187,7 +187,7 @@ export class GeneratorRegistry {
       }
       currentProto = Object.getPrototypeOf(currentProto);
     }
-    
+
     return false;
   }
 
@@ -197,7 +197,7 @@ export class GeneratorRegistry {
   extractGeneratorMetadata(generatorClass, filePath, packageJson) {
     const className = generatorClass.name;
     const filename = path.basename(filePath, '.js');
-    
+
     // Determine generator type from filename or class name
     let type = 'unknown';
     if (filename.includes('html') || className.toLowerCase().includes('html')) {
@@ -215,7 +215,7 @@ export class GeneratorRegistry {
     // Create a temporary instance to get metadata
     let description = `${type} generator`;
     let requiresJSDocFiles = false;
-    
+
     try {
       // Try to create instance to get metadata (with minimal parameters)
       const tempInstance = new generatorClass('./temp');
@@ -248,7 +248,7 @@ export class GeneratorRegistry {
   async loadExternalPlugin(packageName, version) {
     try {
       const pluginModule = require(packageName);
-      
+
       // External plugins should export generator metadata and classes
       if (pluginModule.generators && Array.isArray(pluginModule.generators)) {
         for (const generatorConfig of pluginModule.generators) {
@@ -286,7 +286,7 @@ export class GeneratorRegistry {
   registerGenerator(name, generatorInfo) {
     this.generators.set(name, generatorInfo);
     this.pluginMetadata.set(name, generatorInfo.metadata);
-    
+
     console.log(`📦 Registered generator: ${name} (${generatorInfo.metadata.type})`);
   }
 
@@ -346,7 +346,7 @@ export class GeneratorRegistry {
     }
 
     const errors = [];
-    
+
     // Check peer dependencies
     for (const [depName, depVersion] of Object.entries(metadata.peerDependencies)) {
       try {
@@ -368,7 +368,7 @@ export class GeneratorRegistry {
    */
   listGenerators() {
     const generators = [];
-    
+
     for (const [name, info] of this.generators.entries()) {
       generators.push({
         name,
@@ -388,7 +388,7 @@ export class GeneratorRegistry {
    */
   findRootPackageJson() {
     let currentDir = path.dirname(__filename);
-    
+
     while (currentDir !== path.dirname(currentDir)) {
       const packageJsonPath = path.join(currentDir, 'package.json');
       if (fs.existsSync(packageJsonPath)) {
@@ -404,7 +404,7 @@ export class GeneratorRegistry {
       }
       currentDir = path.dirname(currentDir);
     }
-    
+
     return null;
   }
 }

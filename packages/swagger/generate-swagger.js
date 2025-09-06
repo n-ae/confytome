@@ -1,6 +1,6 @@
 /**
  * Static Swagger UI Generator
- * 
+ *
  * OpenAPI spec agnostic - consumes the generated spec from generate-openapi.js
  * Uses swagger-ui-dist to generate the typical Swagger UI interface
  * as a self-contained static HTML file
@@ -15,7 +15,7 @@ const require = createRequire(import.meta.url);
 function generateSwaggerUI(openApiSpec, options = {}) {
   const swaggerUIAssetPath = require.resolve('swagger-ui-dist/package.json');
   const swaggerUIDistPath = path.dirname(swaggerUIAssetPath);
-  
+
   // Read Swagger UI assets
   const swaggerUICSS = fs.readFileSync(path.join(swaggerUIDistPath, 'swagger-ui.css'), 'utf8');
   const swaggerUIJS = fs.readFileSync(path.join(swaggerUIDistPath, 'swagger-ui-bundle.js'), 'utf8');
@@ -194,22 +194,22 @@ class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
 
   async generate() {
     console.log('🎨 Generating Swagger UI HTML...');
-    
+
     const result = await this.generateDocument('swagger', 'api-swagger.html', (openApiSpec, services) => {
       return this.generateSwaggerUI(openApiSpec, services);
     });
-    
+
     console.log(`\n🌐 You can open the file in browser: file://${path.resolve(result.outputPath)}`);
-    
+
     return result;
   }
 
   generateSwaggerUI(openApiSpec, services) {
     // Generate branding using injected services
     const branding = services.branding.generateForSwagger();
-    return generateSwaggerUI(openApiSpec, { 
-      excludeBrand: this.excludeBrand, 
-      branding: branding
+    return generateSwaggerUI(openApiSpec, {
+      excludeBrand: this.excludeBrand,
+      branding
     });
   }
 

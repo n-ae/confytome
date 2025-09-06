@@ -1,6 +1,6 @@
 /**
  * Configuration Merger Utility
- * 
+ *
  * Merges CLI options with configuration files to create a unified config,
  * ensuring the app always sources configuration from JSON.
  */
@@ -15,7 +15,7 @@ export class ConfigMerger {
    * @param {string} configPath - Path to the base configuration file
    * @param {Object} cliOptions - CLI options to merge/override
    * @param {string} tempDir - Directory for temporary config files (default: './docs')
-   * @returns {Promise<{configPath: string, isTemporary: boolean}>} 
+   * @returns {Promise<{configPath: string, isTemporary: boolean}>}
    */
   static async mergeWithConfig(configPath, cliOptions, tempDir = './docs') {
     // Read the base configuration
@@ -31,14 +31,14 @@ export class ConfigMerger {
 
     // Create merged configuration
     const mergedConfig = this.mergeConfigurations(baseConfig, cliOptions);
-    
+
     // Check if we need to create a temporary config file
     const hasOverrides = this.hasOverrides(baseConfig, cliOptions);
-    
+
     if (!hasOverrides) {
       // No overrides needed, use original config
       return {
-        configPath: configPath,
+        configPath,
         isTemporary: false,
         config: mergedConfig
       };
@@ -61,17 +61,17 @@ export class ConfigMerger {
     const optionMappings = {
       // Path and output options
       config: 'configPath',
-      output: 'outputDir', 
+      output: 'outputDir',
       spec: 'specPath',
-      
+
       // Content options
       files: 'routeFiles',
       serverConfig: 'serverConfig',
-      
-      // Feature flags  
+
+      // Feature flags
       noBrand: 'excludeBrand',
       watch: 'watchMode',
-      
+
       // Direct mappings (same name in CLI and config)
       routeFiles: 'routeFiles',
       excludeBrand: 'excludeBrand',
@@ -124,17 +124,17 @@ export class ConfigMerger {
     const optionMappings = {
       // Path and output options
       config: 'configPath',
-      output: 'outputDir', 
+      output: 'outputDir',
       spec: 'specPath',
-      
+
       // Content options
       files: 'routeFiles',
       serverConfig: 'serverConfig',
-      
-      // Feature flags  
+
+      // Feature flags
       noBrand: 'excludeBrand',
       watch: 'watchMode',
-      
+
       // Direct mappings (same name in CLI and config)
       routeFiles: 'routeFiles',
       excludeBrand: 'excludeBrand',
@@ -148,7 +148,7 @@ export class ConfigMerger {
       if (cliOptions[cliKey] !== undefined && cliOptions[cliKey] !== null) {
         const cliValue = cliOptions[cliKey];
         const configValue = baseConfig[configKey];
-        
+
         // Compare values (deep comparison for objects/arrays)
         if (JSON.stringify(cliValue) !== JSON.stringify(configValue)) {
           return true;
@@ -190,7 +190,7 @@ export class ConfigMerger {
     return {
       configPath: tempConfigPath,
       isTemporary: true,
-      config: config
+      config
     };
   }
 
@@ -217,14 +217,14 @@ export class ConfigMerger {
    */
   static extractCliOptions(commanderOptions) {
     const cleaned = {};
-    
+
     // Skip commander.js internal properties and undefined values
     for (const [key, value] of Object.entries(commanderOptions)) {
       if (!key.startsWith('_') && value !== undefined) {
         cleaned[key] = value;
       }
     }
-    
+
     return cleaned;
   }
 }

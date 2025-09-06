@@ -1,6 +1,6 @@
 /**
  * Confytome Core Services
- * 
+ *
  * Centralized services for shared functionality across all generators.
  * This eliminates code duplication and provides consistent behavior.
  */

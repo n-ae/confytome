@@ -2,10 +2,10 @@
 
 /**
  * @confytome/html CLI
- * 
+ *
  * Standalone HTML generator that can be run via:
  * npx @confytome/html --config confytome.json
- * 
+ *
  * This package generates OpenAPI specs first (if needed), then creates HTML docs.
  */
 
@@ -33,23 +33,42 @@ const options = program.opts();
 
 async function main() {
   try {
-    console.log('🚀 @confytome/html v' + pkg.version);
+    console.log(`🚀 @confytome/html v${pkg.version}`);
     console.log('');
 
     // Check if OpenAPI spec exists or needs to be generated
-    const specPath = options.spec || path.join(options.output, 'api-spec.json');
-    let needsSpecGeneration = !fs.existsSync(specPath);
+    // Check if OpenAPI spec exists or needs to be generated
+    // First check if user provided existing spec via --spec option
+    let specPath;
+    let needsSpecGeneration = false;
+
+    if (options.spec) {
+      // User provided existing spec file
+      specPath = path.resolve(options.spec);
+      if (!fs.existsSync(specPath)) {
+        console.error(`❌ Error: Specified OpenAPI spec file not found: ${specPath}`);
+        process.exit(1);
+      }
+      console.log(`📋 Using provided OpenAPI spec: ${specPath}`);
+    } else {
+      // Look for spec in default location
+      specPath = path.join(options.output, 'api-spec.json');
+      needsSpecGeneration = !fs.existsSync(specPath);
+    }
 
     if (needsSpecGeneration) {
       console.log('📋 OpenAPI spec not found, generating it first...');
+      console.log('   This requires @confytome/core to generate the spec from your API code.');
 
-      // Check if confytome is available
+      // Check if confytome is available only when we actually need it
       try {
         execSync('npx @confytome/core --version', { stdio: 'ignore' });
       } catch (error) {
-        console.error('❌ Error: confytome is required to generate OpenAPI specs.');
-        console.log('💡 Install it with: npm install -g @confytome/core');
-        console.log('   Or manually run: npx @confytome/core generate --config ' + options.config);
+        console.error('❌ Error: @confytome/core is required to generate OpenAPI specs from your API code.');
+        console.log('');
+        console.log('💡 You have two options:');
+        console.log('   1. Install @confytome/core: npm install -g @confytome/core');
+        console.log('   2. Provide existing OpenAPI spec: npx @confytome/html --spec path/to/your-spec.json');
         process.exit(1);
       }
 
@@ -58,7 +77,7 @@ async function main() {
       if (fs.existsSync(options.config)) {
         const configContent = fs.readFileSync(options.config, 'utf8');
         const config = JSON.parse(configContent);
-        
+
         // Check if it's a confytome.json (has serverConfig + routeFiles) or traditional serverConfig.json
         if (config.serverConfig && config.routeFiles) {
           // It's a confytome.json file
@@ -78,7 +97,7 @@ async function main() {
         process.exit(1);
       }
 
-      console.log('   Running: ' + confytomeCmd);
+      console.log(`   Running: ${confytomeCmd}`);
 
       try {
         execSync(confytomeCmd, { stdio: 'inherit' });
@@ -87,23 +106,36 @@ async function main() {
         console.log('💡 Make sure your confytome.json has valid serverConfig and routeFiles');
         process.exit(1);
       }
+    } else if (!options.spec) {
+      console.log(`📋 Using existing OpenAPI spec: ${specPath}`);
+      console.log('');
+    }
+
+    // Pass the resolved spec path to the generator
+    if (options.spec) {
+      // For external spec files, we need to copy it to the expected location
+      const targetSpecPath = path.join(options.output, 'api-spec.json');
+      if (!fs.existsSync(path.dirname(targetSpecPath))) {
+        fs.mkdirSync(path.dirname(targetSpecPath), { recursive: true });
+      }
+      fs.copyFileSync(specPath, targetSpecPath);
     }
 
     // Generate HTML documentation
     console.log('🎨 Generating HTML documentation...');
     const generator = new SimpleDocsGenerator();
-    
+
     // Set output directory and brand options
     generator.outputDir = options.output;
     generator.excludeBrand = options.brand === false;
-    
+
     // Override spec path if provided
     if (options.spec) {
       generator.specPath = options.spec;
     }
-    
+
     const result = await generator.generate();
-    
+
     console.log('');
     console.log('✅ HTML documentation generation completed!');
     console.log(`📄 Generated: ${result.outputPath}`);

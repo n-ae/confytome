@@ -1,6 +1,6 @@
 /**
  * Example API Router with JSDoc Comments
- * 
+ *
  * This file demonstrates how to write JSDoc comments for API documentation generation.
  * Copy this file and modify it to match your actual API endpoints.
  */
@@ -39,7 +39,7 @@
  *           type: boolean
  *           description: Whether the user account is active
  *           example: true
- *     
+ *
  *     Error:
  *       type: object
  *       properties:
@@ -55,7 +55,7 @@
  *           type: object
  *           description: Additional error details
  *           example: {}
- * 
+ *
  *   parameters:
  *     UserId:
  *       name: id

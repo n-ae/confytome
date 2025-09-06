@@ -1,6 +1,6 @@
 /**
  * Generator Factory
- * 
+ *
  * Provides a clean interface for creating and managing generators
  * through the generator registry system.
  */
@@ -40,7 +40,7 @@ export class GeneratorFactory {
     if (!services && options.contextUrl) {
       const metadata = generatorRegistry.getGeneratorMetadata(generatorName);
       services = ServiceFactory.createGeneratorServices(
-        options.contextUrl, 
+        options.contextUrl,
         metadata.type,
         options
       );
@@ -48,7 +48,7 @@ export class GeneratorFactory {
 
     // Create generator instance
     const generator = generatorRegistry.createGenerator(generatorName, outputDir, services);
-    
+
     // Apply any additional configuration
     if (options.excludeBrand !== undefined) {
       generator.excludeBrand = options.excludeBrand;
@@ -89,10 +89,10 @@ export class GeneratorFactory {
     if (!generatorRegistry.initialized) {
       await this.initialize();
     }
-    
+
     const metadata = generatorRegistry.getGeneratorMetadata(generatorName);
     const validation = generatorRegistry.validateGenerator(generatorName);
-    
+
     return {
       metadata,
       validation,
@@ -109,7 +109,7 @@ export class GeneratorFactory {
     if (!generatorRegistry.initialized) {
       await this.initialize();
     }
-    
+
     const validation = generatorRegistry.validateGenerator(generatorName);
     return validation.valid;
   }
@@ -159,7 +159,7 @@ export class GeneratorFactory {
    */
   static async createGenerators(generatorNames, outputDir = './docs', options = {}) {
     const generators = [];
-    
+
     for (const name of generatorNames) {
       try {
         const generator = await this.createGenerator(name, outputDir, options);
@@ -192,7 +192,7 @@ export class GeneratorFactory {
     try {
       const generator = await this.createGenerator(generatorName, outputDir, options);
       const result = await generator.run();
-      
+
       return {
         success: true,
         generatorName,
@@ -218,11 +218,11 @@ export class GeneratorFactory {
    */
   static async executeGenerators(generatorNames, outputDir = './docs', options = {}) {
     const results = [];
-    
+
     for (const name of generatorNames) {
       const result = await this.executeGenerator(name, outputDir, options);
       results.push(result);
-      
+
       // Stop on first failure if failFast option is enabled
       if (!result.success && options.failFast) {
         break;

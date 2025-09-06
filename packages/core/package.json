@@ -48,14 +48,17 @@
         "SECURITY.md"
     ],
     "scripts": {
-        "prepublishOnly": "npm test",
-        "preversion": "npm test",
-        "version": "git add -A .",
-        "postversion": "git push && git push --tags",
-        "clean": "rm -rf docs/*",
         "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
         "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
         "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+        "lint": "eslint . --ext .js",
+        "format": "eslint . --ext .js --fix",
+        "clean": "rm -rf docs/* .cache",
+        "validate": "npm run lint && npm run test",
+        "prepublishOnly": "npm run validate",
+        "preversion": "npm run validate",
+        "version": "git add -A .",
+        "postversion": "git push && git push --tags",
         "security:check": "npm audit",
         "security:fix": "npm audit fix"
     },

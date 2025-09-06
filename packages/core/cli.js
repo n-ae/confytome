@@ -2,7 +2,7 @@
 
 /**
  * CLI entry point for documentation generation
- * 
+ *
  * Refactored to use BaseGenerator pattern for unified error handling
  * and consistent command execution across all generators.
  */
@@ -50,7 +50,7 @@ async function startWatchMode(configPath, files, outputDir) {
     };
   };
 
-  const generateDocs = debounce(async () => {
+  const generateDocs = debounce(async() => {
     if (isGenerating) {
       pendingRegeneration = true;
       return;
@@ -147,22 +147,22 @@ program
   .option('-c, --config <path>', 'confytome config file (default: ./confytome.json)')
   .option('-o, --output <dir>', 'output directory (default: ./docs)')
   .option('--no-brand', 'exclude confytome branding from generated documentation')
-  .action(async (options) => {
+  .action(async(options) => {
     let tempConfig = null;
-    
+
     try {
       const configPath = options.config || './confytome.json';
       const outputDir = options.output || './docs';
-      
+
       // Extract and clean CLI options
       const cliOptions = ConfigMerger.extractCliOptions(options);
-      
+
       // Merge CLI options with config file
       tempConfig = await ConfigMerger.mergeWithConfig(configPath, cliOptions, outputDir);
-      
+
       // Generate using the merged configuration
       await generateFromConfytomeConfig(tempConfig.configPath, outputDir);
-      
+
     } catch (error) {
       console.error('❌ Generate failed:', error.message);
       process.exit(1);
@@ -185,7 +185,7 @@ program
   .option('-c, --config <path>', 'server config JSON file (required)')
   .option('-f, --files <files...>', 'JSDoc files to process (required)')
   .option('-o, --output <dir>', 'output directory (default: ./docs)')
-  .action(async (options) => {
+  .action(async(options) => {
     const files = options.files || [];
     if (!options.config || files.length === 0) {
       console.error('❌ Config file and JSDoc files are required');
@@ -194,31 +194,31 @@ program
     }
 
     let tempConfig = null;
-    
+
     try {
       const outputDir = options.output || './docs';
-      
+
       // Extract and clean CLI options
       const cliOptions = ConfigMerger.extractCliOptions(options);
-      
+
       // Create a temporary config that includes the files and output options
       const serverConfigContent = fs.readFileSync(options.config, 'utf8');
       const serverConfig = JSON.parse(serverConfigContent);
-      
+
       // Create a confytome-style config for consistency
       const confytomeConfig = {
         serverConfig: options.config,
         routeFiles: files,
-        outputDir: outputDir,
+        outputDir,
         ...cliOptions
       };
-      
+
       // Merge with any CLI overrides
       tempConfig = await ConfigMerger.createTemporaryConfig(confytomeConfig, outputDir);
-      
+
       // Generate using the unified configuration approach
       await generateOpenAPI(options.config, files, outputDir);
-      
+
     } catch (error) {
       console.error('❌ OpenAPI generation failed:', error.message);
       console.log('');
@@ -337,7 +337,7 @@ Examples:
   confytome demo                    # Generate demo in ./docs/
   confytome demo --output ./demo    # Custom output directory`)
   .option('-o, --output <dir>', 'output directory (default: ./docs)')
-  .action(async (options) => {
+  .action(async(options) => {
     const outputDir = options.output || './docs';
 
     console.log('🚀 Running confytome demo with example files...');

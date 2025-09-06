@@ -1,58 +1,152 @@
 # @confytome/swagger
 
-Interactive Swagger UI generator for confytome - generates self-contained Swagger UI documentation from OpenAPI specifications.
+Interactive Swagger UI generator for confytome. Generates self-contained Swagger UI documentation from OpenAPI specifications with responsive design and embedded assets.
 
-## Installation
+## ✨ Features
+
+- 🎨 **Interactive Swagger UI** - Full-featured API explorer interface\n- 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices\n- 🎯 **Self-contained** - Single HTML file with all assets embedded (~1.9MB)\n- 🔒 **Documentation Mode** - Displays spec without making actual API calls\n- 🌍 **Unicode Support** - Supports international characters and languages\n- 🔗 **Deep Linking** - Direct links to specific endpoints\n- ⚡ **Fast Loading** - Optimized bundle with minimal dependencies
+
+## 📦 Installation
 
 ```bash
+# Global installation
 npm install -g @confytome/swagger
+
+# Or use with npx (no installation)
+npx @confytome/swagger --help
 ```
 
-## Usage
+## 🚀 Usage
+
+### Standalone Usage (Recommended)
+```bash
+# Use existing OpenAPI spec - No additional dependencies required
+npx @confytome/swagger --spec ./path/to/your-api-spec.json --output ./docs
+```
+
+### With confytome.json Configuration
+```bash
+# Generate from API code - Requires @confytome/core
+npx @confytome/swagger --config ./confytome.json --output ./api-docs
+```
+
+## ⚙️ Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|---------|
+| `--config` | `-c` | Path to confytome.json config file | `./confytome.json` |
+| `--output` | `-o` | Output directory for generated files | `./docs` |
+| `--spec` | | Path to existing OpenAPI spec file | |
+| `--version` | `-V` | Show version number | |
+| `--help` | `-h` | Show help information | |
+
+| `--no-brand` | | Exclude confytome branding from documentation | |
+
+## 🎯 Two Usage Scenarios
+
+### ✅ Scenario 1: Standalone with Existing Spec
+**Perfect when you already have an OpenAPI specification file.**
 
 ```bash
-# Generate Swagger UI docs from confytome.json config
-npx @confytome/swagger --config confytome.json
-
-# Specify custom output directory
-npx @confytome/swagger --config confytome.json --output ./api-docs
-
-# Use existing OpenAPI spec
-npx @confytome/swagger --spec ./docs/api-spec.json --output ./docs
+npx @confytome/swagger --spec ./my-api-spec.json
 ```
 
-## Options
+- ✅ **No additional dependencies**
+- ✅ **Works immediately**
+- ✅ **Perfect for CI/CD pipelines**
 
-- `--config, -c <path>` - Path to confytome.json config file (default: ./confytome.json)
-- `--output, -o <path>` - Output directory for generated files (default: ./docs)
-- `--spec <path>` - Path to existing OpenAPI spec file
+### ⚙️ Scenario 2: Generate from Code
+**When you need to generate the OpenAPI spec from your API code first.**
 
-## Features
+```bash
+npx @confytome/swagger --config ./confytome.json
+```
 
-- 🎨 **Interactive Swagger UI** - Full-featured API explorer interface
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
-- 🎯 **Self-contained** - Single HTML file with embedded assets
-- 🔒 **Static Mode** - Displays documentation without actual API calls
-- 🌍 **Multi-language Support** - Supports Unicode and special characters
+- ⚠️ **Requires @confytome/core** for spec generation
+- ✅ **Full workflow from code to documentation**
+- ✅ **Automatic spec generation**
 
-## Dependencies
+If @confytome/core is not installed, you'll see helpful guidance:
+```
+💡 You have two options:
+   1. Install @confytome/core: npm install -g @confytome/core
+   2. Provide existing OpenAPI spec: npx @confytome/swagger --spec path/to/spec.json
+```
 
-- **@confytome/core**: This package requires the main `@confytome/core` package to generate OpenAPI specs first
+## 📁 Generated Output
 
-## Generated Output
+Creates `api-swagger.html` in the specified output directory - a self-contained interactive Swagger UI interface with:\n- Complete OpenAPI specification embedded\n- Professional Swagger UI styling and responsive layout\n- Interactive interface for exploring endpoints\n- Deep linking support for easy navigation\n- Try-it-out interface (disabled for static documentation)
 
-Creates `api-swagger.html` - a self-contained interactive Swagger UI interface with:
-- Complete OpenAPI specification embedded
-- Professional styling and responsive layout
-- Try-it-out interface (disabled for static documentation)
-- Deep linking support for easy navigation
+### Generated File Structure\n\n```\ndocs/\n├── api-swagger.html   # Self-contained Swagger UI (~1.9MB)\n└── api-spec.json      # OpenAPI spec (copied from source)\n```\n\n### Interface Features\n- **Endpoint Explorer** - Expandable sections for each API endpoint\n- **Schema Browser** - Interactive data model exploration\n- **Response Examples** - Sample responses for each endpoint\n- **Parameter Documentation** - Detailed input requirements\n- **Authentication Info** - Security scheme documentation
 
-## Part of Confytome Ecosystem
+## 🔧 Dependencies
 
-Part of the [Confytome](https://github.com/n-ae/confytome) documentation ecosystem.
+- **commander**: CLI argument parsing\n- **swagger-ui-dist**: Official Swagger UI distribution\n\nWhen using `--spec` option: **No additional dependencies required**\nWhen using `--config` option: **Requires @confytome/core** for OpenAPI spec generation
 
-- **@confytome/core** - OpenAPI spec generator
-- **@confytome/markdown** - Confluence-friendly Markdown docs
-- **@confytome/swagger** - Interactive Swagger UI (this package)
-- **@confytome/postman** - Postman collections
-- **@confytome/html** - Professional HTML docs
+## 💡 Examples
+
+### Basic Usage
+```bash
+# Simple generation with existing spec
+npx @confytome/swagger --spec ./docs/api-spec.json --output ./public
+```
+
+### CI/CD Integration
+```bash
+#!/bin/bash
+# Generate Swagger UI documentation in CI
+npx @confytome/swagger --spec ./build/api-spec.json --output ./dist/docs
+```
+
+### Multiple Environments
+```bash
+# Production docs
+npx @confytome/swagger --spec ./specs/prod-api.json --output ./docs/prod
+
+# Staging docs  
+npx @confytome/swagger --spec ./specs/staging-api.json --output ./docs/staging
+```
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+#### "Specified OpenAPI spec file not found"
+```bash
+# Check file path exists
+ls -la ./path/to/your-spec.json
+
+# Use absolute path if needed
+npx @confytome/swagger --spec $(pwd)/api-spec.json
+```
+
+#### "OpenAPI spec not found, generating it first"
+This means you're using config mode but don't have @confytome/core installed.
+
+```bash
+# Option 1: Install core
+npm install -g @confytome/core
+
+# Option 2: Use existing spec instead  
+npx @confytome/swagger --spec ./path/to/existing-spec.json
+```
+
+#### Large file size (~1.9MB)\nThe generated HTML file includes the complete Swagger UI bundle for offline usage. This is intentional for self-contained documentation.
+
+## 🌟 Part of confytome Ecosystem
+
+@confytome/swagger is part of the [confytome](https://github.com/n-ae/confytome) documentation ecosystem:
+
+- **[@confytome/core](https://npmjs.com/package/@confytome/core)** - Plugin system & OpenAPI generator
+- **[@confytome/markdown](https://npmjs.com/package/@confytome/markdown)** - Confluence-friendly Markdown docs
+- **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML docs  
+- **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** - Interactive Swagger UI
+- **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** - Postman collections
+
+## 📄 License
+
+MIT License - see the [LICENSE](https://github.com/n-ae/confytome/blob/main/LICENSE) file for details.
+
+---
+
+**Generate beautiful Swagger UI documentation from OpenAPI specifications in seconds.**

@@ -1,18 +1,14 @@
 /**
  * Custom Widdershins Template Markdown Generator
- * 
+ *
  * OpenAPI spec agnostic - consumes the generated spec from generate-openapi.js
  * Uses custom widdershins template for Confluence-friendly output with code samples
  */
 
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
-import { createRequire } from 'module';
 import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
 import { TemplateManager } from './utils/template-manager.js';
-
-const require = createRequire(import.meta.url);
 
 class MarkdownGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir = './docs', services = null) {
@@ -21,30 +17,34 @@ class MarkdownGenerator extends SpecConsumerGeneratorBase {
 
   async generate() {
     console.log('📝 Generating Markdown with custom widdershins template...');
-    
-    return this.generateWithExternalTool('markdown', 'api-docs.md', async (openApiSpec, services, outputPath) => {
+
+    return this.generateWithExternalTool('markdown', 'api-docs.md', async(openApiSpec, services, outputPath) => {
       const specPath = path.join(this.outputDir, 'api-spec.json');
       const templateDir = services.template.getWiddershinsPath();
-      
-      // Find local widdershins binary
-      let widdershinsPath;
-      try {
-        widdershinsPath = require.resolve('widdershins/widdershins.js');
-      } catch (error) {
-        throw new Error('widdershins dependency not found. Please install it: npm install widdershins');
-      }
-      
+
       // Prepare template data
       const templateData = services.branding.getMarkdownTemplateData();
-      
+
       // Process the main template to inject branding data
       await this.processWiddershinsTemplate(templateDir, templateData);
-      
-      // Use custom template for clean Confluence-friendly markdown  
-      const widdershinsCommand = `node ${widdershinsPath} ${specPath} ${outputPath} --user_templates ${templateDir} --language_tabs 'shell:cURL' --omitHeader true --summary --code true --httpsnippet false`;
-      
+
+      // Use widdershins as a library with proper ES module import
       try {
-        execSync(widdershinsCommand, { stdio: 'inherit' });
+        const widdershins = await import('widdershins');
+        const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
+
+        const options = {
+          user_templates: templateDir,
+          language_tabs: ['shell:cURL'],
+          omitHeader: true,
+          summary: true,
+          code: true,
+          httpsnippet: false
+        };
+
+        const markdown = await widdershins.convert(spec, options);
+        fs.writeFileSync(outputPath, markdown, 'utf8');
+
       } catch (error) {
         throw new Error(`Failed to generate Markdown documentation: ${error.message}`);
       }
@@ -59,14 +59,14 @@ class MarkdownGenerator extends SpecConsumerGeneratorBase {
    * Process widdershins templates to inject branding data instead of using environment variables
    * For now, we'll use environment variables but in a cleaner way through the service layer
    * Future enhancement: Create template preprocessing system
-   * @param {string} templateDir - Directory containing templates  
+   * @param {string} templateDir - Directory containing templates
    * @param {Object} templateData - Data to inject into templates
    */
   async processWiddershinsTemplate(templateDir, templateData) {
     // For this implementation, we still use environment variables but managed by services
     // This is safer than regex replacement and maintains compatibility
     // Future: implement proper template preprocessing
-    
+
     if (templateData.excludeBrand) {
       process.env.CONFYTOME_NO_BRAND = 'true';
     } else {

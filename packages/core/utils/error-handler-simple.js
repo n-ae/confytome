@@ -1,6 +1,6 @@
 /**
  * Simple Error Handling Utility
- * 
+ *
  * Applies KISS principles by eliminating complex error class hierarchies
  * and providing only essential error handling functionality.
  */
@@ -20,7 +20,7 @@ export class SimpleErrorHandler {
   static handle(error, context, exit = true) {
     console.error(`❌ Error in ${context}:`);
     console.error(`   ${error.message}`);
-    
+
     // Show additional context for common errors
     if (error.message.includes('ENOENT') && error.message.includes('api-spec.json')) {
       console.log('💡 Run OpenAPI generator first: confytome openapi -c serverConfig.json -f *.js');
@@ -29,12 +29,12 @@ export class SimpleErrorHandler {
     } else if (error.message.includes('JSON')) {
       console.log('💡 Check JSON syntax in configuration file');
     }
-    
+
     // Show stack trace in debug mode
     if (process.env.DEBUG) {
       console.error('   Stack:', error.stack);
     }
-    
+
     if (exit) {
       process.exit(1);
     }
@@ -49,13 +49,13 @@ export class SimpleErrorHandler {
    */
   static logSuccess(context, message, startTime = null, stats = {}) {
     console.log(`✅ ${message}`);
-    
+
     if (Object.keys(stats).length > 0) {
       Object.entries(stats).forEach(([key, value]) => {
         if (value) console.log(`   ${key}: ${value}`);
       });
     }
-    
+
     if (startTime) {
       const duration = Date.now() - startTime;
       console.log(`   Completed in ${duration}ms`);

@@ -1,6 +1,6 @@
 /**
  * Plugin Interface
- * 
+ *
  * Defines the interface and utilities for creating external confytome plugins.
  * External plugin developers can use this to create compatible generators.
  */
@@ -55,15 +55,15 @@ export class PluginBase {
    */
   isValidGeneratorClass(cls) {
     if (!cls.prototype) return false;
-    
+
     // Check required methods
     const hasGenerate = typeof cls.prototype.generate === 'function';
     const hasGetSuccessMessage = typeof cls.prototype.getSuccessMessage === 'function';
-    
+
     // Check inheritance from BaseGenerator
     let currentProto = cls.prototype;
     let extendsBaseGenerator = false;
-    
+
     while (currentProto && !extendsBaseGenerator) {
       const constructorName = currentProto.constructor?.name;
       if (constructorName && (
@@ -75,7 +75,7 @@ export class PluginBase {
       }
       currentProto = Object.getPrototypeOf(currentProto);
     }
-    
+
     return hasGenerate && hasGetSuccessMessage && extendsBaseGenerator;
   }
 
@@ -107,8 +107,8 @@ export class PluginUtils {
    * @returns {Class} Generated class extending SpecConsumerGeneratorBase
    */
   static createSpecConsumerGenerator(name, type, generateFunction, options = {}) {
-    const className = this.toPascalCase(name) + 'Generator';
-    
+    const className = `${this.toPascalCase(name)}Generator`;
+
     class DynamicGenerator extends SpecConsumerGeneratorBase {
       constructor(outputDir = './docs', services = null) {
         super(name, options.description || `${type} documentation generator`, outputDir, services);
@@ -118,7 +118,7 @@ export class PluginUtils {
 
       async generate() {
         console.log(`🎨 Generating ${type} documentation...`);
-        
+
         return this.generateDocument(this.generatorType, this.outputFileName, generateFunction);
       }
 
@@ -129,20 +129,20 @@ export class PluginUtils {
 
     // Set the class name
     Object.defineProperty(DynamicGenerator, 'name', { value: className });
-    
+
     return DynamicGenerator;
   }
 
   /**
    * Create an OpenAPI spec generator (for generators that create OpenAPI specs from JSDoc)
-   * @param {string} name - Generator name  
+   * @param {string} name - Generator name
    * @param {Function} generateFunction - Function that generates OpenAPI spec
    * @param {Object} options - Additional options
    * @returns {Class} Generated class extending OpenAPIGeneratorBase
    */
   static createOpenAPIGenerator(name, generateFunction, options = {}) {
-    const className = this.toPascalCase(name) + 'Generator';
-    
+    const className = `${this.toPascalCase(name)}Generator`;
+
     class DynamicGenerator extends OpenAPIGeneratorBase {
       constructor(outputDir = './docs', services = null) {
         super(name, options.description || 'OpenAPI specification generator', outputDir, services);
@@ -151,7 +151,7 @@ export class PluginUtils {
       async generate(serverConfigPath, jsdocFiles) {
         const services = this.getServices(import.meta.url, 'openapi');
         const config = this.loadServerConfig(serverConfigPath);
-        
+
         return generateFunction(config, jsdocFiles, this.outputDir, services);
       }
 
@@ -161,7 +161,7 @@ export class PluginUtils {
     }
 
     Object.defineProperty(DynamicGenerator, 'name', { value: className });
-    
+
     return DynamicGenerator;
   }
 
@@ -180,7 +180,7 @@ export class PluginUtils {
    */
   static validatePlugin(plugin) {
     const errors = [];
-    
+
     if (!plugin.metadata) {
       errors.push('Plugin must have metadata');
     } else {

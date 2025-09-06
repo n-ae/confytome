@@ -1,13 +1,13 @@
 /**
  * OpenAPI Command Tests
- * 
+ *
  * Tests that 'confytome openapi' produces a valid api-spec.json
  */
 
 import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
-import { 
-  TestEnvironment, 
-  SAMPLE_SERVER_CONFIG, 
+import {
+  TestEnvironment,
+  SAMPLE_SERVER_CONFIG,
   SAMPLE_ROUTER_JS,
   isValidJSON,
   isValidOpenAPISpec
@@ -42,7 +42,7 @@ describe('confytome openapi', () => {
 
     // Read and validate the generated spec
     const specContent = testEnv.readFile('docs/api-spec.json');
-    
+
     // Should be valid JSON
     expect(isValidJSON(specContent)).toBe(true);
 
@@ -122,7 +122,7 @@ describe('confytome openapi', () => {
   test('should handle multiple JSDoc files', () => {
     // Create server config
     testEnv.createFile('serverConfig.json', JSON.stringify(SAMPLE_SERVER_CONFIG, null, 2));
-    
+
     // Create multiple router files
     testEnv.createFile('users-router.js', SAMPLE_ROUTER_JS);
     testEnv.createFile('posts-router.js', `

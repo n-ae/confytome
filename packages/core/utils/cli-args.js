@@ -1,6 +1,6 @@
 /**
  * CLI Argument Parser Utility
- * 
+ *
  * Centralizes common argument parsing patterns used across generators
  * to reduce code duplication and improve maintainability
  */
@@ -13,7 +13,7 @@ export class CliArgsParser {
    */
   static parseGeneratorArgs(generatorName) {
     const args = process.argv.slice(2);
-    
+
     if (args.length === 0) {
       console.error(`❌ Usage: node ${generatorName}.js <serverConfig.json> <jsdoc-file1> [jsdoc-file2] ...`);
       console.error(`   Example: node ${generatorName}.js serverConfig.json ../src/router1.js ../src/router2.js`);
@@ -42,7 +42,7 @@ export class CliArgsParser {
    */
   static parseSpecConsumerArgs(generatorName) {
     const args = process.argv.slice(2);
-    
+
     // Spec consumers don't require arguments but can accept optional ones
     return {
       args,
@@ -59,13 +59,13 @@ export class CliArgsParser {
   static showUsage(generatorName, description, requiresJSDoc = false) {
     console.log(`📝 ${generatorName}`);
     console.log(`   ${description}`);
-    
+
     if (requiresJSDoc) {
       console.log(`   Usage: node ${generatorName}.js <serverConfig.json> <jsdoc-file1> [jsdoc-file2] ...`);
       console.log(`   Example: node ${generatorName}.js serverConfig.json ../src/router1.js ../src/router2.js`);
     } else {
       console.log(`   Usage: node ${generatorName}.js`);
-      console.log(`   Note: Requires existing OpenAPI spec (run generate-openapi.js first)`);
+      console.log('   Note: Requires existing OpenAPI spec (run generate-openapi.js first)');
     }
   }
 }

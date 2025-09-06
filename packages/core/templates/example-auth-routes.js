@@ -1,6 +1,6 @@
 /**
  * Example Auth Router with Server Override
- * 
+ *
  * This file demonstrates authentication endpoints that use a different server
  * than the main API routes. Perfect example for server overrides in confytome.json.
  */
@@ -36,7 +36,7 @@
  *           type: boolean
  *           description: Whether to create a long-lived session
  *           example: false
- *     
+ *
  *     AuthResponse:
  *       type: object
  *       properties:
@@ -77,7 +77,7 @@
  *     description: |
  *       Authenticate user with email and password.
  *       Returns an access token for subsequent API calls.
- *       
+ *
  *       **Note**: This endpoint uses a different server than the main API
  *     servers:
  *       - url: http://localhost:3000

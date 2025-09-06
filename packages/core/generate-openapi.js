@@ -1,6 +1,6 @@
 /**
  * Primary OpenAPI Spec Generator
- * 
+ *
  * This is the first step for all documentation generation.
  * Generates OpenAPI spec from JSDoc which all other generators consume.
  */
@@ -17,22 +17,22 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
 
   async generate(args) {
     const { serverConfigPath, jsdocFiles } = args;
-    
+
     // Load and validate server configuration
     const serverConfig = this.loadServerConfig(serverConfigPath);
-    
+
     // Process JSDoc files
     console.log(`📖 Processing ${jsdocFiles.length} JSDoc files...`);
     console.log('📖 Processing JSDoc comments...');
-    
+
     const options = {
       definition: serverConfig,
-      apis: jsdocFiles,
+      apis: jsdocFiles
     };
 
     // Generate OpenAPI spec
     const openApiSpec = swaggerJSDoc(options);
-    
+
     if (!openApiSpec || Object.keys(openApiSpec).length === 0) {
       throw new Error('Failed to generate OpenAPI spec. Check JSDoc comments in your files.');
     }
@@ -40,11 +40,11 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
     // Write the OpenAPI spec
     const outputPath = path.join(this.outputDir, 'api-spec.json');
     const specContent = JSON.stringify(openApiSpec, null, 2);
-    
+
     FileManager.writeFile(
-      outputPath, 
-      specContent, 
-      this.name, 
+      outputPath,
+      specContent,
+      this.name,
       'OpenAPI spec created'
     );
 
@@ -61,12 +61,12 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
   calculateStats(spec, content) {
     const pathCount = Object.keys(spec.paths || {}).length;
     let endpointCount = 0;
-    
+
     // Count total endpoints
     for (const path in spec.paths || {}) {
       endpointCount += Object.keys(spec.paths[path]).length;
     }
-    
+
     const sizeKB = (Buffer.byteLength(content, 'utf8') / 1024).toFixed(1);
     const serverCount = (spec.servers || []).length;
     const hasAuth = !!(spec.components && spec.components.securitySchemes);

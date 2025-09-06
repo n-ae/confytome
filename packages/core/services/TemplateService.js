@@ -1,6 +1,6 @@
 /**
  * Template Service
- * 
+ *
  * Centralized service for managing template operations across all generators.
  * Provides consistent template path resolution and management.
  */
@@ -33,7 +33,7 @@ export class TemplateService {
 
     // Look for widdershins-templates directory
     const templatesPath = path.join(basePath, 'widdershins-templates');
-    
+
     if (fs.existsSync(templatesPath)) {
       return templatesPath;
     }
@@ -62,10 +62,10 @@ export class TemplateService {
 
     try {
       const content = fs.readFileSync(templatePath, encoding);
-      
+
       // Cache the content
       this.#templateCache.set(cacheKey, content);
-      
+
       return content;
     } catch (error) {
       throw new Error(`Failed to read template file ${templatePath}: ${error.message}`);
@@ -87,7 +87,7 @@ export class TemplateService {
       }
 
       fs.writeFileSync(templatePath, content, encoding);
-      
+
       // Update cache
       const cacheKey = `${templatePath}:${encoding}`;
       this.#templateCache.set(cacheKey, content);
@@ -114,13 +114,13 @@ export class TemplateService {
   static getTemplateFiles(templateDir, extension = null) {
     try {
       const files = fs.readdirSync(templateDir);
-      
+
       return files
         .filter(file => {
           if (extension && !file.endsWith(extension)) {
             return false;
           }
-          
+
           const filePath = path.join(templateDir, file);
           return fs.statSync(filePath).isFile();
         })
@@ -139,7 +139,7 @@ export class TemplateService {
    */
   static processTemplate(template, variables = {}) {
     let processed = template;
-    
+
     // Simple variable substitution using {{variable}} syntax
     for (const [key, value] of Object.entries(variables)) {
       const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
@@ -157,7 +157,7 @@ export class TemplateService {
    */
   static backupTemplate(templatePath, backupSuffix = '.bak') {
     const backupPath = templatePath + backupSuffix;
-    
+
     try {
       if (fs.existsSync(templatePath)) {
         fs.copyFileSync(templatePath, backupPath);
@@ -177,11 +177,11 @@ export class TemplateService {
    */
   static validateTemplate(template) {
     const errors = [];
-    
+
     // Check for unclosed variable references
     const openBraces = (template.match(/{{\s*/g) || []).length;
     const closeBraces = (template.match(/\s*}}/g) || []).length;
-    
+
     if (openBraces !== closeBraces) {
       errors.push(`Mismatched braces: ${openBraces} opening, ${closeBraces} closing`);
     }

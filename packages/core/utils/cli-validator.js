@@ -1,6 +1,6 @@
 /**
  * Comprehensive CLI Validation Utility
- * 
+ *
  * Provides centralized validation for all CLI commands with consistent
  * error messages, file checking, and helpful user guidance
  */
@@ -62,7 +62,7 @@ export class CliValidator {
   static validateSpecConsumerArgs(generatorName) {
     // Check if OpenAPI spec exists
     const specPath = './docs/api-spec.json';
-    
+
     if (!fs.existsSync(specPath)) {
       console.error(`❌ OpenAPI specification not found: ${specPath}`);
       console.error('');
@@ -96,15 +96,15 @@ export class CliValidator {
       console.error(`❌ Config file not found: ${configPath}`);
       console.error('');
       console.log('💡 Create a server configuration file:');
-      
+
       // Check for template file
       const templatePaths = [
         './templates/serverConfig.template.json',
         path.join(process.cwd(), 'templates/serverConfig.template.json')
       ];
-      
+
       const templateExists = templatePaths.find(tp => fs.existsSync(tp));
-      
+
       if (templateExists) {
         console.log(`   cp ${templateExists} ${configPath}`);
         console.log(`   # Then edit ${configPath} with your API details`);
@@ -125,7 +125,7 @@ export class CliValidator {
         console.log('     ]');
         console.log('   }');
       }
-      
+
       console.log('');
       console.log('📝 Alternative: Run "confytome init" to set up project structure');
       console.error('');
@@ -138,7 +138,7 @@ export class CliValidator {
     } catch (error) {
       console.error(`❌ Cannot read config file: ${configPath}`);
       console.error(`   ${error.message}`);
-      console.log('💡 Check file permissions: chmod 644 ' + configPath);
+      console.log(`💡 Check file permissions: chmod 644 ${configPath}`);
       console.error('');
       process.exit(1);
     }
@@ -216,9 +216,9 @@ export class CliValidator {
    */
   static validateTemplatesDirectory() {
     const templatesDir = './widdershins-templates';
-    
+
     if (!fs.existsSync(templatesDir)) {
-      console.error('⚠️  Widdershins templates not found: ' + templatesDir);
+      console.error(`⚠️  Widdershins templates not found: ${templatesDir}`);
       console.log('💡 Markdown generation may use default templates');
       console.log('   To use custom templates:');
       console.log('   1. Create widdershins-templates/ directory');
@@ -235,7 +235,7 @@ export class CliValidator {
    */
   static showOpenAPIUsage(generatorName) {
     const command = generatorName.replace('generate-', '');
-    
+
     console.log(`📝 ${generatorName} - Generate OpenAPI specification from JSDoc`);
     console.log('');
     console.log('Usage:');
@@ -259,7 +259,7 @@ export class CliValidator {
    */
   static showSpecConsumerUsage(generatorName) {
     const command = generatorName.replace('generate-', '');
-    
+
     console.log(`📝 ${generatorName} - Generate documentation from OpenAPI spec`);
     console.log('');
     console.log('Usage:');
@@ -398,7 +398,7 @@ export class CliValidator {
     // 3. Copy confytome config template if it doesn't exist
     const confytomeConfigPath = './confytome.json';
     const confytomeTemplatePath = path.join(sourceTemplateDir, 'confytome.template.json');
-    
+
     if (fs.existsSync(confytomeTemplatePath) && !fs.existsSync(confytomeConfigPath)) {
       fs.copyFileSync(confytomeTemplatePath, confytomeConfigPath);
       console.log('✅ Created confytome.json configuration');
@@ -414,7 +414,7 @@ export class CliValidator {
         description: 'Created example-router.js with API endpoint examples'
       },
       {
-        template: 'example-auth-routes.js', 
+        template: 'example-auth-routes.js',
         target: './example-auth-routes.js',
         description: 'Created example-auth-routes.js with server override examples'
       }
@@ -422,7 +422,7 @@ export class CliValidator {
 
     exampleFiles.forEach(({ template, target, description }) => {
       const templatePath = path.join(sourceTemplateDir, template);
-      
+
       if (fs.existsSync(templatePath) && !fs.existsSync(target)) {
         fs.copyFileSync(templatePath, target);
         console.log(`✅ ${description}`);

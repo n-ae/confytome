@@ -15,6 +15,6 @@ export default async function() {
   if (fs.existsSync(tempDir)) {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
-  
+
   console.log('🧹 Test environment cleanup complete');
 };

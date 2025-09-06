@@ -1,6 +1,6 @@
 /**
  * Base Generator Class
- * 
+ *
  * Provides a common pattern and shared functionality for all generators
  * to reduce duplication and improve maintainability
  */
@@ -21,7 +21,7 @@ export class BaseGenerator {
     this.outputDir = outputDir;
     this.startTime = null;
     this.stats = {};
-    
+
     // Dependency injection - services can be injected or created automatically
     this.services = services;
   }
@@ -40,12 +40,12 @@ export class BaseGenerator {
         excludeBrand: this.excludeBrand || false,
         ...options
       };
-      
-      this.services = generatorType 
+
+      this.services = generatorType
         ? ServiceFactory.createGeneratorServices(contextUrl, generatorType, opts)
         : ServiceFactory.createServices(contextUrl, opts);
     }
-    
+
     return this.services;
   }
 
@@ -58,8 +58,8 @@ export class BaseGenerator {
     const options = {
       excludeBrand: this.excludeBrand || false
     };
-    
-    this.services = generatorType 
+
+    this.services = generatorType
       ? ServiceFactory.createGeneratorServices(contextUrl, generatorType, options)
       : ServiceFactory.createServices(contextUrl, options);
   }
@@ -70,23 +70,23 @@ export class BaseGenerator {
   async run() {
     this.startTime = Date.now();
     console.log(`🔄 ${this.description}...`);
-    
+
     try {
       // Setup phase
       await this.setup();
-      
+
       // Parse arguments
       const args = this.parseArguments();
-      
+
       // Validate dependencies
       await this.validateDependencies(args);
-      
+
       // Generate output
       const result = await this.generate(args);
-      
+
       // Post-process and report success
       await this.postProcess(result);
-      
+
       return result;
     } catch (error) {
       SimpleErrorHandler.handle(error, this.name);
@@ -105,7 +105,7 @@ export class BaseGenerator {
    */
   parseArguments() {
     const args = process.argv.slice(2);
-    
+
     if (this.requiresJSDocFiles) {
       return CliValidator.validateOpenAPIArgs(args, this.name);
     } else {
@@ -205,7 +205,7 @@ export class OpenAPIGeneratorBase extends BaseGenerator {
 }
 
 /**
- * Spec Consumer Generator Base Class  
+ * Spec Consumer Generator Base Class
  * For generators that consume existing OpenAPI spec
  */
 export class SpecConsumerGeneratorBase extends BaseGenerator {
@@ -226,11 +226,11 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
    */
   writeOutputFile(filePath, content, description) {
     const result = FileManager.writeFile(filePath, content, this.name, description);
-    
+
     // Add stats
     this.addStat('Output file', filePath);
     this.addStat('File size', FileManager.getFileSize(filePath));
-    
+
     return result;
   }
 
@@ -241,20 +241,20 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
   async generateDocument(generatorType, outputFileName, generateContent) {
     // Initialize services if not injected
     const services = this.getServices(import.meta.url, generatorType);
-    
+
     // Load OpenAPI spec
     const openApiSpec = this.loadOpenAPISpec();
-    
+
     // Generate content using provided function
     const content = await generateContent(openApiSpec, services);
-    
+
     // Write output file
     const outputPath = path.join(this.outputDir, outputFileName);
     this.writeOutputFile(outputPath, content, `${generatorType} documentation created`);
-    
+
     // Calculate stats
     this.calculateDocumentStats(openApiSpec, outputPath);
-    
+
     return {
       outputPath,
       size: Buffer.byteLength(content, 'utf8')
@@ -268,17 +268,17 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
   async generateWithExternalTool(generatorType, outputFileName, toolProcess, description) {
     // Initialize services if not injected
     const services = this.getServices(import.meta.url, generatorType);
-    
+
     // Load OpenAPI spec
     const openApiSpec = this.loadOpenAPISpec();
-    
+
     // Run external tool process
     const outputPath = path.join(this.outputDir, outputFileName);
     await toolProcess(openApiSpec, services, outputPath);
-    
+
     // Calculate stats
     this.calculateDocumentStats(openApiSpec, outputPath);
-    
+
     return {
       outputPath,
       size: fs.statSync(outputPath).size
@@ -292,15 +292,15 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
   calculateDocumentStats(openApiSpec, outputPath) {
     const specStats = fs.statSync(path.join(this.outputDir, 'api-spec.json'));
     const outputStats = fs.statSync(outputPath);
-    
+
     this.addStat('OpenAPI spec', `${(specStats.size / 1024).toFixed(1)} KB`);
     this.addStat('Generated output', `${(outputStats.size / 1024).toFixed(1)} KB`);
-    
+
     // Count paths and endpoints
     const pathCount = Object.keys(openApiSpec.paths || {}).length;
     const endpointCount = Object.values(openApiSpec.paths || {})
       .reduce((acc, methods) => acc + Object.keys(methods).length, 0);
-    
+
     this.addStat('Unique paths', `${pathCount}`);
     this.addStat('Total endpoints', `${endpointCount}`);
   }

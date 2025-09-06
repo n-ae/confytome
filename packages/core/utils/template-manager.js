@@ -1,6 +1,6 @@
 /**
  * Simple Template Manager
- * 
+ *
  * Centralized template management following KISS principles.
  * Eliminates hardcoded paths and provides validation.
  */
@@ -39,11 +39,11 @@ export class TemplateManager {
    */
   static getInitTemplate(templateName) {
     const templatePath = path.join(this.getInitTemplatesPath(), templateName);
-    
+
     if (!fs.existsSync(templatePath)) {
       throw new Error(`Init template not found: ${templateName}`);
     }
-    
+
     return templatePath;
   }
 
@@ -56,7 +56,7 @@ export class TemplateManager {
     if (!fs.existsSync(templatePath)) {
       throw new Error(`${templateType} templates directory not found: ${templatePath}`);
     }
-    
+
     try {
       fs.accessSync(templatePath, fs.constants.R_OK);
     } catch (error) {

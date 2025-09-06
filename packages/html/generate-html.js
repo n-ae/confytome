@@ -1,6 +1,6 @@
 /**
  * Simple HTML Documentation Generator
- * 
+ *
  * OpenAPI spec agnostic - consumes the generated spec from generate-openapi.js
  * Generates professional styled HTML documentation
  */
@@ -16,7 +16,7 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
 
   async generate() {
     console.log('🎨 Generating HTML documentation...');
-    
+
     return this.generateDocument('html', 'api-docs.html', (openApiSpec, services) => {
       return this.generateHTML(openApiSpec, services);
     });
@@ -24,7 +24,7 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
 
   generateHTML(openApiSpec, services) {
     const { info, servers, tags, paths, components } = openApiSpec;
-    
+
     // Group endpoints by tags
     const tagSections = {};
     if (tags) {
@@ -35,7 +35,7 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
         };
       });
     }
-    
+
     // Add endpoints to their respective tags
     Object.entries(paths).forEach(([path, methods]) => {
       Object.entries(methods).forEach(([method, endpoint]) => {
@@ -44,7 +44,7 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
           if (!tagSections[tagName]) {
             tagSections[tagName] = { description: '', endpoints: [] };
           }
-          
+
           tagSections[tagName].endpoints.push({
             path,
             method: method.toUpperCase(),

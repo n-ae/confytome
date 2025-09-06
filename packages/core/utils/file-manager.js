@@ -1,6 +1,6 @@
 /**
  * File Management Utility
- * 
+ *
  * Centralizes all file operations with consistent error handling
  * and dependency validation for better maintainability
  */
@@ -34,17 +34,17 @@ export class FileManager {
   static loadServerConfig(configPath, generator) {
     try {
       console.log(`📁 Server config loaded from: ${configPath}`);
-      
+
       if (!fs.existsSync(configPath)) {
         throw new Error(`Config file not found: ${configPath}`);
       }
 
       const configContent = fs.readFileSync(configPath, 'utf8');
       const config = JSON.parse(configContent);
-      
+
       // Basic validation
       this.validateServerConfig(config, configPath, generator);
-      
+
       return config;
     } catch (error) {
       SimpleErrorHandler.handle(error, generator);
@@ -60,14 +60,14 @@ export class FileManager {
   static validateServerConfig(config, configPath, generator) {
     const requiredFields = ['info', 'servers'];
     const requiredInfoFields = ['title', 'version'];
-    
+
     for (const field of requiredFields) {
       if (!config[field]) {
         const error = new Error(`Missing required field: ${field}`);
         SimpleErrorHandler.handle(error, generator);
       }
     }
-    
+
     if (config.info) {
       for (const field of requiredInfoFields) {
         if (!config.info[field]) {
@@ -76,7 +76,7 @@ export class FileManager {
         }
       }
     }
-    
+
     if (config.servers && !Array.isArray(config.servers)) {
       const error = new Error('Servers must be an array');
       SimpleErrorHandler.handle(error, generator);
@@ -92,19 +92,19 @@ export class FileManager {
   static readOpenAPISpec(specPath = './docs/api-spec.json', generator) {
     try {
       console.log('📖 Reading OpenAPI spec...');
-      
+
       if (!fs.existsSync(specPath)) {
         throw new Error('OpenAPI spec not found. Run OpenAPI generator first.');
       }
 
       const specContent = fs.readFileSync(specPath, 'utf8');
       const spec = JSON.parse(specContent);
-      
+
       // Basic validation - support both OpenAPI 3.x and Swagger 2.0
       if ((!spec.openapi && !spec.swagger) || !spec.info || !spec.paths) {
         throw new Error('Invalid OpenAPI/Swagger specification format');
       }
-      
+
       return spec;
     } catch (error) {
       if (error instanceof SyntaxError) {
@@ -127,7 +127,7 @@ export class FileManager {
   static validateJSDocFiles(filePaths, generator) {
     const validFiles = [];
     const missingFiles = [];
-    
+
     for (const filePath of filePaths) {
       try {
         if (fs.existsSync(filePath)) {
@@ -142,12 +142,12 @@ export class FileManager {
         SimpleErrorHandler.handle(error, generator);
       }
     }
-    
+
     if (missingFiles.length > 0) {
       const error = new Error(`JSDoc files not found: ${missingFiles.join(', ')}`);
       throw new FileError(error.message, generator, missingFiles[0], error);
     }
-    
+
     return validFiles;
   }
 
@@ -165,10 +165,10 @@ export class FileManager {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      
+
       fs.writeFileSync(filePath, content, 'utf8');
       console.log(`✅ ${description}: ${filePath}`);
-      
+
       return {
         path: filePath,
         size: Buffer.byteLength(content, 'utf8')
@@ -187,14 +187,14 @@ export class FileManager {
     try {
       const stats = fs.statSync(filePath);
       const bytes = stats.size;
-      
+
       if (bytes === 0) return '0 B';
-      
+
       const k = 1024;
       const sizes = ['B', 'KB', 'MB'];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
-      
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+
+      return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
     } catch {
       return 'Unknown';
     }
@@ -208,7 +208,7 @@ export class FileManager {
   static getFileInfo(filePath) {
     try {
       if (!fs.existsSync(filePath)) return null;
-      
+
       const stats = fs.statSync(filePath);
       return {
         exists: true,
@@ -230,18 +230,18 @@ export class FileManager {
   static validateSpecConsumerPrerequisites(outputDir, generator) {
     // Ensure output directory exists
     this.ensureDocsDir(outputDir);
-    
+
     // Check if OpenAPI spec exists
     const specPath = path.join(outputDir, 'api-spec.json');
     if (!fs.existsSync(specPath)) {
       throw new Error('OpenAPI spec not found. Run OpenAPI generator first.');
     }
-    
+
     // Validate spec is readable and valid JSON
     try {
       const specContent = fs.readFileSync(specPath, 'utf8');
       const spec = JSON.parse(specContent);
-      
+
       // Basic validation - support both OpenAPI 3.x and Swagger 2.0
       if ((!spec.openapi && !spec.swagger) || !spec.info || !spec.paths) {
         throw new Error('Invalid OpenAPI/Swagger specification format');
@@ -265,12 +265,12 @@ export class FileManager {
   static validateOpenAPIPrerequisites(configPath, jsdocFiles, outputDir, generator) {
     // Ensure output directory exists
     this.ensureDocsDir(outputDir);
-    
+
     // Validate server config
     if (!fs.existsSync(configPath)) {
       throw new Error(`Server config file not found: ${configPath}`);
     }
-    
+
     // Validate JSDoc files
     this.validateJSDocFiles(jsdocFiles, generator);
   }
@@ -298,15 +298,15 @@ export class FileManager {
     try {
       const docsDir = './docs';
       if (!fs.existsSync(docsDir)) return;
-      
+
       const files = fs.readdirSync(docsDir);
       let cleaned = 0;
-      
+
       for (const file of files) {
         if (!filesToKeep.includes(file) && file !== '.gitkeep') {
           const filePath = path.join(docsDir, file);
           const stats = fs.statSync(filePath);
-          
+
           // Only clean files older than 1 hour
           if (Date.now() - stats.mtime.getTime() > 3600000) {
             fs.unlinkSync(filePath);
@@ -314,7 +314,7 @@ export class FileManager {
           }
         }
       }
-      
+
       if (cleaned > 0) {
         console.log(`🧹 Cleaned ${cleaned} old files from docs directory`);
       }

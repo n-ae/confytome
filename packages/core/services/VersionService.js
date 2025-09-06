@@ -1,6 +1,6 @@
 /**
  * Version Service
- * 
+ *
  * Centralized service for managing package version information across all generators.
  * Eliminates the duplication of package.json reading logic in every generator.
  */
@@ -32,17 +32,17 @@ export class VersionService {
     try {
       const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
       const version = packageJson.version || 'unknown';
-      
+
       // Cache the result
       this.#versionCache.set(packagePath, version);
-      
+
       return version;
     } catch (error) {
       console.warn(`Warning: Could not read version from ${packagePath}: ${error.message}`);
-      
+
       // Cache the failure to avoid repeated attempts
       this.#versionCache.set(packagePath, 'unknown');
-      
+
       return 'unknown';
     }
   }
@@ -65,13 +65,13 @@ export class VersionService {
    */
   static getDisplayVersion(packagePath, packageName = null) {
     const version = this.getPackageVersion(packagePath);
-    
+
     if (!packageName) {
       try {
-        const resolvedPath = packagePath.startsWith('file://') 
+        const resolvedPath = packagePath.startsWith('file://')
           ? new URL('./package.json', packagePath).pathname
           : path.join(packagePath, 'package.json');
-        
+
         const packageJson = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
         packageName = packageJson.name || 'unknown';
       } catch (error) {

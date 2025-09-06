@@ -1,6 +1,6 @@
 /**
  * Registry-based Generator Orchestrator
- * 
+ *
  * Replaces the simplified generator orchestrator with a plugin-aware system
  * that uses the GeneratorRegistry for dynamic discovery and execution.
  */
@@ -18,7 +18,7 @@ export class RegistryOrchestrator {
    */
   async initialize() {
     if (this.initialized) return;
-    
+
     await GeneratorFactory.initialize();
     this.initialized = true;
   }
@@ -68,10 +68,10 @@ export class RegistryOrchestrator {
    */
   async executeGenerators(generatorNames, outputDir = './docs', options = {}) {
     await this.initialize();
-    
+
     // Resolve execution order based on dependencies
     const executionOrder = this.resolveDependencyOrder(generatorNames);
-    
+
     return await GeneratorFactory.executeGenerators(executionOrder, outputDir, options);
   }
 
@@ -81,7 +81,7 @@ export class RegistryOrchestrator {
   async executeAllSpecConsumers(outputDir = './docs', options = {}) {
     const specConsumers = await this.getSpecConsumerGenerators();
     const generatorNames = specConsumers.map(gen => gen.name);
-    
+
     return await this.executeGenerators(generatorNames, outputDir, options);
   }
 
@@ -91,7 +91,7 @@ export class RegistryOrchestrator {
   async executeGeneratorSet(setName, outputDir = './docs', options = {}) {
     const sets = await this.getGeneratorSets();
     const generatorNames = sets[setName];
-    
+
     if (!generatorNames) {
       throw new Error(`Unknown generator set: ${setName}`);
     }
@@ -104,7 +104,7 @@ export class RegistryOrchestrator {
    */
   async getGeneratorSets() {
     await this.initialize();
-    
+
     const allGenerators = await GeneratorFactory.listGenerators();
     const specConsumers = await this.getSpecConsumerGenerators();
     const specCreators = await this.getSpecCreatorGenerators();
@@ -152,13 +152,13 @@ export class RegistryOrchestrator {
    */
   async validateGenerators(generatorNames) {
     await this.initialize();
-    
+
     const results = [];
-    
+
     for (const name of generatorNames) {
       const isAvailable = await GeneratorFactory.isGeneratorAvailable(name);
       const info = await GeneratorFactory.getGeneratorInfo(name);
-      
+
       results.push({
         name,
         available: isAvailable,
@@ -183,7 +183,7 @@ export class RegistryOrchestrator {
    */
   async listGeneratorsWithStatus() {
     await this.initialize();
-    
+
     const allGenerators = await GeneratorFactory.listGenerators();
     const results = [];
 

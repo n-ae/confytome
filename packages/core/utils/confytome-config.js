@@ -1,6 +1,6 @@
 /**
  * Simple confytome Configuration Utility
- * 
+ *
  * Reads confytome.json and provides a simple way to configure server and routes
  * without complex JSDoc manipulation.
  */

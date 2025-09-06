@@ -1,12 +1,12 @@
 /**
  * Init Command Tests
- * 
+ *
  * Tests that 'confytome init' sets up docs/ and serverConfig.json
  */
 
 import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
-import { 
-  TestEnvironment, 
+import {
+  TestEnvironment,
   isValidJSON
 } from './test-helpers.js';
 
@@ -69,7 +69,7 @@ describe('confytome init', () => {
 
     // Validate example router content
     const routerContent = testEnv.readFile('example-router.js');
-    
+
     // Should contain JSDoc examples
     expect(routerContent).toContain('@swagger');
     expect(routerContent).toContain('components:');
@@ -111,10 +111,10 @@ describe('confytome init', () => {
   test('should not overwrite existing files', () => {
     // Create an existing serverConfig.json
     const existingConfig = {
-      openapi: "3.0.0",
+      openapi: '3.0.0',
       info: {
-        title: "Existing API",
-        version: "2.0.0"
+        title: 'Existing API',
+        version: '2.0.0'
       }
     };
     testEnv.createFile('serverConfig.json', JSON.stringify(existingConfig, null, 2));
@@ -159,7 +159,7 @@ describe('confytome init', () => {
     // Should still create other files
     expect(testEnv.fileExists('serverConfig.json')).toBe(true);
     expect(testEnv.fileExists('example-router.js')).toBe(true);
-    
+
     // Should create assets subdirectory
     expect(testEnv.fileExists('docs/assets')).toBe(true);
   });
@@ -168,13 +168,13 @@ describe('confytome init', () => {
     // Pre-create docs directory
     testEnv.createFile('docs/.gitkeep', '');
 
-    // Run init command  
+    // Run init command
     const result = testEnv.runConfytome('init');
     expect(result.success).toBe(true);
 
     // Output should differentiate between created and existing items
     expect(result.stdout).toContain('Created');
-    
+
     // Should not claim to have created something that already existed
     if (result.stdout.includes('exists')) {
       // This would indicate it found existing files

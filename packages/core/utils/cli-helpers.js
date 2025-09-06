@@ -1,6 +1,6 @@
 /**
  * Registry-based CLI Helper Functions
- * 
+ *
  * Updated version that uses the new generator registry system
  * while maintaining backward compatibility with existing CLI functions.
  */
@@ -20,21 +20,21 @@ import { ConfytomeConfig } from './confytome-config.js';
  */
 export async function generateOpenAPI(configPath, files, outputDir = './docs') {
   await GeneratorFactory.initialize();
-  
+
   // For OpenAPI generation, we need to use the core OpenAPI generator
   // This is handled by the existing generate-openapi.js directly
   const { main } = await import('../generate-openapi.js');
-  
+
   // Set up environment for the generator
   process.argv = ['node', 'generate-openapi.js', configPath, ...files];
   process.env.OUTPUT_DIR = outputDir;
-  
+
   return await main();
 }
 
 /**
  * Run all documentation generators (OpenAPI first, then consumers)
- * @param {string} configPath - Path to server config file  
+ * @param {string} configPath - Path to server config file
  * @param {Array<string>} files - JSDoc files to process
  * @param {string} outputDir - Output directory
  * @returns {Promise<Array<Object>>} Array of generation results
@@ -42,7 +42,7 @@ export async function generateOpenAPI(configPath, files, outputDir = './docs') {
 export async function generateAllDocs(configPath, files, outputDir = './docs', options = {}) {
   // First generate OpenAPI spec
   await generateOpenAPI(configPath, files, outputDir);
-  
+
   // Then run all spec consumer generators
   const results = await registryOrchestrator.executeAllSpecConsumers(outputDir, {
     excludeBrand: options.excludeBrand || false,
@@ -62,7 +62,7 @@ export async function generateFromSpec(generatorName, outputDir = './docs') {
   const result = await registryOrchestrator.executeGenerator(generatorName, outputDir, {
     contextUrl: import.meta.url
   });
-  
+
   return result;
 }
 
@@ -76,7 +76,7 @@ export async function generateMultipleFromSpec(generatorNames, outputDir = './do
   const results = await registryOrchestrator.executeGenerators(generatorNames, outputDir, {
     contextUrl: import.meta.url
   });
-  
+
   return results;
 }
 
@@ -89,7 +89,7 @@ export async function generateDemo(outputDir = './docs') {
   // For demo, we need the example files to exist first
   const exampleRouter = './example-router.js';
   const exampleConfig = './serverConfig.json';
-  
+
   if (fs.existsSync(exampleRouter) && fs.existsSync(exampleConfig)) {
     return await generateAllDocs(exampleConfig, [exampleRouter], outputDir);
   } else {
@@ -104,11 +104,11 @@ export async function generateDemo(outputDir = './docs') {
  */
 export async function getGeneratorInfo(generatorName = null) {
   await GeneratorFactory.initialize();
-  
+
   if (generatorName) {
     return await registryOrchestrator.getGeneratorInfo(generatorName);
   }
-  
+
   return await registryOrchestrator.listGeneratorsWithStatus();
 }
 
@@ -128,10 +128,10 @@ export async function getGeneratorSets() {
  */
 export async function validateGenerators(generatorNames) {
   await GeneratorFactory.initialize();
-  
+
   const results = await registryOrchestrator.validateGenerators(generatorNames);
   const invalid = results.filter(r => !r.available);
-  
+
   if (invalid.length > 0) {
     const errors = invalid.map(r => `${r.name}: ${r.validation.errors.join(', ')}`);
     throw new Error(`Generator validation failed:\\n${errors.join('\\n')}`);
@@ -146,24 +146,24 @@ export async function validateGenerators(generatorNames) {
  */
 export async function generateFromConfytomeConfig(configPath = './confytome.json', outputDir = './docs', options = {}) {
   const confytomeConfig = await ConfytomeConfig.load(configPath);
-  
+
   // Extract route file names from the configuration
   const routeFileNames = ConfytomeConfig.getRouteFileNames(confytomeConfig);
-  
+
   // Create modified server config with overrides for OpenAPI generation
   const modifiedServerConfig = ConfytomeConfig.createModifiedServerConfig(confytomeConfig);
-  
+
   // Write the modified server config to a temporary file
   const tempConfigPath = path.join(outputDir, '.confytome-server-config.json');
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
   fs.writeFileSync(tempConfigPath, JSON.stringify(modifiedServerConfig, null, 2));
-  
+
   try {
     // Use the modified configuration to run all generators
     const result = await generateAllDocs(tempConfigPath, routeFileNames, outputDir, options);
-    
+
     return result;
   } finally {
     // Clean up temp config file

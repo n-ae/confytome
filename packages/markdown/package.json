@@ -38,11 +38,18 @@
     "README.md"
   ],
   "scripts": {
-    "test": "echo \"Tests in main confytome package\" && exit 0"
+    "test": "echo \"Tests in main confytome package\" && exit 0",
+    "lint": "eslint . --ext .js",
+    "format": "eslint . --ext .js --fix",
+    "clean": "rm -rf docs/* .cache",
+    "validate": "npm ls",
+    "prepublishOnly": "npm run validate",
+    "security:check": "npm audit",
+    "security:fix": "npm audit fix"
   },
   "dependencies": {
     "commander": "^14.0.0",
-    "widdershins": "4.0.1"
+    "widdershins": "^4.0.1"
   },
   "peerDependencies": {
     "@confytome/core": "^1.2.0"

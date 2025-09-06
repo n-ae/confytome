@@ -1,6 +1,6 @@
 /**
  * Branding Service
- * 
+ *
  * Centralized service for managing confytome branding across all generators.
  * Provides consistent branding formats and handles the excludeBrand option uniformly.
  */
@@ -23,7 +23,7 @@ export class BrandingService {
   static getTimestamp() {
     return new Date().toLocaleDateString('en-US', {
       day: 'numeric',
-      month: 'long', 
+      month: 'long',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
@@ -52,7 +52,7 @@ export class BrandingService {
     if (excludeBrand) {
       if (includeTimestamp) {
         const timestamp = this.getTimestamp();
-        return format === 'html' 
+        return format === 'html'
           ? `Generated: ${timestamp} UTC`
           : `Generated ${timestamp} UTC`;
       }
@@ -63,13 +63,13 @@ export class BrandingService {
     const version = includeVersion ? VersionService.getCurrentVersion(importMetaUrl) : null;
 
     switch (format) {
-      case 'html':
-        return this.#generateHtmlBranding(timestamp, version);
-      case 'markdown':
-        return this.#generateMarkdownBranding(timestamp, version);
-      case 'text':
-      default:
-        return this.#generateTextBranding(timestamp, version);
+    case 'html':
+      return this.#generateHtmlBranding(timestamp, version);
+    case 'markdown':
+      return this.#generateMarkdownBranding(timestamp, version);
+    case 'text':
+    default:
+      return this.#generateTextBranding(timestamp, version);
     }
   }
 
@@ -79,33 +79,33 @@ export class BrandingService {
    */
   static #generateHtmlBranding(timestamp, version) {
     const { projectName, projectIcon, projectUrl, heartIcon } = this.#brandingConfig;
-    
+
     let branding = '';
     if (timestamp) {
       branding += `<small>Generated: ${timestamp} UTC</small>`;
     }
-    
+
     if (version) {
       const versionText = version !== 'unknown' ? `v${version}` : '';
       branding += timestamp ? '<br>' : '';
-      branding += `<small>Generated with ${projectIcon} <a href="${projectUrl}" style="color: inherit; text-decoration: none;">${projectName}${versionText ? ' ' + versionText : ''}</a> with ${heartIcon}</small>`;
+      branding += `<small>Generated with ${projectIcon} <a href="${projectUrl}" style="color: inherit; text-decoration: none;">${projectName}${versionText ? ` ${versionText}` : ''}</a> with ${heartIcon}</small>`;
     }
 
     return branding;
   }
 
   /**
-   * Generate Markdown branding  
+   * Generate Markdown branding
    * @private
    */
   static #generateMarkdownBranding(timestamp, version) {
     const { projectName, projectIcon, heartIconAlt } = this.#brandingConfig;
-    
-    let parts = [];
+
+    const parts = [];
     if (timestamp) {
       parts.push(`Generated ${timestamp} UTC`);
     }
-    
+
     if (version) {
       const versionText = version !== 'unknown' ? ` v${version}` : '';
       parts.push(`by ${projectIcon} ${projectName}${versionText} with ${heartIconAlt}`);
@@ -116,16 +116,16 @@ export class BrandingService {
 
   /**
    * Generate plain text branding
-   * @private  
+   * @private
    */
   static #generateTextBranding(timestamp, version) {
     const { projectName, projectIcon } = this.#brandingConfig;
-    
-    let parts = [];
+
+    const parts = [];
     if (timestamp) {
       parts.push(`Generated ${timestamp} UTC`);
     }
-    
+
     if (version) {
       const versionText = version !== 'unknown' ? ` v${version}` : '';
       parts.push(`by ${projectIcon} ${projectName}${versionText}`);
@@ -142,11 +142,11 @@ export class BrandingService {
    */
   static getTemplateEnvironment(importMetaUrl, excludeBrand = false) {
     const env = {};
-    
+
     if (excludeBrand) {
       env.CONFYTOME_NO_BRAND = 'true';
     }
-    
+
     if (!excludeBrand) {
       const version = VersionService.getCurrentVersion(importMetaUrl);
       env.CONFYTOME_VERSION = version;
@@ -168,7 +168,7 @@ export class BrandingService {
 
   static generateMarkdownBranding(importMetaUrl, excludeBrand = false) {
     return this.generateBranding(importMetaUrl, excludeBrand, {
-      format: 'markdown', 
+      format: 'markdown',
       includeTimestamp: true,
       includeVersion: true
     });

@@ -1,6 +1,6 @@
 /**
  * Test Helper Utilities
- * 
+ *
  * Provides common utilities for setting up test environments
  * and running CLI commands in isolated directories
  */
@@ -48,7 +48,7 @@ export class TestEnvironment {
    */
   runConfytome(command, options = {}) {
     const fullCommand = `node "${binPath}" ${command}`;
-    
+
     try {
       const result = execSync(fullCommand, {
         cwd: this.testDir,
@@ -56,7 +56,7 @@ export class TestEnvironment {
         stdio: 'pipe',
         ...options
       });
-      
+
       return {
         stdout: result,
         stderr: '',
@@ -80,11 +80,11 @@ export class TestEnvironment {
   createFile(filename, content) {
     const filePath = path.join(this.testDir, filename);
     const dir = path.dirname(filePath);
-    
+
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
+
     fs.writeFileSync(filePath, content, 'utf8');
     return filePath;
   }
@@ -145,29 +145,29 @@ export class TestEnvironment {
  * Sample server config for testing
  */
 export const SAMPLE_SERVER_CONFIG = {
-  "openapi": "3.0.3",
-  "info": {
-    "title": "Test API",
-    "version": "1.0.0",
-    "description": "Test API for Jest testing"
+  'openapi': '3.0.3',
+  'info': {
+    'title': 'Test API',
+    'version': '1.0.0',
+    'description': 'Test API for Jest testing'
   },
-  "servers": [
+  'servers': [
     {
-      "url": "https://api.test.com/v1",
-      "description": "Test Server"
+      'url': 'https://api.test.com/v1',
+      'description': 'Test Server'
     }
   ],
-  "security": [
+  'security': [
     {
-      "bearerAuth": []
+      'bearerAuth': []
     }
   ],
-  "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+  'components': {
+    'securitySchemes': {
+      'bearerAuth': {
+        'type': 'http',
+        'scheme': 'bearer',
+        'bearerFormat': 'JWT'
       }
     }
   }
@@ -285,19 +285,19 @@ export function isValidJSON(str) {
  */
 export function isValidOpenAPISpec(spec) {
   if (!spec || typeof spec !== 'object') return false;
-  
+
   // Check required fields
   if (!spec.openapi || !spec.info || !spec.paths) return false;
-  
+
   // Check openapi version
   if (!spec.openapi.startsWith('3.')) return false;
-  
+
   // Check info object
   if (!spec.info.title || !spec.info.version) return false;
-  
+
   // Check paths is an object
   if (typeof spec.paths !== 'object') return false;
-  
+
   return true;
 }
 

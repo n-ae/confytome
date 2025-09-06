@@ -1,6 +1,6 @@
 /**
  * Service Factory
- * 
+ *
  * Factory for creating and managing service instances with dependency injection.
  * Provides a clean way to inject services into generators and other components.
  */
@@ -11,7 +11,7 @@ import { TemplateService } from './TemplateService.js';
 
 export class ServiceFactory {
   static #instances = new Map();
-  
+
   /**
    * Create a service container with all services
    * @param {string} contextUrl - import.meta.url from the calling context
@@ -20,7 +20,7 @@ export class ServiceFactory {
    */
   static createServices(contextUrl, options = {}) {
     const serviceId = `${contextUrl}:${JSON.stringify(options)}`;
-    
+
     // Return cached instance if available
     if (this.#instances.has(serviceId)) {
       return this.#instances.get(serviceId);
@@ -35,7 +35,7 @@ export class ServiceFactory {
 
     // Cache the services
     this.#instances.set(serviceId, services);
-    
+
     return services;
   }
 
@@ -57,18 +57,18 @@ export class ServiceFactory {
    */
   static #createBrandingService(contextUrl, options) {
     const { excludeBrand = false } = options;
-    
+
     return {
       generateHtml: (opts = {}) => BrandingService.generateHtmlBranding(
-        contextUrl, 
+        contextUrl,
         opts.excludeBrand ?? excludeBrand
       ),
       generateMarkdown: (opts = {}) => BrandingService.generateMarkdownBranding(
-        contextUrl, 
+        contextUrl,
         opts.excludeBrand ?? excludeBrand
       ),
       generateSwagger: (opts = {}) => BrandingService.generateSwaggerBranding(
-        contextUrl, 
+        contextUrl,
         opts.excludeBrand ?? excludeBrand
       ),
       getTimestamp: () => BrandingService.getTimestamp(),
@@ -109,21 +109,21 @@ export class ServiceFactory {
    */
   static createGeneratorServices(contextUrl, generatorType, options = {}) {
     const services = this.createServices(contextUrl, options);
-    
+
     // Add generator-specific convenience methods
     switch (generatorType) {
-      case 'markdown':
-        services.branding.generateForMarkdown = () => services.branding.generateMarkdown();
-        services.branding.getMarkdownTemplateData = () => services.branding.getTemplateData();
-        break;
-        
-      case 'html':
-        services.branding.generateForHtml = () => services.branding.generateHtml();
-        break;
-        
-      case 'swagger':
-        services.branding.generateForSwagger = () => services.branding.generateSwagger();
-        break;
+    case 'markdown':
+      services.branding.generateForMarkdown = () => services.branding.generateMarkdown();
+      services.branding.getMarkdownTemplateData = () => services.branding.getTemplateData();
+      break;
+
+    case 'html':
+      services.branding.generateForHtml = () => services.branding.generateHtml();
+      break;
+
+    case 'swagger':
+      services.branding.generateForSwagger = () => services.branding.generateSwagger();
+      break;
     }
 
     return services;

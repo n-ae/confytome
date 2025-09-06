@@ -1,6 +1,6 @@
 /**
  * CLI Plugin Management Commands
- * 
+ *
  * Provides commands for managing the generator plugin system
  */
 
@@ -13,11 +13,11 @@ import { SimpleErrorHandler } from './error-handler-simple.js';
  */
 export async function listGenerators(options = {}) {
   const errorHandler = new SimpleErrorHandler('list-generators');
-  
+
   try {
     await GeneratorFactory.initialize();
     const generators = await registryOrchestrator.listGeneratorsWithStatus();
-    
+
     if (options.json) {
       console.log(JSON.stringify(generators, null, 2));
       return;
@@ -40,15 +40,15 @@ export async function listGenerators(options = {}) {
 
     for (const [type, typeGenerators] of Object.entries(byType)) {
       console.log(`📦 ${type.toUpperCase()} Generators:`);
-      
+
       typeGenerators.forEach(gen => {
         const status = gen.available ? '✅' : gen.compatible ? '⚠️ ' : '❌';
         const external = gen.isExternal ? ' (external)' : '';
-        
+
         console.log(`   ${status} ${gen.name}${external}`);
         console.log(`      ${gen.description}`);
         console.log(`      Version: ${gen.version}, Package: ${gen.packageName}`);
-        
+
         if (!gen.available && gen.errors.length > 0) {
           console.log(`      Issues: ${gen.errors.join(', ')}`);
         }
@@ -66,11 +66,11 @@ export async function listGenerators(options = {}) {
  */
 export async function showGeneratorInfo(generatorName, options = {}) {
   const errorHandler = new SimpleErrorHandler('generator-info');
-  
+
   try {
     await GeneratorFactory.initialize();
     const info = await registryOrchestrator.getGeneratorInfo(generatorName);
-    
+
     if (!info.metadata) {
       console.error(`❌ Generator not found: ${generatorName}`);
       console.log('');
@@ -94,14 +94,14 @@ export async function showGeneratorInfo(generatorName, options = {}) {
     console.log(`   Package: ${meta.packageName}`);
     console.log(`   JSDoc Required: ${meta.requiresJSDocFiles ? 'Yes' : 'No'}`);
     console.log(`   External Plugin: ${meta.isExternalPlugin ? 'Yes' : 'No'}`);
-    
+
     if (meta.filePath) {
       console.log(`   File Path: ${meta.filePath}`);
     }
 
     console.log('');
     console.log(`   Status: ${info.validation.valid ? '✅ Available' : '❌ Unavailable'}`);
-    
+
     if (!info.validation.valid) {
       console.log('   Issues:');
       info.validation.errors.forEach(error => {
@@ -112,7 +112,7 @@ export async function showGeneratorInfo(generatorName, options = {}) {
     // Show dependencies
     const deps = Object.keys(meta.dependencies);
     const peerDeps = Object.keys(meta.peerDependencies);
-    
+
     if (deps.length > 0) {
       console.log('');
       console.log('   Dependencies:');
@@ -135,11 +135,11 @@ export async function showGeneratorInfo(generatorName, options = {}) {
  */
 export async function showRecommendedGenerators(options = {}) {
   const errorHandler = new SimpleErrorHandler('recommended-generators');
-  
+
   try {
     await GeneratorFactory.initialize();
     const recommended = await GeneratorFactory.getRecommendedGenerators();
-    
+
     if (options.json) {
       console.log(JSON.stringify(recommended, null, 2));
       return;
@@ -171,10 +171,10 @@ export async function showRecommendedGenerators(options = {}) {
  */
 export async function validateGenerators(generatorNames, options = {}) {
   const errorHandler = new SimpleErrorHandler('validate-generators');
-  
+
   try {
     await GeneratorFactory.initialize();
-    
+
     let generators = generatorNames;
     if (generators.length === 0) {
       // Validate all generators if none specified
@@ -183,7 +183,7 @@ export async function validateGenerators(generatorNames, options = {}) {
     }
 
     const results = await registryOrchestrator.validateGenerators(generators);
-    
+
     if (options.json) {
       console.log(JSON.stringify(results, null, 2));
       return;
@@ -196,7 +196,7 @@ export async function validateGenerators(generatorNames, options = {}) {
     results.forEach(result => {
       const status = result.available ? '✅' : '❌';
       console.log(`${status} ${result.name}`);
-      
+
       if (!result.available) {
         allValid = false;
         result.validation.errors.forEach(error => {
@@ -223,10 +223,10 @@ export async function validateGenerators(generatorNames, options = {}) {
  */
 export async function executeGenerators(generatorNames, options = {}) {
   const errorHandler = new SimpleErrorHandler('execute-generators');
-  
+
   try {
     await GeneratorFactory.initialize();
-    
+
     const outputDir = options.outputDir || './docs';
     const executionOptions = {
       failFast: options.failFast || false,
@@ -239,8 +239,8 @@ export async function executeGenerators(generatorNames, options = {}) {
     console.log('');
 
     const results = await registryOrchestrator.executeGenerators(
-      generatorNames, 
-      outputDir, 
+      generatorNames,
+      outputDir,
       executionOptions
     );
 
@@ -259,7 +259,7 @@ export async function executeGenerators(generatorNames, options = {}) {
 
     console.log('');
     console.log(`📊 Results: ${successCount} succeeded, ${failCount} failed`);
-    
+
     if (failCount > 0) {
       process.exit(1);
     }
@@ -274,13 +274,13 @@ export async function executeGenerators(generatorNames, options = {}) {
  */
 export async function executeAllSpecConsumers(options = {}) {
   const errorHandler = new SimpleErrorHandler('execute-all-spec-consumers');
-  
+
   try {
     await GeneratorFactory.initialize();
-    
+
     const specConsumers = await registryOrchestrator.getSpecConsumerGenerators();
     const generatorNames = specConsumers.map(gen => gen.name);
-    
+
     if (generatorNames.length === 0) {
       console.log('❌ No spec consumer generators found.');
       console.log('   Try running "confytome init" first.');
@@ -288,7 +288,7 @@ export async function executeAllSpecConsumers(options = {}) {
     }
 
     console.log(`🔄 Executing all spec consumer generators: ${generatorNames.join(', ')}`);
-    
+
     await executeGenerators(generatorNames, options);
 
   } catch (error) {

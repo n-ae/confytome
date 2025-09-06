@@ -1,6 +1,6 @@
 /**
  * Generic Postman Collection Generator
- * 
+ *
  * Generates Postman collections and environment variables from OpenAPI specifications.
  * Creates generic, reusable collections without project-specific logic.
  */
@@ -11,37 +11,37 @@ import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/
 
 // Create Postman environment from OpenAPI spec
 function createPostmanEnvironment(openApiSpec) {
-  const serverUrl = openApiSpec.servers?.[0]?.url || "http://localhost:3000";
-  
+  const serverUrl = openApiSpec.servers?.[0]?.url || 'http://localhost:3000';
+
   return {
     id: generateUUID(),
-    name: openApiSpec.info.title?.toUpperCase().replace(/\s+/g, '_') || "API_ENVIRONMENT",
+    name: openApiSpec.info.title?.toUpperCase().replace(/\s+/g, '_') || 'API_ENVIRONMENT',
     values: [
       {
-        key: "BASE_URL",
+        key: 'BASE_URL',
         value: serverUrl,
-        type: "default",
-        description: "API base URL from OpenAPI spec",
+        type: 'default',
+        description: 'API base URL from OpenAPI spec',
         enabled: true
       },
       {
-        key: "API_VERSION",
-        value: openApiSpec.info.version || "1.0.0",
-        type: "default",
-        description: "API version",
+        key: 'API_VERSION',
+        value: openApiSpec.info.version || '1.0.0',
+        type: 'default',
+        description: 'API version',
         enabled: true
       },
       {
-        key: "AUTH_TOKEN",
-        value: "your_auth_token_here",
-        type: "secret",
-        description: "Authentication token (configure in your environment)",
+        key: 'AUTH_TOKEN',
+        value: 'your_auth_token_here',
+        type: 'secret',
+        description: 'Authentication token (configure in your environment)',
         enabled: true
       }
     ],
-    _postman_variable_scope: "environment",
+    _postman_variable_scope: 'environment',
     _postman_exported_at: new Date().toISOString(),
-    _postman_exported_using: "Generated from OpenAPI spec via Confytome"
+    _postman_exported_using: 'Generated from OpenAPI spec via Confytome'
   };
 }
 
@@ -57,26 +57,26 @@ function generateUUID() {
 // Generate Postman collection from OpenAPI spec
 function generatePostmanCollection(openApiSpec) {
   const { info, paths, servers } = openApiSpec;
-  
+
   return {
     info: {
       _postman_id: generateUUID(),
       name: `${info.title} v${info.version}`,
       description: info.description || `API collection for ${info.title}`,
-      schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+      schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
     },
     item: [
       {
-        name: "API Endpoints",
+        name: 'API Endpoints',
         item: generateRequests(paths, servers)
       }
     ],
     variable: [
       {
-        key: "authToken",
-        value: "",
-        type: "string",
-        description: "Authentication token"
+        key: 'authToken',
+        value: '',
+        type: 'string',
+        description: 'Authentication token'
       }
     ]
   };
@@ -100,20 +100,20 @@ function generateRequests(paths, servers = []) {
 
 // Create individual Postman request
 function createPostmanRequest(path, method, operation, servers) {
-  const serverUrl = servers?.[0]?.url || "{{BASE_URL}}";
-  
+  const serverUrl = servers?.[0]?.url || '{{BASE_URL}}';
+
   // Convert OpenAPI path parameters to Postman format
   const postmanPath = path.replace(/{([^}]+)}/g, ':$1');
-  
+
   const request = {
     name: operation.summary || `${method} ${path}`,
     request: {
-      method: method,
+      method,
       header: [
         {
-          key: "Content-Type",
-          value: "application/json",
-          type: "text"
+          key: 'Content-Type',
+          value: 'application/json',
+          type: 'text'
         }
       ],
       url: {
@@ -127,20 +127,20 @@ function createPostmanRequest(path, method, operation, servers) {
   // Add authorization header if security is defined
   if (operation.security || operation.responses) {
     request.request.header.push({
-      key: "Authorization",
-      value: "Bearer {{AUTH_TOKEN}}",
-      type: "text"
+      key: 'Authorization',
+      value: 'Bearer {{AUTH_TOKEN}}',
+      type: 'text'
     });
   }
 
   // Add request body for POST/PUT/PATCH
   if (['POST', 'PUT', 'PATCH'].includes(method) && operation.requestBody) {
     request.request.body = {
-      mode: "raw",
+      mode: 'raw',
       raw: JSON.stringify(generateExampleBody(operation.requestBody), null, 2),
       options: {
         raw: {
-          language: "json"
+          language: 'json'
         }
       }
     };
@@ -184,57 +184,57 @@ function generateExampleFromSchema(schema) {
   if (schema.example) return schema.example;
 
   switch (schema.type) {
-    case 'object':
-      const obj = {};
-      if (schema.properties) {
-        for (const [key, prop] of Object.entries(schema.properties)) {
-          obj[key] = generateExampleFromSchema(prop);
-        }
+  case 'object':
+    const obj = {};
+    if (schema.properties) {
+      for (const [key, prop] of Object.entries(schema.properties)) {
+        obj[key] = generateExampleFromSchema(prop);
       }
-      return obj;
-    case 'array':
-      return schema.items ? [generateExampleFromSchema(schema.items)] : [];
-    case 'string':
-      return schema.enum?.[0] || 'string';
-    case 'number':
-    case 'integer':
-      return 0;
-    case 'boolean':
-      return false;
-    default:
-      return null;
+    }
+    return obj;
+  case 'array':
+    return schema.items ? [generateExampleFromSchema(schema.items)] : [];
+  case 'string':
+    return schema.enum?.[0] || 'string';
+  case 'number':
+  case 'integer':
+    return 0;
+  case 'boolean':
+    return false;
+  default:
+    return null;
   }
 }
 
 // Generate example value for parameters
 function generateExampleValue(schema) {
   if (!schema) return '';
-  
+
   if (schema.example !== undefined) return schema.example;
-  
+
   switch (schema.type) {
-    case 'string': return schema.enum?.[0] || 'example';
-    case 'number':
-    case 'integer': return 1;
-    case 'boolean': return true;
-    default: return '';
+  case 'string': return schema.enum?.[0] || 'example';
+  case 'number':
+  case 'integer': return 1;
+  case 'boolean': return true;
+  default: return '';
   }
 }
 
 // Generate Postman tests
 function generatePostmanTests(responses) {
   const tests = [];
-  
+
   if (responses['200'] || responses['201']) {
     tests.push('pm.test("Status code is successful", function () {');
     tests.push('    pm.expect(pm.response.code).to.be.oneOf([200, 201]);');
     tests.push('});');
   }
-  
+
   tests.push('pm.test("Response time is less than 5000ms", function () {');
   tests.push('    pm.expect(pm.response.responseTime).to.be.below(5000);');
   tests.push('});');
-  
+
   return tests.join('\n');
 }
 
@@ -246,19 +246,19 @@ class PostmanGenerator extends SpecConsumerGeneratorBase {
   async generate() {
     // Load OpenAPI spec
     const openApiSpec = this.loadOpenAPISpec();
-    
+
     // Generate Postman collection
     console.log('📥 Generating Postman collection...');
     const collection = generatePostmanCollection(openApiSpec);
-    
+
     // Write collection file
     const collectionPath = path.join(this.outputDir, 'api-postman.json');
     this.writeOutputFile(
-      collectionPath, 
-      JSON.stringify(collection, null, '\t'), 
+      collectionPath,
+      JSON.stringify(collection, null, '\t'),
       'Postman collection created'
     );
-    
+
     // Generate environment variables
     console.log('🌍 Generating environment variables...');
     const environment = createPostmanEnvironment(openApiSpec);
@@ -268,7 +268,7 @@ class PostmanGenerator extends SpecConsumerGeneratorBase {
       JSON.stringify(environment, null, '\t'),
       'Environment variables created'
     );
-    
+
     // Calculate stats
     this.calculateStats(openApiSpec, collectionPath, envPath);
 
@@ -282,7 +282,7 @@ class PostmanGenerator extends SpecConsumerGeneratorBase {
   calculateStats(spec, collectionPath, envPath) {
     const pathCount = Object.keys(spec.paths || {}).length;
     let endpointCount = 0;
-    
+
     for (const path in spec.paths || {}) {
       endpointCount += Object.keys(spec.paths[path]).length;
     }
