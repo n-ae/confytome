@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { glob } from 'glob';
-import { fileURLToPath } from 'url';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -14,12 +14,12 @@ async function updateVersion(targetVersion) {
   ];
 
   console.log(`🔄 Updating to ${targetVersion}...`);
-  
+
   files.forEach(file => {
     const filePath = path.join(rootDir, file);
     const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     content.version = targetVersion;
-    fs.writeFileSync(filePath, JSON.stringify(content, null, 2) + '\n');
+    fs.writeFileSync(filePath, `${JSON.stringify(content, null, 2)}\n`);
     console.log(`   ✓ ${path.basename(path.dirname(filePath))}`);
   });
 

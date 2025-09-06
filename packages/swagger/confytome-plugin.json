@@ -4,7 +4,7 @@
   "description": "Interactive Swagger UI generator with self-contained HTML output",
   "main": "./generate-swagger.js",
   "className": "SwaggerUIGenerator",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "nae",
   "tags": [
     "swagger",
@@ -29,4 +29,4 @@
     "self-contained",
     "responsive"
   ]
-}\n
+}

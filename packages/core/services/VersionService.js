@@ -5,8 +5,8 @@
  * Eliminates the duplication of package.json reading logic in every generator.
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 export class VersionService {
   static #versionCache = new Map();
@@ -74,7 +74,7 @@ export class VersionService {
 
         const packageJson = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
         packageName = packageJson.name || 'unknown';
-      } catch (error) {
+      } catch {
         packageName = 'unknown';
       }
     }

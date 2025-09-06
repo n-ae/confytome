@@ -40,7 +40,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.get('/test', (req, res) => {
+router.get('/test', (_req, res) => {
   res.json({
     message: 'Hello, World!',
     timestamp: new Date().toISOString()

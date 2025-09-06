@@ -7,7 +7,7 @@
 
 import swaggerJSDoc from 'swagger-jsdoc';
 import path from 'path';
-import { OpenAPIGeneratorBase, BaseGenerator } from './utils/base-generator.js';
+import { OpenAPIGeneratorBase } from './utils/base-generator.js';
 import { FileManager } from './utils/file-manager.js';
 
 class OpenAPIGenerator extends OpenAPIGeneratorBase {
@@ -83,15 +83,6 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
   }
 }
 
-// Legacy function for backwards compatibility
-function main() {
-  const generator = new OpenAPIGenerator();
-  return generator.run();
-}
-
-// Auto-run if this is the main module
-BaseGenerator.runIfMain(OpenAPIGenerator, import.meta.url);
-
-// Export both class and legacy function
-export { OpenAPIGenerator, main, main as generateOpenApiSpec };
-export default main;
+// Export class only
+export { OpenAPIGenerator };
+export default OpenAPIGenerator;

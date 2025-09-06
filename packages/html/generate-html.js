@@ -5,9 +5,7 @@
  * Generates professional styled HTML documentation
  */
 
-import path from 'path';
-import fs from 'fs';
-import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
+import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
 
 class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir = './docs', services = null) {
@@ -96,7 +94,7 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
 <body>
   <div class="container">
     <h1>${info.title}</h1>
-    
+
     <div class="info-section">
       <h3>API Information</h3>
       <p><strong>Version:</strong> ${info.version}</p>
@@ -124,7 +122,6 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
     return Object.entries(tagSections).map(([tagName, section]) => `
       <h2>${tagName}</h2>
       ${section.description ? `<p class="description">${section.description}</p>` : ''}
-      
       ${section.endpoints.map(endpoint => `
         <div class="endpoint">
           <h3>
@@ -133,7 +130,6 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
           </h3>
           ${endpoint.summary ? `<p><strong>${endpoint.summary}</strong></p>` : ''}
           ${endpoint.description ? `<p class="description">${endpoint.description}</p>` : ''}
-          
           ${endpoint.parameters.length > 0 ? `
             <div class="parameters">
               <h4>Parameters</h4>
@@ -147,7 +143,6 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
               `).join('')}
             </div>
           ` : ''}
-          
           <div class="responses">
             <h4>Responses</h4>
             ${Object.entries(endpoint.responses).map(([code, response]) => `
@@ -167,20 +162,6 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
   }
 }
 
-// Legacy function for backwards compatibility
-function generateHTML(openApiSpec) {
-  const generator = new SimpleDocsGenerator();
-  return generator.generateHTML(openApiSpec);
-}
-
-function main() {
-  const generator = new SimpleDocsGenerator();
-  return generator.run();
-}
-
-// Auto-run if this is the main module
-BaseGenerator.runIfMain(SimpleDocsGenerator, import.meta.url);
-
-// Export both class and legacy functions
-export { SimpleDocsGenerator, generateHTML, main };
-export default main;
+// Export class only
+export { SimpleDocsGenerator };
+export default SimpleDocsGenerator;

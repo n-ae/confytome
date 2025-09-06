@@ -143,7 +143,7 @@
  *                   type: string
  *                   example: "Too many login attempts. Please try again later."
  */
-function login(req, res) {
+function login(_req, _res) {
   // Implementation here
 }
 
@@ -187,7 +187,7 @@ function login(req, res) {
  *     security:
  *       - bearerAuth: []
  */
-function logout(req, res) {
+function logout(_req, _res) {
   // Implementation here
 }
 
@@ -240,11 +240,11 @@ function logout(req, res) {
  *                   type: string
  *                   example: "Refresh token is invalid or expired"
  */
-function refreshToken(req, res) {
+function refreshToken(_req, _res) {
   // Implementation here
 }
 
-module.exports = {
+export default {
   login,
   logout,
   refreshToken

@@ -8,106 +8,14 @@
  */
 
 import { program } from 'commander';
-import path from 'path';
-import fs from 'fs';
-import { createRequire } from 'module';
+import fs from 'node:fs';
 import { CliValidator } from './utils/cli-validator.js';
-import { SimpleErrorHandler } from './utils/error-handler-simple.js';
 import { ConfigMerger } from './utils/config-merger.js';
 import {
-  generateAllDocs,
   generateOpenAPI,
-  generateFromSpec,
   generateDemo,
-  getGeneratorInfo,
   generateFromConfytomeConfig
 } from './utils/cli-helpers.js';
-const require = createRequire(import.meta.url);
-
-// Watch mode helper function
-async function startWatchMode(configPath, files, outputDir) {
-  console.log('👁️  Watch mode enabled - monitoring files for changes...');
-  console.log(`   Config: ${configPath}`);
-  console.log(`   Files: ${files.join(', ')}`);
-  console.log(`   Output: ${outputDir}`);
-  console.log('   Press Ctrl+C to stop watching');
-  console.log('');
-
-  const watchedFiles = [configPath, ...files];
-  let isGenerating = false;
-  let pendingRegeneration = false;
-
-  // Debounce function to avoid multiple rapid regenerations
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  const generateDocs = debounce(async() => {
-    if (isGenerating) {
-      pendingRegeneration = true;
-      return;
-    }
-
-    isGenerating = true;
-    const timestamp = new Date().toLocaleTimeString();
-
-    try {
-      console.log(`\n🔄 [${timestamp}] File change detected - regenerating documentation...`);
-
-      // Run the same generation logic as the non-watch mode
-      await generateAllDocs(configPath, files, outputDir);
-
-      console.log(`✅ [${timestamp}] Regeneration complete!`);
-      console.log('👁️  Watching for changes...\n');
-
-    } catch (error) {
-      console.error(`❌ [${timestamp}] Regeneration failed:`, error.message);
-      console.log('👁️  Watching for changes...\n');
-    } finally {
-      isGenerating = false;
-
-      // If there was a pending regeneration request, handle it
-      if (pendingRegeneration) {
-        pendingRegeneration = false;
-        setTimeout(() => generateDocs(), 100);
-      }
-    }
-  }, 500); // 500ms debounce
-
-  // Watch all files
-  const watchers = watchedFiles.map(file => {
-    if (fs.existsSync(file)) {
-      return fs.watch(file, (eventType) => {
-        if (eventType === 'change') {
-          generateDocs();
-        }
-      });
-    }
-    return null;
-  }).filter(Boolean);
-
-  // Initial generation
-  await generateDocs();
-
-  // Handle graceful shutdown
-  process.on('SIGINT', () => {
-    console.log('\n\n🛑 Stopping watch mode...');
-    watchers.forEach(watcher => watcher.close());
-    console.log('👋 Watch mode stopped');
-    process.exit(0);
-  });
-
-  // Keep the process running
-  return new Promise(() => { }); // Never resolves, keeps watching
-}
 
 // Simplified helper functions - no complex plugin system initialization needed
 // All generators are dynamically discovered by the plugin registry system
@@ -202,8 +110,7 @@ program
       const cliOptions = ConfigMerger.extractCliOptions(options);
 
       // Create a temporary config that includes the files and output options
-      const serverConfigContent = fs.readFileSync(options.config, 'utf8');
-      const serverConfig = JSON.parse(serverConfigContent);
+      fs.readFileSync(options.config, 'utf8');
 
       // Create a confytome-style config for consistency
       const confytomeConfig = {

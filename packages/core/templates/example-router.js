@@ -149,7 +149,7 @@
  *     security:
  *       - bearerAuth: []
  */
-function getAllUsers(req, res) {
+function getAllUsers(_req, _res) {
   // Implementation here
 }
 
@@ -217,7 +217,7 @@ function getAllUsers(req, res) {
  *     security:
  *       - bearerAuth: []
  */
-function createUser(req, res) {
+function createUser(_req, _res) {
   // Implementation here
 }
 
@@ -261,11 +261,11 @@ function createUser(req, res) {
  *     security:
  *       - bearerAuth: []
  */
-function getUserById(req, res) {
+function getUserById(_req, _res) {
   // Implementation here
 }
 
-module.exports = {
+export default {
   getAllUsers,
   createUser,
   getUserById

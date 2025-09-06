@@ -4,7 +4,6 @@
  * Tests that 'confytome init' sets up docs/ and serverConfig.json
  */
 
-import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
 import {
   TestEnvironment,
   isValidJSON

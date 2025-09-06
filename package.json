@@ -1,6 +1,6 @@
 {
   "name": "confytome-workspace",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Plugin-based API documentation generator with OpenAPI-first architecture. Generates Swagger UI, HTML, Markdown, and Postman collections from JSDoc comments.",
   "private": true,
   "type": "module",
@@ -8,19 +8,20 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "jest",
-    "test:core": "jest --selectProjects=\"@confytome/core\"",
-    "test:generators": "jest --selectProjects=\"@confytome/generators\"",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:core": "NODE_OPTIONS='--experimental-vm-modules' jest --selectProjects=\"@confytome/core\"",
+    "test:generators": "NODE_OPTIONS='--experimental-vm-modules' jest --selectProjects=\"@confytome/generators\"",
+    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
+    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
     "format": "npm run lint:fix",
-    "build": "npm run build --workspaces",
     "clean": "npm run clean --workspaces && rm -rf coverage",
     "validate": "npm run lint && npm run test",
     "version:bump": "node scripts/update-versions.js bump",
-    "version:set": "node scripts/update-versions.js set"
+    "version:set": "node scripts/update-versions.js set",
+    "publish": "npm run validate && npm publish --workspaces",
+    "publish:dry-run": "npm publish --dry-run --workspaces"
   },
   "repository": {
     "type": "git",

@@ -1,8 +1,7 @@
 /**
  * Registry-based CLI Helper Functions
  *
- * Updated version that uses the new generator registry system
- * while maintaining backward compatibility with existing CLI functions.
+ * Uses the generator registry system for CLI functions.
  */
 
 import fs from 'fs';
@@ -22,14 +21,21 @@ export async function generateOpenAPI(configPath, files, outputDir = './docs') {
   await GeneratorFactory.initialize();
 
   // For OpenAPI generation, we need to use the core OpenAPI generator
-  // This is handled by the existing generate-openapi.js directly
-  const { main } = await import('../generate-openapi.js');
+  const { OpenAPIGenerator } = await import('../generate-openapi.js');
+  const generator = new OpenAPIGenerator();
 
   // Set up environment for the generator
   process.argv = ['node', 'generate-openapi.js', configPath, ...files];
   process.env.OUTPUT_DIR = outputDir;
 
-  return await main();
+  // Create args object for the generator
+  const args = {
+    serverConfigPath: configPath,
+    jsdocFiles: files,
+    outputDir
+  };
+
+  return await generator.generate(args);
 }
 
 /**

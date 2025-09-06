@@ -59,7 +59,7 @@ export class TemplateManager {
 
     try {
       fs.accessSync(templatePath, fs.constants.R_OK);
-    } catch (error) {
+    } catch {
       throw new Error(`${templateType} templates directory not readable: ${templatePath}`);
     }
   }

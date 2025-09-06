@@ -5,9 +5,9 @@
  * Each plugin package contains a confytome-plugin.json file describing the generator.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { glob } from 'glob';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -230,29 +230,6 @@ export class GeneratorRegistry {
     return Array.from(this.generators.keys()).map(name => this.getGeneratorInfo(name));
   }
 
-  /**
-   * Get generator metadata (legacy compatibility method)
-   */
-  getGeneratorMetadata(name) {
-    const info = this.generators.get(name);
-    if (!info) return null;
-
-    return {
-      name,
-      type: info.manifest.type,
-      description: info.manifest.description,
-      version: info.manifest.version,
-      packageName: `@confytome/${name}`,
-      className: info.manifest.className,
-      filePath: info.filePath,
-      outputs: info.manifest.outputs || [],
-      dependencies: info.manifest.dependencies || {},
-      peerDependencies: info.manifest.peerDependencies || {},
-      standalone: info.manifest.standalone || false,
-      tags: info.manifest.tags || [],
-      features: info.manifest.features || []
-    };
-  }
 
   /**
    * Validate generator availability (simplified validation)
@@ -289,5 +266,4 @@ export class GeneratorRegistry {
   }
 }
 
-// Export singleton instance for backwards compatibility
 export const generatorRegistry = new GeneratorRegistry();

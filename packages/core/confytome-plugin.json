@@ -4,7 +4,7 @@
   "description": "Core OpenAPI 3.0.3 generator from JSDoc comments",
   "main": "./generate-openapi.js",
   "className": "OpenAPIGenerator",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "nae",
   "tags": [
     "core",
@@ -21,4 +21,4 @@
   ],
   "inputType": "jsdoc-comments",
   "outputFormat": "openapi-json"
-}\n
+}

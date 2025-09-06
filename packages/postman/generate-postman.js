@@ -5,9 +5,9 @@
  * Creates generic, reusable collections without project-specific logic.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
 
 // Create Postman environment from OpenAPI spec
 function createPostmanEnvironment(openApiSpec) {
@@ -298,23 +298,6 @@ class PostmanGenerator extends SpecConsumerGeneratorBase {
   }
 }
 
-// Legacy function for backwards compatibility
-function generatePostmanCollectionAndEnv(openApiSpec) {
-  const generator = new PostmanGenerator();
-  return {
-    collection: generatePostmanCollection(openApiSpec),
-    environment: createPostmanEnvironment(openApiSpec)
-  };
-}
-
-function main() {
-  const generator = new PostmanGenerator();
-  return generator.run();
-}
-
-// Auto-run if this is the main module
-BaseGenerator.runIfMain(PostmanGenerator, import.meta.url);
-
-// Export both class and legacy functions
-export { PostmanGenerator, generatePostmanCollectionAndEnv, main };
-export default main;
+// Export class only
+export { PostmanGenerator };
+export default PostmanGenerator;

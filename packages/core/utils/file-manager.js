@@ -224,10 +224,10 @@ export class FileManager {
   /**
    * Validate generation prerequisites for spec consumer generators
    * @param {string} outputDir - Output directory path
-   * @param {string} generator - Generator name for error context
+   * @param {string} _generator - Generator name for error context
    * @throws {Error} If prerequisites are not met
    */
-  static validateSpecConsumerPrerequisites(outputDir, generator) {
+  static validateSpecConsumerPrerequisites(outputDir, _generator) {
     // Ensure output directory exists
     this.ensureDocsDir(outputDir);
 

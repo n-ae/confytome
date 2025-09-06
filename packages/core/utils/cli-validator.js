@@ -5,11 +5,10 @@
  * error messages, file checking, and helpful user guidance
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { execSync } from 'child_process';
-import { fileURLToPath } from 'url';
-import { SimpleErrorHandler } from './error-handler-simple.js';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -56,10 +55,10 @@ export class CliValidator {
 
   /**
    * Validate arguments for spec-consuming generators
-   * @param {string} generatorName - Name of the calling generator
+   * @param {string} _generatorName - Name of the calling generator
    * @returns {Object} Validation result
    */
-  static validateSpecConsumerArgs(generatorName) {
+  static validateSpecConsumerArgs(_generatorName) {
     // Check if OpenAPI spec exists
     const specPath = './docs/api-spec.json';
 
@@ -179,7 +178,7 @@ export class CliValidator {
       } else {
         try {
           fs.accessSync(file, fs.constants.R_OK);
-        } catch (error) {
+        } catch {
           unreadableFiles.push(file);
         }
       }
@@ -301,7 +300,7 @@ export class CliValidator {
     // Check for widdershins (for markdown generation)
     try {
       execSync('npx widdershins --version', { stdio: 'ignore' });
-    } catch (error) {
+    } catch {
       console.log('⚠️  Widdershins not found - markdown generation may fail');
       console.log('💡 Install with: npm install widdershins');
     }
@@ -447,7 +446,7 @@ export class CliValidator {
     try {
       fs.accessSync(dirPath, fs.constants.W_OK);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

@@ -5,10 +5,10 @@
  * without complex JSDoc manipulation.
  */
 
-import fs from 'fs';
-import path from 'path';
-import https from 'https';
-import http from 'http';
+import fs from 'node:fs';
+import path from 'node:path';
+import https from 'node:https';
+import http from 'node:http';
 
 export class ConfytomeConfig {
   /**
@@ -156,10 +156,10 @@ export class ConfytomeConfig {
    * Get the server URL for a specific route file
    * Server overrides are now handled directly in JSDoc @swagger servers: field
    * @param {Object} config - Configuration object from load()
-   * @param {string} routeFileName - Path to the route file
+   * @param {string} _routeFileName - Path to the route file
    * @returns {string} Server URL to use for this route file
    */
-  static getServerForRoute(config, routeFileName) {
+  static getServerForRoute(config, _routeFileName) {
     // Server overrides handled in JSDoc - return default server
     const serverConfig = JSON.parse(fs.readFileSync(config.serverConfig, 'utf8'));
     if (serverConfig.servers && serverConfig.servers.length > 0) {

@@ -5,11 +5,10 @@
  * to reduce duplication and improve maintainability
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { SimpleErrorHandler } from './error-handler-simple.js';
 import { FileManager } from './file-manager.js';
-import { CliArgsParser } from './cli-args.js';
 import { CliValidator } from './cli-validator.js';
 import { ServiceFactory } from '../services/ServiceFactory.js';
 
@@ -50,7 +49,7 @@ export class BaseGenerator {
   }
 
   /**
-   * Initialize services for this generator (backward compatibility)
+   * Initialize services for this generator
    * @param {string} contextUrl - import.meta.url from the generator
    * @param {string} generatorType - Type of generator
    */
@@ -117,7 +116,7 @@ export class BaseGenerator {
   /**
    * Validate dependencies - can be overridden by subclasses
    */
-  async validateDependencies(args) {
+  async validateDependencies(_args) {
     // Spec consumers need existing OpenAPI spec
     if (!this.requiresJSDocFiles) {
       FileManager.validateSpecConsumerPrerequisites(this.outputDir, this.name);
@@ -127,14 +126,14 @@ export class BaseGenerator {
   /**
    * Generate method - must be implemented by subclasses
    */
-  async generate(args) {
+  async generate(_args) {
     throw new Error(`generate() method must be implemented by ${this.name}`);
   }
 
   /**
    * Post-process phase - can be overridden by subclasses
    */
-  async postProcess(result) {
+  async postProcess(_result) {
     SimpleErrorHandler.logSuccess(this.name, this.getSuccessMessage(), this.startTime, this.stats);
   }
 
@@ -265,7 +264,7 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
    * Template method for external tool-based generation workflow
    * For generators that use external tools like widdershins
    */
-  async generateWithExternalTool(generatorType, outputFileName, toolProcess, description) {
+  async generateWithExternalTool(generatorType, outputFileName, toolProcess, _description) {
     // Initialize services if not injected
     const services = this.getServices(import.meta.url, generatorType);
 

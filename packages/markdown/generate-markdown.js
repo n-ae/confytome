@@ -5,10 +5,9 @@
  * Uses custom widdershins template for Confluence-friendly output with code samples
  */
 
-import fs from 'fs';
-import path from 'path';
-import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
-import { TemplateManager } from './utils/template-manager.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
 
 class MarkdownGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir = './docs', services = null) {
@@ -87,15 +86,6 @@ class MarkdownGenerator extends SpecConsumerGeneratorBase {
   }
 }
 
-// Legacy function for backwards compatibility
-function main() {
-  const generator = new MarkdownGenerator();
-  return generator.run();
-}
-
-// Auto-run if this is the main module
-BaseGenerator.runIfMain(MarkdownGenerator, import.meta.url);
-
-// Export both class and legacy function
-export { MarkdownGenerator, main };
-export default main;
+// Export class only
+export { MarkdownGenerator };
+export default MarkdownGenerator;

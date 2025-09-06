@@ -4,7 +4,6 @@
  * Tests that 'confytome openapi' produces a valid api-spec.json
  */
 
-import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
 import {
   TestEnvironment,
   SAMPLE_SERVER_CONFIG,

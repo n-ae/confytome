@@ -1,7 +1,6 @@
 /**
  * Jest configuration for confytome workspace
  * Unified configuration for all packages supporting ES modules
- * @type {import('jest').Config}
  */
 export default {
   // Enable workspace support
@@ -80,5 +79,6 @@ export default {
   ],
 
   // ESM support configuration
-  transform: {}
+  transform: {},
+  testEnvironment: 'node'
 };

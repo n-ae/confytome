@@ -37,10 +37,10 @@ export class CliArgsParser {
 
   /**
    * Parse arguments for generators that only work with existing OpenAPI spec
-   * @param {string} generatorName - Name of the generator for error messages
+   * @param {string} _generatorName - Name of the generator for error messages
    * @returns {Object} Parsed arguments (minimal for spec-consuming generators)
    */
-  static parseSpecConsumerArgs(generatorName) {
+  static parseSpecConsumerArgs(_generatorName) {
     const args = process.argv.slice(2);
 
     // Spec consumers don't require arguments but can accept optional ones

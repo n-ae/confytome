@@ -1,6 +1,6 @@
 {
   "name": "@confytome/markdown",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Plugin for @confytome/core - generates Confluence-friendly Markdown documentation from OpenAPI specs using custom Widdershins templates with Turkish Unicode support.",
   "main": "generate-markdown.js",
   "bin": {
@@ -54,4 +54,4 @@
   "peerDependencies": {
     "@confytome/core": "^1.2.0"
   }
-}\n
+}

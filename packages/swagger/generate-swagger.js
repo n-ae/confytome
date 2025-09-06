@@ -9,7 +9,6 @@
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
-import { CliValidator } from '@confytome/core/utils/cli-validator.js';
 const require = createRequire(import.meta.url);
 
 function generateSwaggerUI(openApiSpec, options = {}) {
@@ -185,7 +184,7 @@ function generateSwaggerUI(openApiSpec, options = {}) {
   return html;
 }
 
-import { SpecConsumerGeneratorBase, BaseGenerator } from '@confytome/core/utils/base-generator.js';
+import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
 
 class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir = './docs', services = null) {
@@ -219,15 +218,6 @@ class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
   }
 }
 
-// Legacy function for backwards compatibility
-function main() {
-  const generator = new SwaggerUIGenerator();
-  return generator.run();
-}
-
-// Auto-run if this is the main module
-BaseGenerator.runIfMain(SwaggerUIGenerator, import.meta.url);
-
-// Export both class and legacy function
-export { SwaggerUIGenerator, generateSwaggerUI, main };
-export default main;
+// Export class and core function
+export { SwaggerUIGenerator, generateSwaggerUI };
+export default SwaggerUIGenerator;

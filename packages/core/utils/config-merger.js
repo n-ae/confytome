@@ -5,9 +5,9 @@
  * ensuring the app always sources configuration from JSON.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { randomBytes } from 'crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { randomBytes } from 'node:crypto';
 
 export class ConfigMerger {
   /**
@@ -203,7 +203,7 @@ export class ConfigMerger {
     if (isTemporary && fs.existsSync(configPath)) {
       try {
         fs.unlinkSync(configPath);
-      } catch (error) {
+      } catch {
         // Silently ignore cleanup errors
         console.warn(`Warning: Failed to cleanup temporary config file: ${configPath}`);
       }

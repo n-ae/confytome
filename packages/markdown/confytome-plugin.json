@@ -4,7 +4,7 @@
   "description": "Confluence-friendly Markdown documentation generator using Widdershins",
   "main": "./generate-markdown.js",
   "className": "MarkdownGenerator",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "nae",
   "tags": [
     "markdown",
@@ -27,4 +27,4 @@
   "externalTools": [
     "widdershins"
   ]
-}\n
+}

@@ -37,7 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Generator Base Classes**: Improved template method patterns
 
 ### Removed
-- **Legacy Systems**: Old generator orchestrator and simplified config builder
 - **Redundant Code**: Duplicate generator patterns and utilities
 - **Test Files**: Temporary test directories and sample code
 
