@@ -1,59 +1,58 @@
 /**
- * Generator Registry and Plugin System
+ * Simplified Generator Registry with Manifest-Based Plugin Discovery
  *
- * Provides a centralized registry for all generators with plugin discovery,
- * dynamic loading, and compatibility validation.
+ * Replaces complex reflection-based discovery with simple manifest files.
+ * Each plugin package contains a confytome-plugin.json file describing the generator.
  */
 
 import fs from 'fs';
 import path from 'path';
-import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const require = createRequire(import.meta.url);
 
 export class GeneratorRegistry {
   constructor() {
     this.generators = new Map();
-    this.pluginMetadata = new Map();
+    this.manifests = new Map();
     this.initialized = false;
   }
 
   /**
-   * Initialize the registry by discovering all available generators
+   * Initialize the registry by reading manifest files
    */
   async initialize() {
     if (this.initialized) {
       return;
     }
 
-    console.log('🔌 Initializing generator plugin system...');
+    console.log('🔌 Discovering generators via manifest files...');
 
-    // Discover workspace generators
+    // Discover workspace generators via manifest files
     await this.discoverWorkspaceGenerators();
 
-    // Discover external plugins
+    // Discover external plugins (future feature)
     await this.discoverExternalPlugins();
 
     this.initialized = true;
-    console.log(`✅ Generator registry initialized with ${this.generators.size} generators`);
+    console.log(`✅ Discovered ${this.generators.size} generators`);
   }
 
   /**
-   * Discover generators in the current workspace
+   * Discover generators in workspace packages by reading manifest files
    */
   async discoverWorkspaceGenerators() {
     try {
-      // Find all packages in the workspace
       const packagesRoot = path.resolve(__dirname, '../../../');
-      const packageDirs = await glob('packages/*', { cwd: packagesRoot });
+      const manifestFiles = await glob('packages/*/confytome-plugin.json', { cwd: packagesRoot });
 
-      for (const packageDir of packageDirs) {
-        const packagePath = path.join(packagesRoot, packageDir);
-        await this.scanPackageForGenerators(packagePath);
+      console.log(`   Found ${manifestFiles.length} manifest files`);
+
+      for (const manifestFile of manifestFiles) {
+        const manifestPath = path.join(packagesRoot, manifestFile);
+        await this.loadGeneratorFromManifest(manifestPath);
       }
     } catch (error) {
       console.warn('Warning: Could not discover workspace generators:', error.message);
@@ -61,223 +60,88 @@ export class GeneratorRegistry {
   }
 
   /**
-   * Discover external generator plugins via npm
+   * Discover external generator plugins (placeholder for future expansion)
    */
   async discoverExternalPlugins() {
-    try {
-      const packageJsonPath = this.findRootPackageJson();
-      if (!packageJsonPath) {
-        return;
-      }
-
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-      const dependencies = {
-        ...packageJson.dependencies,
-        ...packageJson.devDependencies
-      };
-
-      // Look for packages that follow the confytome-plugin-* naming convention
-      for (const [packageName, version] of Object.entries(dependencies)) {
-        if (packageName.startsWith('confytome-plugin-') ||
-            packageName.startsWith('@confytome/plugin-')) {
-          await this.loadExternalPlugin(packageName, version);
-        }
-      }
-    } catch (error) {
-      console.warn('Warning: Could not discover external plugins:', error.message);
-    }
+    // Future: Scan node_modules for packages with confytome-plugin.json files
+    // This would allow third-party plugins while maintaining the simple manifest approach
   }
 
   /**
-   * Scan a package directory for generator files
+   * Load a generator from its manifest file
    */
-  async scanPackageForGenerators(packagePath) {
+  async loadGeneratorFromManifest(manifestPath) {
     try {
-      const packageJsonPath = path.join(packagePath, 'package.json');
-      if (!fs.existsSync(packageJsonPath)) {
+      // Read and parse manifest
+      const manifestContent = fs.readFileSync(manifestPath, 'utf8');
+      const manifest = JSON.parse(manifestContent);
+
+      // Validate required manifest fields
+      if (!this.isValidManifest(manifest)) {
+        console.warn(`Invalid manifest: ${manifestPath}`);
         return;
       }
 
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      // Resolve generator file path
+      const packageDir = path.dirname(manifestPath);
+      const generatorPath = path.join(packageDir, manifest.main);
 
-      // Skip core package as it doesn't contain generators
-      if (packageJson.name === '@confytome/core') {
+      if (!fs.existsSync(generatorPath)) {
+        console.warn(`Generator file not found: ${generatorPath}`);
         return;
       }
 
-      // Look for generator files
-      const generatorFiles = await glob('generate-*.js', { cwd: packagePath });
-
-      for (const generatorFile of generatorFiles) {
-        const generatorPath = path.join(packagePath, generatorFile);
-        await this.loadGeneratorFromFile(generatorPath, packageJson);
-      }
-    } catch (error) {
-      console.warn(`Warning: Could not scan package ${packagePath}:`, error.message);
-    }
-  }
-
-  /**
-   * Load a generator from a file and register it
-   */
-  async loadGeneratorFromFile(filePath, packageJson) {
-    try {
-      // Convert to file URL for ES module import
-      const fileUrl = `file://${filePath}`;
+      // Load the generator module
+      const fileUrl = `file://${generatorPath}`;
       const module = await import(fileUrl);
 
-      // Find the generator class in the module
-      const generatorClass = this.findGeneratorClass(module);
-      if (!generatorClass) {
+      // Get the generator class
+      const GeneratorClass = module[manifest.className] || this.findDefaultExport(module);
+
+      if (!GeneratorClass) {
+        console.warn(`Generator class ${manifest.className} not found in ${generatorPath}`);
         return;
       }
 
-      // Extract metadata from the generator
-      const metadata = this.extractGeneratorMetadata(generatorClass, filePath, packageJson);
-
       // Register the generator
-      this.registerGenerator(metadata.name, {
-        class: generatorClass,
-        metadata,
+      this.registerGenerator(manifest.name, {
+        class: GeneratorClass,
+        manifest,
         module,
-        filePath
+        filePath: generatorPath
       });
 
+      console.log(`   ✓ Loaded ${manifest.name} generator`);
+
     } catch (error) {
-      console.warn(`Warning: Could not load generator from ${filePath}:`, error.message);
+      console.warn(`Failed to load generator from ${manifestPath}:`, error.message);
     }
   }
 
   /**
-   * Find the main generator class in a module
+   * Validate that a manifest has required fields
    */
-  findGeneratorClass(module) {
-    // Look for exported generator classes
-    const potentialClasses = Object.values(module).filter(
-      exported => typeof exported === 'function' &&
-      exported.prototype &&
-      this.isGeneratorClass(exported)
+  isValidManifest(manifest) {
+    const required = ['name', 'type', 'main', 'className'];
+    return required.every(field => manifest[field]);
+  }
+
+  /**
+   * Find the default export from a module (fallback if className not found)
+   */
+  findDefaultExport(module) {
+    // Look for default export
+    if (module.default && typeof module.default === 'function') {
+      return module.default;
+    }
+
+    // Look for any function that looks like a generator class
+    const exports = Object.values(module);
+    return exports.find(exp =>
+      typeof exp === 'function' &&
+      exp.prototype &&
+      typeof exp.prototype.generate === 'function'
     );
-
-    // Return the first valid generator class
-    return potentialClasses[0] || null;
-  }
-
-  /**
-   * Check if a class is a valid generator class
-   */
-  isGeneratorClass(cls) {
-    if (!cls.prototype) return false;
-
-    // Check if it has the required methods
-    const hasGenerateMethod = typeof cls.prototype.generate === 'function';
-    const hasGetSuccessMessage = typeof cls.prototype.getSuccessMessage === 'function';
-
-    // Check if it extends BaseGenerator or its subclasses
-    let currentProto = cls.prototype;
-    while (currentProto) {
-      const constructorName = currentProto.constructor?.name;
-      if (constructorName && (
-        constructorName.includes('Generator') ||
-        constructorName === 'BaseGenerator' ||
-        constructorName === 'OpenAPIGeneratorBase' ||
-        constructorName === 'SpecConsumerGeneratorBase'
-      )) {
-        return hasGenerateMethod;
-      }
-      currentProto = Object.getPrototypeOf(currentProto);
-    }
-
-    return false;
-  }
-
-  /**
-   * Extract metadata from a generator class
-   */
-  extractGeneratorMetadata(generatorClass, filePath, packageJson) {
-    const className = generatorClass.name;
-    const filename = path.basename(filePath, '.js');
-
-    // Determine generator type from filename or class name
-    let type = 'unknown';
-    if (filename.includes('html') || className.toLowerCase().includes('html')) {
-      type = 'html';
-    } else if (filename.includes('markdown') || className.toLowerCase().includes('markdown')) {
-      type = 'markdown';
-    } else if (filename.includes('swagger') || className.toLowerCase().includes('swagger')) {
-      type = 'swagger';
-    } else if (filename.includes('openapi') || className.toLowerCase().includes('openapi')) {
-      type = 'openapi';
-    } else if (filename.includes('postman') || className.toLowerCase().includes('postman')) {
-      type = 'postman';
-    }
-
-    // Create a temporary instance to get metadata
-    let description = `${type} generator`;
-    let requiresJSDocFiles = false;
-
-    try {
-      // Try to create instance to get metadata (with minimal parameters)
-      const tempInstance = new generatorClass('./temp');
-      description = tempInstance.description || description;
-      requiresJSDocFiles = tempInstance.requiresJSDocFiles || false;
-    } catch (error) {
-      // Fallback if instantiation fails
-      console.debug(`Could not instantiate ${className} for metadata extraction:`, error.message);
-    }
-
-    return {
-      name: filename,
-      className,
-      type,
-      description,
-      version: packageJson.version,
-      packageName: packageJson.name,
-      requiresJSDocFiles,
-      dependencies: packageJson.dependencies || {},
-      peerDependencies: packageJson.peerDependencies || {},
-      filePath,
-      isWorkspaceGenerator: true,
-      isExternalPlugin: false
-    };
-  }
-
-  /**
-   * Load an external plugin package
-   */
-  async loadExternalPlugin(packageName, version) {
-    try {
-      const pluginModule = require(packageName);
-
-      // External plugins should export generator metadata and classes
-      if (pluginModule.generators && Array.isArray(pluginModule.generators)) {
-        for (const generatorConfig of pluginModule.generators) {
-          this.registerExternalGenerator(generatorConfig, packageName, version);
-        }
-      }
-    } catch (error) {
-      console.warn(`Warning: Could not load external plugin ${packageName}:`, error.message);
-    }
-  }
-
-  /**
-   * Register an external generator from a plugin
-   */
-  registerExternalGenerator(config, packageName, version) {
-    const metadata = {
-      ...config.metadata,
-      packageName,
-      version,
-      isWorkspaceGenerator: false,
-      isExternalPlugin: true
-    };
-
-    this.registerGenerator(config.name, {
-      class: config.class,
-      metadata,
-      module: null,
-      filePath: null
-    });
   }
 
   /**
@@ -285,9 +149,7 @@ export class GeneratorRegistry {
    */
   registerGenerator(name, generatorInfo) {
     this.generators.set(name, generatorInfo);
-    this.pluginMetadata.set(name, generatorInfo.metadata);
-
-    console.log(`📦 Registered generator: ${name} (${generatorInfo.metadata.type})`);
+    this.manifests.set(name, generatorInfo.manifest);
   }
 
   /**
@@ -298,26 +160,26 @@ export class GeneratorRegistry {
   }
 
   /**
-   * Get all registered generators
+   * Get all available generators
    */
   getAllGenerators() {
-    return Array.from(this.generators.entries());
+    return Array.from(this.generators.keys());
   }
 
   /**
    * Get generators by type
    */
   getGeneratorsByType(type) {
-    return Array.from(this.generators.entries()).filter(
-      ([name, info]) => info.metadata.type === type
-    );
+    return Array.from(this.generators.entries())
+      .filter(([_, info]) => info.manifest.type === type)
+      .map(([name]) => name);
   }
 
   /**
-   * Get generator metadata
+   * Get generator manifest
    */
-  getGeneratorMetadata(name) {
-    return this.pluginMetadata.get(name);
+  getManifest(name) {
+    return this.manifests.get(name);
   }
 
   /**
@@ -326,88 +188,106 @@ export class GeneratorRegistry {
   createGenerator(name, outputDir = './docs', services = null) {
     const generatorInfo = this.generators.get(name);
     if (!generatorInfo) {
-      throw new Error(`Generator not found: ${name}`);
+      throw new Error(`Generator '${name}' not found`);
     }
 
     try {
       return new generatorInfo.class(outputDir, services);
     } catch (error) {
-      throw new Error(`Failed to create generator ${name}: ${error.message}`);
+      throw new Error(`Failed to create generator '${name}': ${error.message}`);
     }
   }
 
   /**
-   * Validate generator dependencies
+   * Check if generator exists
+   */
+  hasGenerator(name) {
+    return this.generators.has(name);
+  }
+
+  /**
+   * Get generator info for debugging
+   */
+  getGeneratorInfo(name) {
+    const info = this.generators.get(name);
+    if (!info) return null;
+
+    return {
+      name,
+      type: info.manifest.type,
+      description: info.manifest.description,
+      version: info.manifest.version,
+      outputs: info.manifest.outputs,
+      standalone: info.manifest.standalone || false,
+      filePath: info.filePath
+    };
+  }
+
+  /**
+   * List all generators with their info
+   */
+  listGenerators() {
+    return Array.from(this.generators.keys()).map(name => this.getGeneratorInfo(name));
+  }
+
+  /**
+   * Get generator metadata (legacy compatibility method)
+   */
+  getGeneratorMetadata(name) {
+    const info = this.generators.get(name);
+    if (!info) return null;
+
+    return {
+      name,
+      type: info.manifest.type,
+      description: info.manifest.description,
+      version: info.manifest.version,
+      packageName: `@confytome/${name}`,
+      className: info.manifest.className,
+      filePath: info.filePath,
+      outputs: info.manifest.outputs || [],
+      dependencies: info.manifest.dependencies || {},
+      peerDependencies: info.manifest.peerDependencies || {},
+      standalone: info.manifest.standalone || false,
+      tags: info.manifest.tags || [],
+      features: info.manifest.features || []
+    };
+  }
+
+  /**
+   * Validate generator availability (simplified validation)
    */
   validateGenerator(name) {
-    const metadata = this.getGeneratorMetadata(name);
-    if (!metadata) {
-      return { valid: false, errors: [`Generator not found: ${name}`] };
+    const generator = this.generators.get(name);
+
+    if (!generator) {
+      return {
+        valid: false,
+        errors: [`Generator '${name}' not found`]
+      };
     }
 
+    // Basic validation - generator exists and can be instantiated
     const errors = [];
+    const warnings = [];
 
-    // Check peer dependencies
-    for (const [depName, depVersion] of Object.entries(metadata.peerDependencies)) {
-      try {
-        require.resolve(depName);
-      } catch (error) {
-        errors.push(`Missing peer dependency: ${depName}@${depVersion}`);
-      }
+    // Check if generator file exists
+    if (!fs.existsSync(generator.filePath)) {
+      errors.push(`Generator file not found: ${generator.filePath}`);
+    }
+
+    // Check if external tools are noted (informational only)
+    if (generator.manifest.externalTools?.length > 0) {
+      warnings.push(`Uses external tools: ${generator.manifest.externalTools.join(', ')}`);
     }
 
     return {
       valid: errors.length === 0,
       errors,
-      metadata
+      warnings
     };
-  }
-
-  /**
-   * List all available generators with their metadata
-   */
-  listGenerators() {
-    const generators = [];
-
-    for (const [name, info] of this.generators.entries()) {
-      generators.push({
-        name,
-        type: info.metadata.type,
-        description: info.metadata.description,
-        version: info.metadata.version,
-        packageName: info.metadata.packageName,
-        isExternal: info.metadata.isExternalPlugin
-      });
-    }
-
-    return generators.sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  /**
-   * Find the root package.json file
-   */
-  findRootPackageJson() {
-    let currentDir = path.dirname(__filename);
-
-    while (currentDir !== path.dirname(currentDir)) {
-      const packageJsonPath = path.join(currentDir, 'package.json');
-      if (fs.existsSync(packageJsonPath)) {
-        try {
-          const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-          // Check if this is the workspace root (has workspaces property)
-          if (packageJson.workspaces) {
-            return packageJsonPath;
-          }
-        } catch (error) {
-          // Continue searching
-        }
-      }
-      currentDir = path.dirname(currentDir);
-    }
-
-    return null;
   }
 }
 
-// Export singleton instance
+// Export singleton instance for backwards compatibility
 export const generatorRegistry = new GeneratorRegistry();

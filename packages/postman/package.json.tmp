@@ -1,30 +1,30 @@
 {
-  "name": "@confytome/markdown",
+  "name": "@confytome/postman",
   "version": "1.4.0",
-  "description": "Plugin for @confytome/core - generates Confluence-friendly Markdown documentation from OpenAPI specs using custom Widdershins templates with Turkish Unicode support.",
-  "main": "generate-markdown.js",
+  "description": "Plugin for @confytome/core - generates Postman collections and environment variables from OpenAPI specs for API testing and development.",
+  "main": "generate-postman.js",
   "bin": {
-    "markdown": "cli.js"
+    "postman": "cli.js"
   },
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/n-ae/confytome.git",
-    "directory": "packages/markdown"
+    "directory": "packages/postman"
   },
   "bugs": {
     "url": "https://github.com/n-ae/confytome/issues"
   },
-  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/markdown#readme",
+  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/postman#readme",
   "keywords": [
     "confytome-plugin",
-    "markdown",
-    "confluence",
-    "widdershins",
+    "postman",
+    "api-testing",
+    "collection",
+    "environment-variables",
+    "development",
     "openapi",
-    "api-documentation",
-    "unicode",
-    "turkish",
+    "api-docs",
     "generator",
     "confytome"
   ],
@@ -32,9 +32,8 @@
   "license": "MIT",
   "files": [
     "cli.js",
-    "generate-markdown.js",
+    "generate-postman.js",
     "utils/",
-    "widdershins-templates/",
     "README.md"
   ],
   "scripts": {
@@ -48,10 +47,9 @@
     "security:fix": "npm audit fix"
   },
   "dependencies": {
-    "commander": "^14.0.0",
-    "widdershins": "^4.0.1"
+    "commander": "^14.0.0"
   },
   "peerDependencies": {
     "@confytome/core": "^1.2.0"
   }
-}\n
+}

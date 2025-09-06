@@ -1,0 +1,31 @@
+{
+  "name": "postman",
+  "type": "spec-consumer",
+  "description": "Postman collection and environment generator for API testing",
+  "main": "./generate-postman.js",
+  "className": "PostmanGenerator",
+  "version": "1.4.0",
+  "author": "nae",
+  "tags": [
+    "postman",
+    "api-testing",
+    "collection"
+  ],
+  "dependencies": {
+    "commander": "^14.0.0"
+  },
+  "peerDependencies": {
+    "@confytome/core": "^1.2.0"
+  },
+  "outputs": [
+    "postman-collection.json",
+    "postman-environment.json"
+  ],
+  "inputType": "openapi-spec",
+  "outputFormat": "postman-collection",
+  "standalone": true,
+  "features": [
+    "api-testing",
+    "environment-variables"
+  ]
+}\n

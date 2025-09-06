@@ -1,30 +1,29 @@
 {
-  "name": "@confytome/markdown",
+  "name": "@confytome/swagger",
   "version": "1.4.0",
-  "description": "Plugin for @confytome/core - generates Confluence-friendly Markdown documentation from OpenAPI specs using custom Widdershins templates with Turkish Unicode support.",
-  "main": "generate-markdown.js",
+  "description": "Plugin for @confytome/core - generates interactive, self-contained Swagger UI documentation from OpenAPI specs with responsive design.",
+  "main": "generate-swagger.js",
   "bin": {
-    "markdown": "cli.js"
+    "swagger": "cli.js"
   },
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/n-ae/confytome.git",
-    "directory": "packages/markdown"
+    "directory": "packages/swagger"
   },
   "bugs": {
     "url": "https://github.com/n-ae/confytome/issues"
   },
-  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/markdown#readme",
+  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/swagger#readme",
   "keywords": [
     "confytome-plugin",
-    "markdown",
-    "confluence",
-    "widdershins",
+    "swagger-ui",
+    "interactive",
+    "responsive",
     "openapi",
     "api-documentation",
-    "unicode",
-    "turkish",
+    "self-contained",
     "generator",
     "confytome"
   ],
@@ -32,9 +31,8 @@
   "license": "MIT",
   "files": [
     "cli.js",
-    "generate-markdown.js",
+    "generate-swagger.js",
     "utils/",
-    "widdershins-templates/",
     "README.md"
   ],
   "scripts": {
@@ -49,9 +47,9 @@
   },
   "dependencies": {
     "commander": "^14.0.0",
-    "widdershins": "^4.0.1"
+    "swagger-ui-dist": "^5.0.0"
   },
   "peerDependencies": {
     "@confytome/core": "^1.2.0"
   }
-}\n
+}

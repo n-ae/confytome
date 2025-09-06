@@ -1,30 +1,30 @@
 {
-  "name": "@confytome/markdown",
+  "name": "@confytome/html",
   "version": "1.4.0",
-  "description": "Plugin for @confytome/core - generates Confluence-friendly Markdown documentation from OpenAPI specs using custom Widdershins templates with Turkish Unicode support.",
-  "main": "generate-markdown.js",
+  "description": "Plugin for @confytome/core - generates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
+  "main": "generate-html.js",
   "bin": {
-    "markdown": "cli.js"
+    "html": "cli.js"
   },
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/n-ae/confytome.git",
-    "directory": "packages/markdown"
+    "directory": "packages/html"
   },
   "bugs": {
     "url": "https://github.com/n-ae/confytome/issues"
   },
-  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/markdown#readme",
+  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/html#readme",
   "keywords": [
     "confytome-plugin",
-    "markdown",
-    "confluence",
-    "widdershins",
+    "html",
+    "responsive",
+    "professional",
+    "styled",
+    "navigation",
     "openapi",
     "api-documentation",
-    "unicode",
-    "turkish",
     "generator",
     "confytome"
   ],
@@ -32,9 +32,8 @@
   "license": "MIT",
   "files": [
     "cli.js",
-    "generate-markdown.js",
+    "generate-html.js",
     "utils/",
-    "widdershins-templates/",
     "README.md"
   ],
   "scripts": {
@@ -48,10 +47,9 @@
     "security:fix": "npm audit fix"
   },
   "dependencies": {
-    "commander": "^14.0.0",
-    "widdershins": "^4.0.1"
+    "commander": "^14.0.0"
   },
   "peerDependencies": {
     "@confytome/core": "^1.2.0"
   }
-}\n
+}

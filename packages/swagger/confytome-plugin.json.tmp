@@ -1,0 +1,32 @@
+{
+  "name": "swagger",
+  "type": "spec-consumer",
+  "description": "Interactive Swagger UI generator with self-contained HTML output",
+  "main": "./generate-swagger.js",
+  "className": "SwaggerUIGenerator",
+  "version": "1.4.0",
+  "author": "nae",
+  "tags": [
+    "swagger",
+    "interactive",
+    "swagger-ui"
+  ],
+  "dependencies": {
+    "commander": "^14.0.0",
+    "swagger-ui-dist": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@confytome/core": "^1.2.0"
+  },
+  "outputs": [
+    "api-swagger.html"
+  ],
+  "inputType": "openapi-spec",
+  "outputFormat": "swagger-ui-html",
+  "standalone": true,
+  "features": [
+    "interactive",
+    "self-contained",
+    "responsive"
+  ]
+}

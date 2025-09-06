@@ -1,35 +1,94 @@
 # Confytome Plugin System
 
-The Confytome plugin system provides a flexible, extensible architecture for creating and managing documentation generators. It supports both workspace-local generators and external plugins via npm packages.
+The Confytome plugin system provides a **simplified, maintainable architecture** for creating and managing documentation generators. It uses **manifest-based plugin discovery** for better maintainability and easier debugging.
 
 ## Architecture Overview
 
 The plugin system consists of several key components:
 
-- **GeneratorRegistry**: Discovers and registers all available generators
+- **Plugin Manifests**: `confytome-plugin.json` files describing each generator
+- **GeneratorRegistry**: Discovers and registers generators via manifest files  
 - **GeneratorFactory**: Creates generator instances with dependency injection
 - **RegistryOrchestrator**: Manages generator execution and dependencies
-- **PluginInterface**: Tools for external plugin developers
+
+## Simplified Plugin Discovery
+
+### Manifest Files
+
+Each generator package contains a `confytome-plugin.json` manifest file that describes the plugin:
+
+```json
+{
+  "name": "html",
+  "type": "spec-consumer",
+  "description": "Professional styled HTML documentation generator",
+  "main": "./generate-html.js",
+  "className": "SimpleDocsGenerator",
+  "version": "1.3.0",
+  "author": "nae",
+  "tags": ["html", "documentation", "responsive"],
+  "dependencies": {
+    "commander": "^14.0.0"
+  },
+  "peerDependencies": {
+    "@confytome/core": "^1.2.0"
+  },
+  "outputs": ["api-docs.html"],
+  "inputType": "openapi-spec",
+  "outputFormat": "html",
+  "standalone": true
+}
+```
+
+### Manifest Schema
+
+**Required fields:**
+- `name`: Plugin identifier (used for generator lookup)
+- `type`: Plugin type (`openapi-generator` or `spec-consumer`)
+- `description`: Human-readable description
+- `main`: Path to the generator file (relative to manifest)
+- `className`: Name of the generator class to instantiate
+
+**Optional fields:**
+- `version`: Plugin version
+- `author`: Plugin author
+- `tags`: Array of searchable tags
+- `dependencies`: npm dependencies
+- `peerDependencies`: Peer dependencies
+- `outputs`: Array of generated file names
+- `inputType`: What the generator consumes
+- `outputFormat`: What the generator produces
+- `standalone`: Whether it can run independently
+- `features`: Array of feature descriptions
+- `externalTools`: External tools required (e.g., ["widdershins"])
 
 ## Core Components
 
 ### GeneratorRegistry
 
-Automatically discovers generators in:
-- Workspace packages (`packages/*/generate-*.js`)
-- External npm packages (`confytome-plugin-*` or `@confytome/plugin-*`)
+The registry now uses **manifest-based discovery** instead of complex reflection:
 
 ```javascript
 import { generatorRegistry } from '@confytome/core/services/GeneratorRegistry.js';
 
-// Initialize and discover all generators
+// Initialize and discover all generators via manifest files
 await generatorRegistry.initialize();
 
 // Get all registered generators
 const generators = generatorRegistry.getAllGenerators();
+// → ['core', 'html', 'markdown', 'swagger', 'postman']
 
 // Get specific generator
-const htmlGen = generatorRegistry.getGenerator('generate-html');
+const htmlGen = generatorRegistry.getGenerator('html');
+
+// Get generator info
+const info = generatorRegistry.getGeneratorInfo('html');
+console.log(info);
+// → { name: 'html', type: 'spec-consumer', description: '...', ... }
+
+// Validate generator
+const validation = generatorRegistry.validateGenerator('html');
+// → { valid: true, errors: [], warnings: [] }
 ```
 
 ### GeneratorFactory
@@ -41,313 +100,153 @@ import GeneratorFactory from '@confytome/core/services/GeneratorFactory.js';
 
 // Create a generator instance
 const generator = await GeneratorFactory.createGenerator(
-  'generate-html', 
+  'html', 
   './docs', 
   { excludeBrand: true }
 );
 
 // Execute a generator
-const result = await GeneratorFactory.executeGenerator('generate-html');
+const result = await GeneratorFactory.executeGenerator('html');
 
 // List all available generators
 const generators = await GeneratorFactory.listGenerators();
+
+// Get generators by type
+const specConsumers = await GeneratorFactory.getGeneratorsByType('spec-consumer');
 ```
 
-## CLI Commands
+## Plugin Types
 
-The plugin system adds several new CLI commands:
+### 1. OpenAPI Generator (`openapi-generator`)
 
-### List Generators
-```bash
-confytome generators              # List all generators
-confytome generators --json       # JSON output
+Generates OpenAPI specifications from source code (like JSDoc comments).
+
+**Example:** `@confytome/core`
+- Input: JSDoc comments in source files
+- Output: `api-spec.json` (OpenAPI specification)
+
+### 2. Spec Consumer (`spec-consumer`) 
+
+Consumes OpenAPI specifications to generate various documentation formats.
+
+**Examples:**
+- `@confytome/html`: OpenAPI → Professional HTML docs
+- `@confytome/markdown`: OpenAPI → Confluence-friendly Markdown
+- `@confytome/swagger`: OpenAPI → Interactive Swagger UI
+- `@confytome/postman`: OpenAPI → Postman collection
+
+## Creating New Plugins
+
+### 1. Create Plugin Structure
+
+```
+packages/my-generator/
+├── confytome-plugin.json     # Plugin manifest
+├── generate-my-format.js     # Main generator file
+├── package.json              # npm package config
+└── README.md                # Documentation
 ```
 
-### Generator Information
-```bash
-confytome info generate-html      # Detailed generator info
-confytome info generate-markdown  # Markdown generator details
-```
+### 2. Write Plugin Manifest
 
-### Recommended Generators
-```bash
-confytome recommended             # Show available generators
-confytome recommended --json      # JSON output
-```
-
-### Validation
-```bash
-confytome validate                # Validate all generators
-confytome validate generate-html  # Validate specific generator
-```
-
-### Execute Generators
-```bash
-confytome run generate-html       # Run HTML generator
-confytome run generate-html generate-markdown  # Multiple generators
-confytome run-all                 # All spec consumer generators
-```
-
-## Creating External Plugins
-
-### Plugin Package Structure
-
-External plugins should follow this naming convention:
-- `confytome-plugin-<name>` 
-- `@confytome/plugin-<name>`
-
-Example `package.json`:
 ```json
 {
-  "name": "confytome-plugin-custom",
+  "name": "my-format",
+  "type": "spec-consumer",
+  "description": "Generates documentation in MyFormat",
+  "main": "./generate-my-format.js",
+  "className": "MyFormatGenerator",
   "version": "1.0.0",
-  "description": "Custom documentation generator for Confytome",
-  "main": "index.js",
-  "type": "module",
-  "peerDependencies": {
-    "@confytome/core": "^1.2.0"
-  },
-  "keywords": ["confytome", "plugin", "documentation", "generator"]
+  "author": "Your Name",
+  "tags": ["custom", "format"],
+  "outputs": ["api-docs.myformat"],
+  "inputType": "openapi-spec",
+  "outputFormat": "myformat",
+  "standalone": true
 }
 ```
 
-### Basic Plugin Implementation
-
-```javascript
-// index.js
-import { PluginBase, PluginUtils } from '@confytome/core/services/PluginInterface.js';
-
-// Create plugin instance
-const plugin = new PluginBase({
-  name: 'confytome-plugin-custom',
-  type: 'custom',
-  description: 'Custom documentation generator',
-  version: '1.0.0',
-  author: 'Your Name',
-  homepage: 'https://github.com/yourusername/confytome-plugin-custom'
-});
-
-// Create a custom generator using utility
-const CustomGenerator = PluginUtils.createSpecConsumerGenerator(
-  'generate-custom',
-  'custom',
-  async (openApiSpec, services) => {
-    // Your custom generation logic
-    const title = openApiSpec.info.title;
-    const version = openApiSpec.info.version;
-    
-    return `# ${title} v${version}\\n\\nCustom documentation content...`;
-  },
-  {
-    description: 'Generate custom format documentation',
-    outputFileName: 'api-docs.custom',
-    successMessage: 'Custom documentation generated successfully'
-  }
-);
-
-// Register the generator
-plugin.registerGenerator('generate-custom', CustomGenerator);
-
-// Export the plugin
-export default plugin;
-export const generators = plugin.getGenerators();
-```
-
-### Advanced Plugin with Custom Class
+### 3. Implement Generator Class
 
 ```javascript
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
-import { PluginBase } from '@confytome/core/services/PluginInterface.js';
 
-class CustomDocGenerator extends SpecConsumerGeneratorBase {
+export class MyFormatGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir = './docs', services = null) {
-    super('generate-custom', 'Custom documentation generator', outputDir, services);
+    super('generate-my-format', 'Generating MyFormat documentation', outputDir, services);
   }
 
   async generate() {
-    console.log('🎨 Generating custom documentation...');
+    console.log('🎨 Generating MyFormat documentation...');
     
-    return this.generateDocument('custom', 'api-docs.custom', async (openApiSpec, services) => {
-      // Custom generation logic with access to services
-      const branding = services.branding.generateForHtml();
-      
-      return `
-        <h1>${openApiSpec.info.title}</h1>
-        <p>${openApiSpec.info.description}</p>
-        <div class="branding">${branding}</div>
-      `;
+    return this.generateDocument('myformat', 'api-docs.myformat', (openApiSpec, services) => {
+      return this.convertToMyFormat(openApiSpec);
     });
   }
 
-  getSuccessMessage() {
-    return 'Custom documentation generation completed';
+  convertToMyFormat(openApiSpec) {
+    // Your custom conversion logic
+    return 'MyFormat content based on OpenAPI spec';
   }
 }
-
-const plugin = new PluginBase({
-  name: 'confytome-plugin-advanced',
-  type: 'custom',
-  description: 'Advanced custom documentation generator',
-  version: '1.0.0'
-});
-
-plugin.registerGenerator('generate-custom', CustomDocGenerator);
-
-export default plugin;
-export const generators = plugin.getGenerators();
 ```
 
-## Generator Development Guidelines
+### 4. Register and Test
 
-### Base Classes
-
-Choose the appropriate base class:
-
-- **SpecConsumerGeneratorBase**: For generators that process existing OpenAPI specs (HTML, Markdown, etc.)
-- **OpenAPIGeneratorBase**: For generators that create OpenAPI specs from JSDoc
-- **BaseGenerator**: For completely custom generators
-
-### Required Methods
-
-All generators must implement:
-- `generate()`: Main generation logic
-- `getSuccessMessage()`: Success message for completion
-
-### Service Integration
-
-Generators have access to shared services:
+The plugin will be automatically discovered via its manifest file when the registry initializes.
 
 ```javascript
-async generate() {
-  const services = this.getServices(import.meta.url, 'html');
-  
-  // Access branding service
-  const branding = services.branding.generateForHtml();
-  
-  // Access version service
-  const version = services.version.getPackageVersion(import.meta.url);
-  
-  // Access template service
-  const templateDir = services.template.getWiddershinsPath();
-}
+import { generatorRegistry } from '@confytome/core/services/GeneratorRegistry.js';
+
+await generatorRegistry.initialize();
+console.log(generatorRegistry.getAllGenerators());
+// Should include 'my-format'
 ```
-
-## Plugin Discovery
-
-The system automatically discovers plugins by:
-
-1. **Workspace packages**: Scanning `packages/*/generate-*.js` files
-2. **External packages**: Looking for `confytome-plugin-*` dependencies in package.json
-3. **Dynamic import**: Loading generator classes and extracting metadata
-
-## Validation and Dependencies
-
-The plugin system validates:
-- Generator class structure and required methods
-- Peer dependencies availability
-- Metadata completeness
-- Compatibility with current Confytome version
-
-## Testing Your Plugin
-
-Test your plugin locally:
-
-```bash
-# Link your plugin for local testing
-npm link confytome-plugin-custom
-
-# Verify it's discovered
-confytome generators
-
-# Get detailed information
-confytome info generate-custom
-
-# Validate dependencies
-confytome validate generate-custom
-
-# Execute the generator
-confytome run generate-custom
-```
-
-## Publishing Plugins
-
-1. Ensure your plugin follows the naming convention
-2. Add `@confytome/core` as a peer dependency
-3. Include proper keywords in package.json
-4. Test with a real Confytome project
-5. Publish to npm
-
-```bash
-npm publish
-```
-
-## Plugin Registry Integration
-
-Once published, users can install and use your plugin:
-
-```bash
-# Install the plugin
-npm install confytome-plugin-custom
-
-# Plugin is automatically discovered
-confytome generators
-
-# Use the plugin
-confytome run generate-custom
-```
-
-## Examples and Templates
-
-### Minimal Plugin Template
-
-```javascript
-import { PluginUtils } from '@confytome/core/services/PluginInterface.js';
-
-// Generate example plugin code
-const exampleCode = PluginUtils.createExamplePlugin();
-console.log(exampleCode);
-```
-
-### Real-world Examples
-
-Check the built-in generators for examples:
-- `packages/html/generate-html.js` - HTML documentation
-- `packages/markdown/generate-markdown.js` - Markdown with external tools
-- `packages/swagger/generate-swagger.js` - Static file embedding
 
 ## Best Practices
 
-1. **Follow naming conventions**: Use `confytome-plugin-*` or `@confytome/plugin-*`
-2. **Extend base classes**: Don't create generators from scratch
-3. **Use shared services**: Leverage branding, version, and template services
-4. **Validate input**: Check OpenAPI spec structure
-5. **Handle errors gracefully**: Provide helpful error messages
-6. **Document thoroughly**: Include clear README and examples
-7. **Test extensively**: Test with various OpenAPI specs
+### Plugin Development
+1. **Use descriptive manifest files** with rich metadata
+2. **Follow naming conventions**: `generate-{format}.js` for generator files
+3. **Extend base classes**: Use `SpecConsumerGeneratorBase` or `OpenAPIGeneratorBase`
+4. **Document external dependencies** in manifest `externalTools` field
+5. **Test plugin discovery**: Ensure manifest is valid JSON with required fields
 
-## Troubleshooting
+### Plugin Discovery
+1. **Prefer manifest-based discovery** over reflection
+2. **Validate plugins early** using `validateGenerator()`
+3. **Handle plugin failures gracefully** with proper error messages
+4. **Cache plugin information** for better performance
 
-### Plugin Not Discovered
-- Check naming convention
-- Verify package.json structure
-- Ensure proper exports
+## Debugging Plugin Issues
 
-### Validation Failures
-- Check peer dependencies
-- Verify generator class structure
-- Review error messages from `confytome validate`
+### Common Problems
 
-### Runtime Errors
-- Check service integration
-- Verify file paths and permissions
-- Review generator implementation
+**Plugin Not Found:**
+```javascript
+// Check if manifest exists
+const manifestPath = 'packages/my-plugin/confytome-plugin.json';
+console.log(fs.existsSync(manifestPath));
 
-## API Reference
+// Check manifest validity
+const manifest = JSON.parse(fs.readFileSync(manifestPath));
+console.log('Required fields:', ['name', 'type', 'main', 'className']);
+```
 
-See the JSDoc comments in:
-- `packages/core/services/GeneratorRegistry.js`
-- `packages/core/services/GeneratorFactory.js` 
-- `packages/core/services/PluginInterface.js`
-- `packages/core/utils/base-generator.js`
+**Class Not Found:**
+```javascript
+// Verify className matches export
+console.log('Manifest className:', manifest.className);
+console.log('Available exports:', Object.keys(module));
+```
 
-For complete API documentation and examples.
+**Validation Errors:**
+```javascript
+const validation = generatorRegistry.validateGenerator('my-plugin');
+if (!validation.valid) {
+  console.error('Validation errors:', validation.errors);
+  console.warn('Validation warnings:', validation.warnings);
+}
+```
+
+This simplified plugin system maintains all existing functionality while dramatically improving maintainability and debugging capabilities.

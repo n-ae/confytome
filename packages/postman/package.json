@@ -1,6 +1,6 @@
 {
   "name": "@confytome/postman",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Plugin for @confytome/core - generates Postman collections and environment variables from OpenAPI specs for API testing and development.",
   "main": "generate-postman.js",
   "bin": {
@@ -52,4 +52,4 @@
   "peerDependencies": {
     "@confytome/core": "^1.2.0"
   }
-}
+}\n
