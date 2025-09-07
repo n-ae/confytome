@@ -7,6 +7,7 @@
 import { GeneratorFactory } from '../services/GeneratorFactory.js';
 import { registryOrchestrator } from '../services/RegistryOrchestrator.js';
 import { SimpleErrorHandler } from './error-handler-simple.js';
+import { DEFAULT_OUTPUT_DIR } from '../constants.js';
 
 /**
  * List all available generators
@@ -227,7 +228,7 @@ export async function executeGenerators(generatorNames, options = {}) {
   try {
     await GeneratorFactory.initialize();
 
-    const outputDir = options.outputDir || './docs';
+    const outputDir = options.outputDir || DEFAULT_OUTPUT_DIR;
     const executionOptions = {
       failFast: options.failFast || false,
       excludeBrand: options.excludeBrand || false,

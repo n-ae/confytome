@@ -23,7 +23,7 @@ describe('confytome init', () => {
 
   test('should set up docs/ and serverConfig.json', () => {
     // Verify starting state - nothing exists
-    expect(testEnv.fileExists('docs')).toBe(false);
+    expect(testEnv.fileExists('confytome')).toBe(false);
     expect(testEnv.fileExists('serverConfig.json')).toBe(false);
 
     // Run confytome init command
@@ -34,8 +34,8 @@ describe('confytome init', () => {
     expect(result.stderr).toBe('');
 
     // Check that docs directory was created
-    expect(testEnv.fileExists('docs')).toBe(true);
-    expect(testEnv.fileExists('docs/assets')).toBe(true); // Should also create assets subdirectory
+    expect(testEnv.fileExists('confytome')).toBe(true);
+    expect(testEnv.fileExists('confytome/assets')).toBe(true); // Should also create assets subdirectory
 
     // Check that serverConfig.json was created
     expect(testEnv.fileExists('serverConfig.json')).toBe(true);
@@ -160,7 +160,7 @@ describe('confytome init', () => {
     expect(testEnv.fileExists('example-router.js')).toBe(true);
 
     // Should create assets subdirectory
-    expect(testEnv.fileExists('docs/assets')).toBe(true);
+    expect(testEnv.fileExists('confytome/assets')).toBe(true);
   });
 
   test('should show appropriate status for existing vs created files', () => {
@@ -188,13 +188,13 @@ describe('confytome init', () => {
 
     // Validate complete directory structure
     const createdFiles = testEnv.listFiles('.');
-    expect(createdFiles).toContain('docs');
+    expect(createdFiles).toContain('confytome');
     expect(createdFiles).toContain('serverConfig.json');
     expect(createdFiles).toContain('example-router.js');
     expect(createdFiles).toContain('widdershins-templates');
 
     // Validate subdirectory structure
-    const docsFiles = testEnv.listFiles('docs');
-    expect(docsFiles).toContain('assets');
+    const confytomeFiles = testEnv.listFiles('confytome');
+    expect(confytomeFiles).toContain('assets');
   });
 });

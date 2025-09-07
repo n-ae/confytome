@@ -7,6 +7,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { getOutputDir, OUTPUT_FILES, DEFAULT_OUTPUT_DIR, DEFAULT_CONFIG_FILES } from '../constants.js';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -60,7 +61,7 @@ export class CliValidator {
    */
   static validateSpecConsumerArgs(_generatorName) {
     // Check if OpenAPI spec exists
-    const specPath = './docs/api-spec.json';
+    const specPath = `${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`;
 
     if (!fs.existsSync(specPath)) {
       console.error(`❌ OpenAPI specification not found: ${specPath}`);
@@ -74,7 +75,7 @@ export class CliValidator {
     }
 
     // Ensure docs directory exists
-    const docsDir = './docs';
+    const docsDir = DEFAULT_OUTPUT_DIR;
     if (!fs.existsSync(docsDir)) {
       fs.mkdirSync(docsDir, { recursive: true });
       console.log('📁 Created docs directory');
@@ -266,7 +267,7 @@ export class CliValidator {
     console.log(`   node ${generatorName}.js`);
     console.log('');
     console.log('Prerequisites:');
-    console.log('   - OpenAPI spec must exist: ./docs/api-spec.json');
+    console.log(`   - OpenAPI spec must exist: ${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`);
     console.log('   - Generate it first with: confytome openapi -c config.json -f files...');
     console.log('');
   }
@@ -313,7 +314,7 @@ export class CliValidator {
    * @returns {Object} Initialization status
    */
   static validateInitRequirements() {
-    const docsDir = './docs';
+    const docsDir = DEFAULT_OUTPUT_DIR;
     const configFile = './serverConfig.json';
     const templateFile = './templates/serverConfig.template.json';
     const templatesDir = './widdershins-templates';
@@ -333,9 +334,10 @@ export class CliValidator {
 
   /**
    * Create directory structure for confytome project
-   * @param {string} outputDir - Base output directory (default: './docs')
+   * @param {string} outputDir - Base output directory (default: DEFAULT_OUTPUT_DIR)
    */
-  static createProjectStructure(outputDir = './docs') {
+  static createProjectStructure(outputDir) {
+    outputDir = getOutputDir(outputDir);
     const dirs = [
       outputDir,
       path.join(outputDir, 'assets')  // For static swagger UI assets
@@ -395,7 +397,7 @@ export class CliValidator {
     }
 
     // 3. Copy confytome config template if it doesn't exist
-    const confytomeConfigPath = './confytome.json';
+    const confytomeConfigPath = DEFAULT_CONFIG_FILES.CONFYTOME;
     const confytomeTemplatePath = path.join(sourceTemplateDir, 'confytome.template.json');
 
     if (fs.existsSync(confytomeTemplatePath) && !fs.existsSync(confytomeConfigPath)) {
@@ -452,4 +454,3 @@ export class CliValidator {
   }
 }
 
-export default CliValidator;

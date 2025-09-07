@@ -1,6 +1,6 @@
 {
   "name": "@confytome/html",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Plugin for @confytome/core - generates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
   "main": "generate-html.js",
   "bin": {

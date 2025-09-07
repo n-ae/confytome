@@ -4,7 +4,7 @@
   "description": "Postman collection and environment generator for API testing",
   "main": "./generate-postman.js",
   "className": "PostmanGenerator",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "author": "nae",
   "tags": [
     "postman",

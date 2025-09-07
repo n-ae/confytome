@@ -4,7 +4,7 @@
   "description": "Professional styled HTML documentation generator",
   "main": "./generate-html.js",
   "className": "SimpleDocsGenerator",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "author": "nae",
   "tags": [
     "html",

@@ -6,6 +6,7 @@
  */
 
 import fs from 'fs';
+import { OUTPUT_FILES } from '../constants.js';
 
 /**
  * Simple error handler with consistent formatting
@@ -22,7 +23,7 @@ export class SimpleErrorHandler {
     console.error(`   ${error.message}`);
 
     // Show additional context for common errors
-    if (error.message.includes('ENOENT') && error.message.includes('api-spec.json')) {
+    if (error.message.includes('ENOENT') && error.message.includes(OUTPUT_FILES.OPENAPI_SPEC)) {
       console.log('💡 Run OpenAPI generator first: confytome openapi -c serverConfig.json -f *.js');
     } else if (error.message.includes('widdershins')) {
       console.log('💡 Install widdershins globally: npm i -g widdershins');
@@ -77,4 +78,3 @@ export class SimpleErrorHandler {
   }
 }
 
-export default SimpleErrorHandler;

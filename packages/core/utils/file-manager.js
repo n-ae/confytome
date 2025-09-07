@@ -8,13 +8,14 @@
 import fs from 'fs';
 import path from 'path';
 import { SimpleErrorHandler } from './error-handler-simple.js';
+import { OUTPUT_FILES, DEFAULT_OUTPUT_DIR } from '../constants.js';
 
 export class FileManager {
   /**
    * Ensure the docs directory exists
-   * @param {string} docsPath - Path to docs directory (default: './docs')
+   * @param {string} docsPath - Path to docs directory (default: DEFAULT_OUTPUT_DIR)
    */
-  static ensureDocsDir(docsPath = './docs') {
+  static ensureDocsDir(docsPath = DEFAULT_OUTPUT_DIR) {
     try {
       if (!fs.existsSync(docsPath)) {
         fs.mkdirSync(docsPath, { recursive: true });
@@ -85,11 +86,14 @@ export class FileManager {
 
   /**
    * Read OpenAPI specification file
-   * @param {string} specPath - Path to OpenAPI spec (default: './docs/api-spec.json')
+   * @param {string} specPath - Path to OpenAPI spec
    * @param {string} generator - Generator name for error context
    * @returns {Object} Parsed OpenAPI specification
    */
-  static readOpenAPISpec(specPath = './docs/api-spec.json', generator) {
+  static readOpenAPISpec(specPath, generator) {
+    if (!specPath) {
+      throw new Error('OpenAPI spec path is required');
+    }
     try {
       console.log('📖 Reading OpenAPI spec...');
 
@@ -232,7 +236,7 @@ export class FileManager {
     this.ensureDocsDir(outputDir);
 
     // Check if OpenAPI spec exists
-    const specPath = path.join(outputDir, 'api-spec.json');
+    const specPath = path.join(outputDir, OUTPUT_FILES.OPENAPI_SPEC);
     if (!fs.existsSync(specPath)) {
       throw new Error('OpenAPI spec not found. Run OpenAPI generator first.');
     }
@@ -296,7 +300,7 @@ export class FileManager {
    */
   static cleanupDocs(filesToKeep = []) {
     try {
-      const docsDir = './docs';
+      const docsDir = DEFAULT_OUTPUT_DIR;
       if (!fs.existsSync(docsDir)) return;
 
       const files = fs.readdirSync(docsDir);
@@ -325,4 +329,3 @@ export class FileManager {
   }
 }
 
-export default FileManager;

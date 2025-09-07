@@ -9,6 +9,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import path from 'path';
 import { OpenAPIGeneratorBase } from './utils/base-generator.js';
 import { FileManager } from './utils/file-manager.js';
+import { OUTPUT_FILES } from './constants.js';
 
 class OpenAPIGenerator extends OpenAPIGeneratorBase {
   constructor() {
@@ -38,7 +39,7 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
     }
 
     // Write the OpenAPI spec
-    const outputPath = path.join(this.outputDir, 'api-spec.json');
+    const outputPath = path.join(this.outputDir, OUTPUT_FILES.OPENAPI_SPEC);
     const specContent = JSON.stringify(openApiSpec, null, 2);
 
     FileManager.writeFile(
@@ -83,6 +84,4 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
   }
 }
 
-// Export class only
 export { OpenAPIGenerator };
-export default OpenAPIGenerator;

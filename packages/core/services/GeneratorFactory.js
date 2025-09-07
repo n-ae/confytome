@@ -7,6 +7,7 @@
 
 import { generatorRegistry } from './GeneratorRegistry.js';
 import { ServiceFactory } from './ServiceFactory.js';
+import { getOutputDir } from '../constants.js';
 
 export class GeneratorFactory {
   /**
@@ -23,7 +24,8 @@ export class GeneratorFactory {
    * @param {Object} options - Configuration options
    * @returns {Object} Generator instance
    */
-  static async createGenerator(generatorName, outputDir = './docs', options = {}) {
+  static async createGenerator(generatorName, outputDir, options = {}) {
+    outputDir = getOutputDir(outputDir);
     // Ensure registry is initialized
     if (!generatorRegistry.initialized) {
       await this.initialize();
@@ -157,7 +159,8 @@ export class GeneratorFactory {
    * @param {Object} options - Configuration options
    * @returns {Array} Array of generator instances
    */
-  static async createGenerators(generatorNames, outputDir = './docs', options = {}) {
+  static async createGenerators(generatorNames, outputDir, options = {}) {
+    outputDir = getOutputDir(outputDir);
     const generators = [];
 
     for (const name of generatorNames) {
@@ -188,7 +191,8 @@ export class GeneratorFactory {
    * @param {Object} options - Configuration options
    * @returns {Object} Execution result
    */
-  static async executeGenerator(generatorName, outputDir = './docs', options = {}) {
+  static async executeGenerator(generatorName, outputDir, options = {}) {
+    outputDir = getOutputDir(outputDir);
     try {
       const generator = await this.createGenerator(generatorName, outputDir, options);
       const result = await generator.run();
@@ -216,7 +220,8 @@ export class GeneratorFactory {
    * @param {Object} options - Configuration options
    * @returns {Array} Array of execution results
    */
-  static async executeGenerators(generatorNames, outputDir = './docs', options = {}) {
+  static async executeGenerators(generatorNames, outputDir, options = {}) {
+    outputDir = getOutputDir(outputDir);
     const results = [];
 
     for (const name of generatorNames) {

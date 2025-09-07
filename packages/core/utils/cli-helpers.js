@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { registryOrchestrator } from '../services/RegistryOrchestrator.js';
 import { GeneratorFactory } from '../services/GeneratorFactory.js';
+import { getOutputDir, DEFAULT_CONFIG_FILES } from '../constants.js';
 import { ConfytomeConfig } from './confytome-config.js';
 
 /**
@@ -17,7 +18,8 @@ import { ConfytomeConfig } from './confytome-config.js';
  * @param {string} outputDir - Output directory
  * @returns {Promise<Object>} Generation result
  */
-export async function generateOpenAPI(configPath, files, outputDir = './docs') {
+export async function generateOpenAPI(configPath, files, outputDir) {
+  outputDir = getOutputDir(outputDir);
   await GeneratorFactory.initialize();
 
   // For OpenAPI generation, we need to use the core OpenAPI generator
@@ -45,7 +47,8 @@ export async function generateOpenAPI(configPath, files, outputDir = './docs') {
  * @param {string} outputDir - Output directory
  * @returns {Promise<Array<Object>>} Array of generation results
  */
-export async function generateAllDocs(configPath, files, outputDir = './docs', options = {}) {
+export async function generateAllDocs(configPath, files, outputDir, options = {}) {
+  outputDir = getOutputDir(outputDir);
   // First generate OpenAPI spec
   await generateOpenAPI(configPath, files, outputDir);
 
@@ -64,7 +67,8 @@ export async function generateAllDocs(configPath, files, outputDir = './docs', o
  * @param {string} outputDir - Output directory
  * @returns {Promise<Object>} Generation result
  */
-export async function generateFromSpec(generatorName, outputDir = './docs') {
+export async function generateFromSpec(generatorName, outputDir) {
+  outputDir = getOutputDir(outputDir);
   const result = await registryOrchestrator.executeGenerator(generatorName, outputDir, {
     contextUrl: import.meta.url
   });
@@ -78,7 +82,8 @@ export async function generateFromSpec(generatorName, outputDir = './docs') {
  * @param {string} outputDir - Output directory
  * @returns {Promise<Array<Object>>} Array of generation results
  */
-export async function generateMultipleFromSpec(generatorNames, outputDir = './docs') {
+export async function generateMultipleFromSpec(generatorNames, outputDir) {
+  outputDir = getOutputDir(outputDir);
   const results = await registryOrchestrator.executeGenerators(generatorNames, outputDir, {
     contextUrl: import.meta.url
   });
@@ -91,7 +96,8 @@ export async function generateMultipleFromSpec(generatorNames, outputDir = './do
  * @param {string} outputDir - Output directory
  * @returns {Promise<Object>} Generation result
  */
-export async function generateDemo(outputDir = './docs') {
+export async function generateDemo(outputDir) {
+  outputDir = getOutputDir(outputDir);
   // For demo, we need the example files to exist first
   const exampleRouter = './example-router.js';
   const exampleConfig = './serverConfig.json';
@@ -146,12 +152,21 @@ export async function validateGenerators(generatorNames) {
 
 /**
  * Generate documentation using confytome.json configuration
- * @param {string} configPath - Path to confytome.json (default: './confytome.json')
+ * @param {string} configPath - Path to confytome.json (default: DEFAULT_CONFIG_FILES.CONFYTOME)
  * @param {string} outputDir - Output directory
  * @returns {Promise<Object>} Generation result
  */
-export async function generateFromConfytomeConfig(configPath = './confytome.json', outputDir = './docs', options = {}) {
-  const confytomeConfig = await ConfytomeConfig.load(configPath);
+export async function generateFromConfytomeConfig(configOrPath = DEFAULT_CONFIG_FILES.CONFYTOME, outputDir, options = {}) {
+  outputDir = getOutputDir(outputDir);
+  let confytomeConfig;
+
+  // Handle both config objects and file paths for backward compatibility
+  if (typeof configOrPath === 'string') {
+    confytomeConfig = await ConfytomeConfig.load(configOrPath);
+  } else {
+    // It's already a config object
+    confytomeConfig = configOrPath;
+  }
 
   // Extract route file names from the configuration
   const routeFileNames = ConfytomeConfig.getRouteFileNames(confytomeConfig);

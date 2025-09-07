@@ -1,23 +1,20 @@
 /**
  * Configuration Merger Utility
  *
- * Merges CLI options with configuration files to create a unified config,
- * ensuring the app always sources configuration from JSON.
+ * Simple configuration merging without temporary file creation.
+ * Merges CLI options with configuration files in memory only.
  */
 
 import fs from 'node:fs';
-import path from 'node:path';
-import { randomBytes } from 'node:crypto';
 
 export class ConfigMerger {
   /**
    * Merge CLI options with a configuration file
    * @param {string} configPath - Path to the base configuration file
    * @param {Object} cliOptions - CLI options to merge/override
-   * @param {string} tempDir - Directory for temporary config files (default: './docs')
-   * @returns {Promise<{configPath: string, isTemporary: boolean}>}
+   * @returns {Object} Merged configuration object
    */
-  static async mergeWithConfig(configPath, cliOptions, tempDir = './docs') {
+  static mergeWithConfig(configPath, cliOptions) {
     // Read the base configuration
     let baseConfig = {};
     if (fs.existsSync(configPath)) {
@@ -29,23 +26,8 @@ export class ConfigMerger {
       }
     }
 
-    // Create merged configuration
-    const mergedConfig = this.mergeConfigurations(baseConfig, cliOptions);
-
-    // Check if we need to create a temporary config file
-    const hasOverrides = this.hasOverrides(baseConfig, cliOptions);
-
-    if (!hasOverrides) {
-      // No overrides needed, use original config
-      return {
-        configPath,
-        isTemporary: false,
-        config: mergedConfig
-      };
-    }
-
-    // Create temporary config file
-    return await this.createTemporaryConfig(mergedConfig, tempDir);
+    // Create and return merged configuration
+    return this.mergeConfigurations(baseConfig, cliOptions);
   }
 
   /**
@@ -57,157 +39,33 @@ export class ConfigMerger {
   static mergeConfigurations(baseConfig, cliOptions) {
     const merged = { ...baseConfig };
 
-    // Define all possible option mappings (CLI option -> config property)
+    // Simple option mappings (CLI option -> config property)
     const optionMappings = {
-      // Path and output options
-      config: 'configPath',
       output: 'outputDir',
       spec: 'specPath',
-
-      // Content options
       files: 'routeFiles',
       serverConfig: 'serverConfig',
-
-      // Feature flags
-      noBrand: 'excludeBrand',
-      watch: 'watchMode',
-
-      // Direct mappings (same name in CLI and config)
-      routeFiles: 'routeFiles',
-      excludeBrand: 'excludeBrand',
-      outputDir: 'outputDir',
-      specPath: 'specPath',
-      watchMode: 'watchMode'
+      noBrand: 'excludeBrand'
     };
 
-    // Apply CLI overrides with precedence
+    // Apply CLI overrides
     for (const [cliKey, configKey] of Object.entries(optionMappings)) {
       if (cliOptions[cliKey] !== undefined && cliOptions[cliKey] !== null) {
         merged[configKey] = cliOptions[cliKey];
       }
     }
 
-    // Handle special Commander.js --no-* options (they become false instead of true)
+    // Handle Commander.js --no-brand option
     if (cliOptions.brand === false) {
       merged.excludeBrand = true;
     }
 
-    // Handle special cases and validation
-    this.validateMergedConfig(merged);
+    // Basic validation
+    if (merged.routeFiles && !Array.isArray(merged.routeFiles)) {
+      merged.routeFiles = [merged.routeFiles];
+    }
 
     return merged;
-  }
-
-  /**
-   * Validate merged configuration for consistency
-   * @param {Object} config - Merged configuration to validate
-   */
-  static validateMergedConfig(config) {
-    // Ensure consistent path handling
-    if (config.outputDir && !path.isAbsolute(config.outputDir)) {
-      config.outputDir = path.resolve(config.outputDir);
-    }
-
-    // Ensure routeFiles is always an array
-    if (config.routeFiles && !Array.isArray(config.routeFiles)) {
-      config.routeFiles = [config.routeFiles];
-    }
-  }
-
-  /**
-   * Check if CLI options would override any config values
-   * @param {Object} baseConfig - Base configuration
-   * @param {Object} cliOptions - CLI options
-   * @returns {boolean} True if overrides exist
-   */
-  static hasOverrides(baseConfig, cliOptions) {
-    const optionMappings = {
-      // Path and output options
-      config: 'configPath',
-      output: 'outputDir',
-      spec: 'specPath',
-
-      // Content options
-      files: 'routeFiles',
-      serverConfig: 'serverConfig',
-
-      // Feature flags
-      noBrand: 'excludeBrand',
-      watch: 'watchMode',
-
-      // Direct mappings (same name in CLI and config)
-      routeFiles: 'routeFiles',
-      excludeBrand: 'excludeBrand',
-      outputDir: 'outputDir',
-      specPath: 'specPath',
-      watchMode: 'watchMode'
-    };
-
-    // Check all mapped options for differences
-    for (const [cliKey, configKey] of Object.entries(optionMappings)) {
-      if (cliOptions[cliKey] !== undefined && cliOptions[cliKey] !== null) {
-        const cliValue = cliOptions[cliKey];
-        const configValue = baseConfig[configKey];
-
-        // Compare values (deep comparison for objects/arrays)
-        if (JSON.stringify(cliValue) !== JSON.stringify(configValue)) {
-          return true;
-        }
-      }
-    }
-
-    // Handle special Commander.js --no-* options
-    if (cliOptions.brand === false && baseConfig.excludeBrand !== true) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Create a temporary configuration file
-   * @param {Object} config - Configuration to write
-   * @param {string} tempDir - Directory for temporary files
-   * @returns {Promise<{configPath: string, isTemporary: boolean}>}
-   */
-  static async createTemporaryConfig(config, tempDir) {
-    // Ensure temp directory exists
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
-
-    // Generate unique temporary filename
-    const randomId = randomBytes(8).toString('hex');
-    const tempConfigPath = path.join(tempDir, `.confytome-temp-${randomId}.json`);
-
-    // Write temporary config
-    try {
-      fs.writeFileSync(tempConfigPath, JSON.stringify(config, null, 2));
-    } catch (error) {
-      throw new Error(`Failed to create temporary config file: ${error.message}`);
-    }
-
-    return {
-      configPath: tempConfigPath,
-      isTemporary: true,
-      config
-    };
-  }
-
-  /**
-   * Clean up temporary configuration file
-   * @param {string} configPath - Path to temporary config file
-   * @param {boolean} isTemporary - Whether the file is temporary
-   */
-  static cleanup(configPath, isTemporary) {
-    if (isTemporary && fs.existsSync(configPath)) {
-      try {
-        fs.unlinkSync(configPath);
-      } catch {
-        // Silently ignore cleanup errors
-        console.warn(`Warning: Failed to cleanup temporary config file: ${configPath}`);
-      }
-    }
   }
 
   /**
@@ -226,5 +84,27 @@ export class ConfigMerger {
     }
 
     return cleaned;
+  }
+
+  /**
+   * Create temporary config - simplified to just return the config object
+   * @param {Object} config - Configuration object
+   * @returns {Object} Config wrapper with backward compatibility
+   */
+  static createTemporaryConfig(config) {
+    return {
+      configPath: null, // No file created
+      isTemporary: false, // No cleanup needed
+      config
+    };
+  }
+
+  /**
+   * Cleanup method for backward compatibility - no-op
+   * @param {string} _configPath - Ignored
+   * @param {boolean} _isTemporary - Ignored
+   */
+  static cleanup(_configPath, _isTemporary) {
+    // No-op - no temporary files to clean up
   }
 }

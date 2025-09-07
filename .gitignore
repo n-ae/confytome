@@ -139,7 +139,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # Generated documentation (should be created by users)
-docs/
+confytome/
 api-docs/
 confytome-cache/
 

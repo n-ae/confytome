@@ -11,9 +11,11 @@ import { SimpleErrorHandler } from './error-handler-simple.js';
 import { FileManager } from './file-manager.js';
 import { CliValidator } from './cli-validator.js';
 import { ServiceFactory } from '../services/ServiceFactory.js';
+import { getOutputDir, OUTPUT_FILES } from '../constants.js';
 
 export class BaseGenerator {
-  constructor(name, description, requiresJSDocFiles = false, outputDir = './docs', services = null) {
+  constructor(name, description, requiresJSDocFiles = false, outputDir, services = null) {
+    outputDir = getOutputDir(outputDir);
     this.name = name;
     this.description = description;
     this.requiresJSDocFiles = requiresJSDocFiles;
@@ -181,7 +183,8 @@ export class BaseGenerator {
  * For generators that create the OpenAPI spec from JSDoc files
  */
 export class OpenAPIGeneratorBase extends BaseGenerator {
-  constructor(name, description, outputDir = './docs', services = null) {
+  constructor(name, description, outputDir, services = null) {
+    outputDir = getOutputDir(outputDir);
     super(name, description, true, outputDir, services); // Requires JSDoc files
   }
 
@@ -208,7 +211,8 @@ export class OpenAPIGeneratorBase extends BaseGenerator {
  * For generators that consume existing OpenAPI spec
  */
 export class SpecConsumerGeneratorBase extends BaseGenerator {
-  constructor(name, description, outputDir = './docs', services = null) {
+  constructor(name, description, outputDir, services = null) {
+    outputDir = getOutputDir(outputDir);
     super(name, description, false, outputDir, services); // Doesn't require JSDoc files
   }
 
@@ -216,7 +220,7 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
    * Load existing OpenAPI spec
    */
   loadOpenAPISpec() {
-    const specPath = path.join(this.outputDir, 'api-spec.json');
+    const specPath = path.join(this.outputDir, OUTPUT_FILES.OPENAPI_SPEC);
     return FileManager.readOpenAPISpec(specPath, this.name);
   }
 
@@ -289,7 +293,7 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
    * Override in subclasses if needed
    */
   calculateDocumentStats(openApiSpec, outputPath) {
-    const specStats = fs.statSync(path.join(this.outputDir, 'api-spec.json'));
+    const specStats = fs.statSync(path.join(this.outputDir, OUTPUT_FILES.OPENAPI_SPEC));
     const outputStats = fs.statSync(outputPath);
 
     this.addStat('OpenAPI spec', `${(specStats.size / 1024).toFixed(1)} KB`);
@@ -305,4 +309,3 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
   }
 }
 
-export default BaseGenerator;

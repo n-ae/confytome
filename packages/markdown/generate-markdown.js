@@ -8,17 +8,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+import { getOutputDir, OUTPUT_FILES } from '@confytome/core/constants.js';
 
 class MarkdownGenerator extends SpecConsumerGeneratorBase {
-  constructor(outputDir = './docs', services = null) {
+  constructor(outputDir, services = null) {
+    outputDir = getOutputDir(outputDir);
     super('generate-markdown', 'Generating Confluence-friendly Markdown (custom widdershins template)', outputDir, services);
   }
 
   async generate() {
     console.log('📝 Generating Markdown with custom widdershins template...');
 
-    return this.generateWithExternalTool('markdown', 'api-docs.md', async(openApiSpec, services, outputPath) => {
-      const specPath = path.join(this.outputDir, 'api-spec.json');
+    return this.generateWithExternalTool('markdown', OUTPUT_FILES.MARKDOWN_DOCS, async(openApiSpec, services, outputPath) => {
+      const specPath = path.join(this.outputDir, OUTPUT_FILES.OPENAPI_SPEC);
       const templateDir = services.template.getWiddershinsPath();
 
       // Prepare template data

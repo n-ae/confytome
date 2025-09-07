@@ -4,7 +4,7 @@
   "description": "Core OpenAPI 3.0.3 generator from JSDoc comments",
   "main": "./generate-openapi.js",
   "className": "OpenAPIGenerator",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "author": "nae",
   "tags": [
     "core",

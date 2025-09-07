@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+import { getOutputDir } from '@confytome/core/constants.js';
 
 // Create Postman environment from OpenAPI spec
 function createPostmanEnvironment(openApiSpec) {
@@ -239,8 +240,9 @@ function generatePostmanTests(responses) {
 }
 
 class PostmanGenerator extends SpecConsumerGeneratorBase {
-  constructor(outputDir = './docs') {
-    super('generate-postman', 'Generating Postman collection and environment (OpenAPI spec agnostic)', outputDir);
+  constructor(outputDir, services = null) {
+    outputDir = getOutputDir(outputDir);
+    super('generate-postman', 'Generating Postman collection and environment (OpenAPI spec agnostic)', outputDir, services);
   }
 
   async generate() {

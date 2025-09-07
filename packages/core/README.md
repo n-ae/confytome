@@ -1,6 +1,9 @@
 # @confytome/core
 
-[![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)\n[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)\n[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)\n[![Code Style: ESM](https://img.shields.io/badge/code%20style-ESM-blue)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+[![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+[![Code Style: ESM](https://img.shields.io/badge/code%20style-ESM-blue)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 
 Core plugin system and OpenAPI 3.0.3 generator from JSDoc comments. Plugin registry, service layer, and CLI for extensible API documentation generation.
 
@@ -76,12 +79,14 @@ npx @confytome/core --config ./confytome.json
 ## 🚀 Quick Start
 
 ### 1. Basic OpenAPI Generation
+
 ```bash
 # Generate OpenAPI spec from JSDoc comments
 npx @confytome/core --input ./src --output ./docs
 ```
 
 ### 2. With Configuration File
+
 ```json
 // confytome.json
 {
@@ -164,6 +169,7 @@ app.get('/users/:id', getUserById);
 ```
 
 Generated OpenAPI spec:
+
 ```json
 {
   "paths": {
@@ -196,6 +202,7 @@ All files are generated based on your configuration and installed plugins.
 ### Common Issues
 
 #### "No JSDoc comments found"
+
 ```bash
 # Check your input directory
 ls -la ./src
@@ -205,6 +212,7 @@ npx @confytome/core --input ./src --verbose
 ```
 
 #### "Plugin not found"
+
 ```bash
 # Install required plugins
 npm install -g @confytome/html @confytome/swagger
@@ -214,6 +222,7 @@ npx @confytome/core --config ./confytome.json
 ```
 
 #### Configuration errors
+
 ```bash
 # Validate your configuration
 npx @confytome/core --config ./confytome.json --verbose
@@ -234,6 +243,7 @@ npx @confytome/core --config ./confytome.json --verbose
 ```
 
 ### Plugin System
+
 - **Automatic Discovery**: Plugins are discovered via npm package naming convention
 - **Dependency Injection**: Clean interfaces between core and plugins  
 - **Configuration-driven**: Plugin behavior controlled via confytome.json
@@ -244,6 +254,7 @@ npx @confytome/core --config ./confytome.json --verbose
 We welcome contributions! Please see our [Contributing Guide](https://github.com/n-ae/confytome/blob/main/CONTRIBUTING.md) for details.
 
 ### Development Setup
+
 ```bash
 git clone https://github.com/n-ae/confytome.git
 cd confytome
@@ -252,6 +263,7 @@ npm run test
 ```
 
 ### Creating Plugins
+
 ```bash
 # Create a new generator plugin
 npm init @confytome/plugin-my-generator

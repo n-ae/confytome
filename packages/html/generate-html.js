@@ -6,16 +6,18 @@
  */
 
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+import { getOutputDir, OUTPUT_FILES } from '@confytome/core/constants.js';
 
 class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
-  constructor(outputDir = './docs', services = null) {
+  constructor(outputDir, services = null) {
+    outputDir = getOutputDir(outputDir);
     super('generate-html', 'Generating HTML documentation (OpenAPI spec agnostic)', outputDir, services);
   }
 
   async generate() {
     console.log('🎨 Generating HTML documentation...');
 
-    return this.generateDocument('html', 'api-docs.html', (openApiSpec, services) => {
+    return this.generateDocument('html', OUTPUT_FILES.HTML_DOCS, (openApiSpec, services) => {
       return this.generateHTML(openApiSpec, services);
     });
   }

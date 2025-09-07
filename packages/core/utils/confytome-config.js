@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import https from 'node:https';
 import http from 'node:http';
+import { DEFAULT_CONFIG_FILES } from '../constants.js';
 
 export class ConfytomeConfig {
   /**
@@ -78,10 +79,10 @@ export class ConfytomeConfig {
 
   /**
    * Load and parse confytome.json configuration
-   * @param {string} configPath - Path to confytome.json (default: './confytome.json')
+   * @param {string} configPath - Path to confytome.json (default: DEFAULT_CONFIG_FILES.CONFYTOME)
    * @returns {Promise<Object>} Configuration object with resolved file paths
    */
-  static async load(configPath = './confytome.json') {
+  static async load(configPath = DEFAULT_CONFIG_FILES.CONFYTOME) {
     if (!fs.existsSync(configPath)) {
       throw new Error(`confytome config not found: ${configPath}`);
     }
@@ -193,4 +194,3 @@ export class ConfytomeConfig {
   }
 }
 
-export default ConfytomeConfig;

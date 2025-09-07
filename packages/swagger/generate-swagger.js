@@ -9,6 +9,7 @@
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
+import { getOutputDir, OUTPUT_FILES } from '@confytome/core/constants.js';
 const require = createRequire(import.meta.url);
 
 function generateSwaggerUI(openApiSpec, options = {}) {
@@ -187,14 +188,15 @@ function generateSwaggerUI(openApiSpec, options = {}) {
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
 
 class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
-  constructor(outputDir = './docs', services = null) {
+  constructor(outputDir, services = null) {
+    outputDir = getOutputDir(outputDir);
     super('generate-swagger', 'Generating Swagger UI static HTML (OpenAPI spec agnostic)', outputDir, services);
   }
 
   async generate() {
     console.log('🎨 Generating Swagger UI HTML...');
 
-    const result = await this.generateDocument('swagger', 'api-swagger.html', (openApiSpec, services) => {
+    const result = await this.generateDocument('swagger', OUTPUT_FILES.SWAGGER_UI, (openApiSpec, services) => {
       return this.generateSwaggerUI(openApiSpec, services);
     });
 

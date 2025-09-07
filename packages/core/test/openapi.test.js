@@ -1,7 +1,7 @@
 /**
  * OpenAPI Command Tests
  *
- * Tests that 'confytome openapi' produces a valid api-spec.json
+ * Tests that 'confytome openapi' produces a valid OpenAPI spec
  */
 
 import {
@@ -11,6 +11,7 @@ import {
   isValidJSON,
   isValidOpenAPISpec
 } from './test-helpers.js';
+import { OUTPUT_FILES, DEFAULT_OUTPUT_DIR } from '../constants.js';
 
 describe('confytome openapi', () => {
   let testEnv;
@@ -24,7 +25,7 @@ describe('confytome openapi', () => {
     testEnv.cleanup();
   });
 
-  test('should produce a valid api-spec.json file', () => {
+  test('should produce a valid OpenAPI spec file', () => {
     // Create test files
     testEnv.createFile('serverConfig.json', JSON.stringify(SAMPLE_SERVER_CONFIG, null, 2));
     testEnv.createFile('test-router.js', SAMPLE_ROUTER_JS);
@@ -36,11 +37,11 @@ describe('confytome openapi', () => {
     expect(result.success).toBe(true);
     expect(result.stderr).toBe('');
 
-    // Check that api-spec.json was created
-    expect(testEnv.fileExists('docs/api-spec.json')).toBe(true);
+    // Check that OpenAPI spec was created
+    expect(testEnv.fileExists(`${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`)).toBe(true);
 
     // Read and validate the generated spec
-    const specContent = testEnv.readFile('docs/api-spec.json');
+    const specContent = testEnv.readFile(`${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`);
 
     // Should be valid JSON
     expect(isValidJSON(specContent)).toBe(true);
@@ -74,7 +75,7 @@ describe('confytome openapi', () => {
     expect(spec.components.securitySchemes.bearerAuth).toBeDefined();
 
     // Verify file is not empty (reasonable size)
-    expect(testEnv.getFileSize('docs/api-spec.json')).toBeGreaterThan(100);
+    expect(testEnv.getFileSize(`${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`)).toBeGreaterThan(100);
   });
 
   test('should create docs directory if it does not exist', () => {
@@ -83,7 +84,7 @@ describe('confytome openapi', () => {
     testEnv.createFile('test-router.js', SAMPLE_ROUTER_JS);
 
     // Verify docs directory doesn't exist
-    expect(testEnv.fileExists('docs')).toBe(false);
+    expect(testEnv.fileExists('confytome')).toBe(false);
 
     // Run confytome openapi command
     const result = testEnv.runConfytome('openapi -c serverConfig.json -f test-router.js');
@@ -92,8 +93,8 @@ describe('confytome openapi', () => {
     expect(result.success).toBe(true);
 
     // Check that docs directory was created
-    expect(testEnv.fileExists('docs')).toBe(true);
-    expect(testEnv.fileExists('docs/api-spec.json')).toBe(true);
+    expect(testEnv.fileExists('confytome')).toBe(true);
+    expect(testEnv.fileExists(`${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`)).toBe(true);
   });
 
   test('should fail gracefully with invalid server config', () => {
@@ -145,10 +146,10 @@ describe('confytome openapi', () => {
 
     // Check command succeeded
     expect(result.success).toBe(true);
-    expect(testEnv.fileExists('docs/api-spec.json')).toBe(true);
+    expect(testEnv.fileExists(`${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`)).toBe(true);
 
     // Check that both sets of endpoints are included
-    const spec = JSON.parse(testEnv.readFile('docs/api-spec.json'));
+    const spec = JSON.parse(testEnv.readFile(`${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`));
     expect(spec.paths['/api/users']).toBeDefined();
     expect(spec.paths['/api/posts']).toBeDefined();
   });

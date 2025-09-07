@@ -7,6 +7,7 @@
 
 import { GeneratorFactory } from './GeneratorFactory.js';
 import { generatorRegistry } from './GeneratorRegistry.js';
+import { getOutputDir } from '../constants.js';
 
 export class RegistryOrchestrator {
   constructor() {
@@ -58,7 +59,8 @@ export class RegistryOrchestrator {
   /**
    * Execute a single generator
    */
-  async executeGenerator(generatorName, outputDir = './docs', options = {}) {
+  async executeGenerator(generatorName, outputDir, options = {}) {
+    outputDir = getOutputDir(outputDir);
     await this.initialize();
     return await GeneratorFactory.executeGenerator(generatorName, outputDir, options);
   }
@@ -66,7 +68,8 @@ export class RegistryOrchestrator {
   /**
    * Execute multiple generators in dependency order
    */
-  async executeGenerators(generatorNames, outputDir = './docs', options = {}) {
+  async executeGenerators(generatorNames, outputDir, options = {}) {
+    outputDir = getOutputDir(outputDir);
     await this.initialize();
 
     // Resolve execution order based on dependencies
@@ -78,7 +81,8 @@ export class RegistryOrchestrator {
   /**
    * Execute all available spec consumer generators (html, markdown, swagger, etc.)
    */
-  async executeAllSpecConsumers(outputDir = './docs', options = {}) {
+  async executeAllSpecConsumers(outputDir, options = {}) {
+    outputDir = getOutputDir(outputDir);
     const specConsumers = await this.getSpecConsumerGenerators();
     const generatorNames = specConsumers.map(gen => gen.name);
 
@@ -88,7 +92,8 @@ export class RegistryOrchestrator {
   /**
    * Execute a predefined set of generators
    */
-  async executeGeneratorSet(setName, outputDir = './docs', options = {}) {
+  async executeGeneratorSet(setName, outputDir, options = {}) {
+    outputDir = getOutputDir(outputDir);
     const sets = await this.getGeneratorSets();
     const generatorNames = sets[setName];
 

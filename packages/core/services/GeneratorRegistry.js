@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { glob } from 'glob';
+import { getOutputDir } from '../constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -185,7 +186,8 @@ export class GeneratorRegistry {
   /**
    * Create a generator instance
    */
-  createGenerator(name, outputDir = './docs', services = null) {
+  createGenerator(name, outputDir, services = null) {
+    outputDir = getOutputDir(outputDir);
     const generatorInfo = this.generators.get(name);
     if (!generatorInfo) {
       throw new Error(`Generator '${name}' not found`);
