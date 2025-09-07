@@ -18,5 +18,5 @@ program
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
   .parse(process.argv);
 
-const swaggerCLI = createCLI('swagger', SwaggerUIGenerator, 'Generating Swagger UI documentation');
+const swaggerCLI = createCLI('swagger', SwaggerUIGenerator, 'Generating Swagger UI Generator');
 await swaggerCLI(program, pkg);

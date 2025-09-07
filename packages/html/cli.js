@@ -18,5 +18,5 @@ program
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
   .parse(process.argv);
 
-const htmlCLI = createCLI('html', SimpleDocsGenerator, 'Generating HTML documentation');
+const htmlCLI = createCLI('html', SimpleDocsGenerator, 'Generating HTML Generator');
 await htmlCLI(program, pkg);

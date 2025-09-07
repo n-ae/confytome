@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+import { program } from 'commander';
+import fs from 'node:fs';
+import { createCLI } from '@confytome/core/utils/{{{cliHelper}}}';
+import { DEFAULT_OUTPUT_DIR, DEFAULT_CONFIG_FILES } from '@confytome/core/constants.js';
+import { {{{className}}} } from './{{{mainFile}}}';
+
+const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
+
+program
+  .name('{{{packageName}}}')
+  .description('{{{description}}}')
+  .version(pkg.version){{#options}}
+  .option('{{{flag}}}', '{{{description}}}'{{#defaultValue}}, {{{defaultValue}}}{{/defaultValue}}){{/options}}
+  .parse(process.argv);
+
+const {{{generatorType}}}CLI = createCLI('{{{generatorType}}}', {{{className}}}, '{{{progressMessage}}}');
+await {{{generatorType}}}CLI(program, pkg);

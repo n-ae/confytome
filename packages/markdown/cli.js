@@ -18,5 +18,5 @@ program
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
   .parse(process.argv);
 
-const markdownCLI = createCLI('markdown', MarkdownGenerator, 'Generating Markdown documentation');
+const markdownCLI = createCLI('markdown', MarkdownGenerator, 'Generating Markdown Generator');
 await markdownCLI(program, pkg);

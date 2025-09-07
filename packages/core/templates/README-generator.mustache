@@ -1,0 +1,195 @@
+# {{{packageName}}}
+
+{{{description}}}
+
+## ✨ Features
+
+{{#features}}
+- {{{.}}}
+{{/features}}
+
+## 📦 Installation
+
+```bash
+# Global installation
+npm install -g {{{packageName}}}
+
+# Or use with npx (no installation)
+npx {{{packageName}}} --help
+```
+
+## 🚀 Usage
+
+### Standalone Usage (Recommended)
+```bash
+# Use existing OpenAPI spec - No additional dependencies required
+npx {{{packageName}}} --spec ./path/to/your-api-spec.json --output ./docs
+```
+
+### With confytome.json Configuration
+```bash
+# Generate from API code - Requires @confytome/core
+npx {{{packageName}}} --config ./confytome.json --output ./api-docs
+```
+
+## ⚙️ Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|---------|
+{{#options}}
+| `{{{flag}}}` | `{{{short}}}` | {{{description}}} | `{{{default}}}` |
+{{/options}}
+
+## 🎯 Two Usage Scenarios
+
+### ✅ Scenario 1: Standalone with Existing Spec
+**Perfect when you already have an OpenAPI specification file.**
+
+```bash
+npx {{{packageName}}} --spec ./my-api-spec.json
+```
+
+- ✅ **No additional dependencies**
+- ✅ **Works immediately**
+- ✅ **Perfect for CI/CD pipelines**
+
+### ⚙️ Scenario 2: Generate from Code
+**When you need to generate the OpenAPI spec from your API code first.**
+
+```bash
+npx {{{packageName}}} --config ./confytome.json
+```
+
+- ⚠️ **Requires @confytome/core** for spec generation
+- ✅ **Full workflow from code to documentation**
+- ✅ **Automatic spec generation**
+
+If @confytome/core is not installed, you'll see helpful guidance:
+```
+💡 You have two options:
+   1. Install @confytome/core:
+      npm install -g @confytome/core
+   2. Provide existing OpenAPI spec:
+      npx {{{packageName}}} --spec path/to/spec.json
+```
+
+## 📁 Generated Output
+
+{{{outputDescription}}}
+
+### Generated File Structure
+
+```
+docs/
+{{#outputExamples.fileStructure}}
+├── {{{file}}}      # {{{description}}}
+{{/outputExamples.fileStructure}}
+```
+
+{{#outputExamples.features}}
+### Content Features
+{{#outputExamples.features}}
+- {{{.}}}
+{{/outputExamples.features}}
+{{/outputExamples.features}}
+
+{{#outputExamples.usage}}
+### How to Use Generated Files
+
+{{#outputExamples.usage}}
+{{{order}}}. {{{.}}}
+{{/outputExamples.usage}}
+{{/outputExamples.usage}}
+
+## 🔧 Dependencies
+
+{{#dependencies}}
+- **{{{name}}}**: {{{description}}}
+{{/dependencies}}
+
+{{{dependencyRequirement}}}
+
+## 💡 Examples
+
+### Basic Usage
+
+```bash
+# Simple generation with existing spec
+npx {{{packageName}}} --spec ./docs/api-spec.json --output ./public
+```
+
+### CI/CD Integration
+
+```bash
+#!/bin/bash
+# Generate {{{packageType}}} documentation in CI
+npx {{{packageName}}} \\
+   --spec ./build/api-spec.json \\
+   --output ./dist/docs
+```
+
+### Multiple Environments
+
+```bash
+# Production docs
+npx {{{packageName}}} \\
+   --spec ./specs/prod-api.json \\
+   --output ./docs/prod
+
+# Staging docs  
+npx {{{packageName}}} \\
+   --spec ./specs/staging-api.json \\
+   --output ./docs/staging
+```
+
+{{#hasTroubleshooting}}
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+{{#troubleshooting}}
+#### {{{issue}}}
+{{{solution}}}
+
+{{/troubleshooting}}
+{{/hasTroubleshooting}}
+
+#### "Specified OpenAPI spec file not found"
+
+```bash
+# Check file path exists
+ls -la ./path/to/your-spec.json
+
+# Use absolute path if needed
+npx {{{packageName}}} --spec $(pwd)/api-spec.json
+```
+
+#### "OpenAPI spec not found, generating it first"
+
+This means you're using config mode but don't have @confytome/core installed.
+
+```bash
+# Option 1: Install core
+npm install -g @confytome/core
+
+# Option 2: Use existing spec instead  
+npx {{{packageName}}} --spec ./path/to/existing-spec.json
+```
+
+## 🌟 Part of confytome Ecosystem
+
+{{{packageName}}} is part of the [confytome](https://github.com/n-ae/confytome) documentation ecosystem:
+
+- **[@confytome/core](https://npmjs.com/package/@confytome/core)** - Plugin system & OpenAPI generator
+- **[@confytome/markdown](https://npmjs.com/package/@confytome/markdown)** - Confluence-friendly Markdown docs
+- **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML docs  
+- **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** - Interactive Swagger UI
+- **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** - Postman collections
+
+## 📄 License
+
+MIT License - see the [LICENSE](https://github.com/n-ae/confytome/blob/main/LICENSE) file for details.
+
+---
+
+**Generate beautiful {{{packageType}}} documentation from OpenAPI specifications in seconds.**

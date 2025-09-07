@@ -1,0 +1,27 @@
+{
+  "name": "{{generatorType}}",
+  "type": "spec-consumer",
+  "description": "{{description}}",
+  "main": "./{{mainFile}}",
+  "className": "{{className}}",
+  "version": "{{version}}",
+  "author": "{{author}}",
+  "tags": [{{#tags}}
+    "{{value}}"{{^last}},{{/last}}{{/tags}}
+  ],
+  "dependencies": {{{#dependencies}}
+    "{{name}}": "{{version}}"{{^last}},{{/last}}{{/dependencies}}
+  },
+  "peerDependencies": {
+    "@confytome/core": "{{coreVersion}}"
+  },
+  "outputs": [{{#outputFiles}}
+    "{{value}}"{{^last}},{{/last}}{{/outputFiles}}
+  ],
+  "inputType": "openapi-spec",
+  "outputFormat": "{{outputFormat}}",
+  "standalone": true{{#hasExternalTools}},
+  "externalTools": [{{#externalTools}}
+    "{{.}}"{{^last}},{{/last}}{{/externalTools}}
+  ]{{/hasExternalTools}}
+}

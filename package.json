@@ -20,6 +20,11 @@
     "validate": "npm run lint && npm run test",
     "version:bump": "node scripts/update-versions.js bump",
     "version:set": "node scripts/update-versions.js set",
+    "regenerate:cli": "node packages/core/scripts/regenerate-cli-files.js",
+    "regenerate:cli:validate": "node packages/core/scripts/regenerate-cli-files.js --validate",
+    "regenerate:readmes": "node packages/core/scripts/regenerate-readmes.js",
+    "regenerate:readmes:validate": "node packages/core/scripts/regenerate-readmes.js --validate",
+    "regenerate:readmes:preview": "node packages/core/scripts/regenerate-readmes.js --preview",
     "publish": "npm run validate && npm publish --workspaces",
     "publish:dry-run": "npm publish --dry-run --workspaces"
   },

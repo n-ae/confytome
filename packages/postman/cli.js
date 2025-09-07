@@ -18,5 +18,5 @@ program
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
   .parse(process.argv);
 
-const postmanCLI = createCLI('postman', PostmanGenerator, 'Generating Postman collection and environment');
+const postmanCLI = createCLI('postman', PostmanGenerator, 'Generating Postman Generator');
 await postmanCLI(program, pkg);
