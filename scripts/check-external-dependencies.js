@@ -16,11 +16,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const MONITORED_DEPENDENCIES = {
-  'widdershins': {
+  'mustache': {
     package: '@confytome/markdown',
-    purpose: 'Markdown generation from OpenAPI specs',
-    criticality: 'medium',
-    alternatives: ['openapi-to-markdown', 'redoc-cli']
+    purpose: 'Markdown template processing engine',
+    criticality: 'low',
+    alternatives: ['handlebars', 'template-literals']
   },
   'swagger-ui-dist': {
     package: '@confytome/swagger',

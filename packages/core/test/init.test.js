@@ -81,13 +81,13 @@ describe('confytome init', () => {
     expect(testEnv.getFileSize('example-router.js')).toBeGreaterThan(1000);
   });
 
-  test('should create widdershins-templates directory', () => {
+  test('should create templates directory', () => {
     // Run confytome init command
     const result = testEnv.runConfytome('init');
     expect(result.success).toBe(true);
 
-    // Check that widdershins-templates directory was created
-    expect(testEnv.fileExists('widdershins-templates')).toBe(true);
+    // Check that templates directory was created
+    expect(testEnv.fileExists('templates')).toBe(true);
   });
 
   test('should handle custom output directory', () => {
@@ -104,7 +104,7 @@ describe('confytome init', () => {
     // Config and examples should still be in root
     expect(testEnv.fileExists('serverConfig.json')).toBe(true);
     expect(testEnv.fileExists('example-router.js')).toBe(true);
-    expect(testEnv.fileExists('widdershins-templates')).toBe(true);
+    expect(testEnv.fileExists('templates')).toBe(true);
   });
 
   test('should not overwrite existing files', () => {
@@ -191,7 +191,7 @@ describe('confytome init', () => {
     expect(createdFiles).toContain('confytome');
     expect(createdFiles).toContain('serverConfig.json');
     expect(createdFiles).toContain('example-router.js');
-    expect(createdFiles).toContain('widdershins-templates');
+    expect(createdFiles).toContain('templates');
 
     // Validate subdirectory structure
     const confytomeFiles = testEnv.listFiles('confytome');

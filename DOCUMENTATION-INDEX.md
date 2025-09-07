@@ -141,7 +141,7 @@ confytome validate
 - [Swagger JSDoc Integration](https://github.com/Surnet/swagger-jsdoc)
 
 ### Related Tools
-- [Widdershins](https://github.com/Mermade/widdershins) - Markdown generation
+- [Mustache](https://mustache.github.io/) - Logic-less templates (used for markdown generation)
 - [Swagger UI](https://swagger.io/tools/swagger-ui/) - Interactive documentation
 - [Postman Collections](https://learning.postman.com/docs/collections/collections-overview/) - API testing
 

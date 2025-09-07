@@ -7,11 +7,13 @@
 
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
 import { getOutputDir, OUTPUT_FILES } from '@confytome/core/constants.js';
+import { OpenApiProcessor } from '@confytome/core/utils/openapi-processor.js';
 
 class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir, services = null) {
     outputDir = getOutputDir(outputDir);
     super('generate-html', 'Generating HTML documentation (OpenAPI spec agnostic)', outputDir, services);
+    this.processor = new OpenApiProcessor();
   }
 
   async generate() {
@@ -23,45 +25,40 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
   }
 
   generateHTML(openApiSpec, services) {
-    const { info, servers, tags, paths, components } = openApiSpec;
+    // Use OpenApiProcessor to get structured data
+    const templateData = services.branding.getHtmlTemplateData();
+    const processorOptions = {
+      excludeBrand: templateData.excludeBrand,
+      version: templateData.version || 'unknown'
+    };
 
-    // Group endpoints by tags
+    this.processor.options = { ...this.processor.options, ...processorOptions };
+    const data = this.processor.process(openApiSpec);
+
+    // Convert processed data to expected format for HTML generation
     const tagSections = {};
-    if (tags) {
-      tags.forEach(tag => {
-        tagSections[tag.name] = {
-          description: tag.description || '',
-          endpoints: []
-        };
-      });
-    }
-
-    // Add endpoints to their respective tags
-    Object.entries(paths).forEach(([path, methods]) => {
-      Object.entries(methods).forEach(([method, endpoint]) => {
-        if (endpoint.tags && endpoint.tags[0]) {
-          const tagName = endpoint.tags[0];
-          if (!tagSections[tagName]) {
-            tagSections[tagName] = { description: '', endpoints: [] };
-          }
-
-          tagSections[tagName].endpoints.push({
-            path,
-            method: method.toUpperCase(),
-            summary: endpoint.summary || '',
-            description: endpoint.description || '',
-            parameters: endpoint.parameters || [],
-            responses: endpoint.responses || {}
-          });
-        }
-      });
+    data.resources.forEach(resource => {
+      tagSections[resource.name] = {
+        description: resource.description || '',
+        endpoints: resource.endpoints.map(endpoint => ({
+          path: endpoint.path,
+          method: endpoint.method,
+          summary: endpoint.summary,
+          description: endpoint.description,
+          parameters: endpoint.parameters?.parameters || [],
+          responses: endpoint.responses.reduce((acc, response) => {
+            acc[response.code] = { description: response.description };
+            return acc;
+          }, {})
+        }))
+      };
     });
 
-    return this.buildHTMLDocument(info, servers, tagSections, components, services);
+    return this.buildHTMLDocument(data.info, data.servers, tagSections, data.schemas, services);
   }
 
-  buildHTMLDocument(info, servers, tagSections, components, services) {
-    const serverUrls = servers ? servers.map(s => s.url).join(', ') : 'Not specified';
+  buildHTMLDocument(info, servers, tagSections, schemas, services) {
+    const serverUrls = servers?.servers ? servers.servers.map(s => s.url).join(', ') : 'Not specified';
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -138,7 +135,7 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
               ${endpoint.parameters.map(param => `
                 <div class="param">
                   <span class="param-name">${param.name}</span>
-                  <span class="param-type">(${param.in} - ${param.schema?.type || 'string'})</span>
+                  <span class="param-type">(${param.in} - ${param.type || 'string'})</span>
                   ${param.required ? '<span style="color: #dc3545;">*</span>' : ''}
                   ${param.description ? `<p style="margin: 0.25rem 0 0 0; font-size: 0.9em;">${param.description}</p>` : ''}
                 </div>

@@ -8,7 +8,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getOutputDir, OUTPUT_FILES, DEFAULT_OUTPUT_DIR, DEFAULT_CONFIG_FILES } from '../constants.js';
-import { execSync } from 'child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -215,14 +214,14 @@ export class CliValidator {
    * Validate templates directory for markdown generation
    */
   static validateTemplatesDirectory() {
-    const templatesDir = './widdershins-templates';
+    const templatesDir = './templates';
 
     if (!fs.existsSync(templatesDir)) {
-      console.error(`⚠️  Widdershins templates not found: ${templatesDir}`);
+      console.error(`⚠️  Mustache templates not found: ${templatesDir}`);
       console.log('💡 Markdown generation may use default templates');
       console.log('   To use custom templates:');
-      console.log('   1. Create widdershins-templates/ directory');
-      console.log('   2. Add custom .dot template files');
+      console.log('   1. Create templates/ directory');
+      console.log('   2. Add custom .mustache template files');
       console.log('');
     } else {
       console.log('📂 Templates directory found');
@@ -298,13 +297,9 @@ export class CliValidator {
    * Check if all required tools are available
    */
   static validateEnvironment() {
-    // Check for widdershins (for markdown generation)
-    try {
-      execSync('npx widdershins --version', { stdio: 'ignore' });
-    } catch {
-      console.log('⚠️  Widdershins not found - markdown generation may fail');
-      console.log('💡 Install with: npm install widdershins');
-    }
+    // Environment validation for dependencies
+    // Note: Mustache templating is built-in, no external validation needed
+    console.log('✅ Environment validated - using built-in Mustache templating');
 
     return true;
   }
@@ -317,7 +312,7 @@ export class CliValidator {
     const docsDir = DEFAULT_OUTPUT_DIR;
     const configFile = './serverConfig.json';
     const templateFile = './templates/serverConfig.template.json';
-    const templatesDir = './widdershins-templates';
+    const templatesDir = './templates';
     const packagedTemplateDir = './templates';
 
     return {
@@ -386,13 +381,13 @@ export class CliValidator {
       }
     }
 
-    // 2. Copy widdershins templates if they don't exist
-    const widdershinsDir = './widdershins-templates';
-    if (!fs.existsSync(widdershinsDir)) {
-      // Create basic widdershins template structure
-      fs.mkdirSync(widdershinsDir, { recursive: true });
-      console.log('✅ Created widdershins-templates directory');
-      console.log('   💡 Add custom .dot template files for Markdown customization');
+    // 2. Copy Mustache templates if they don't exist
+    const templatesDir = './templates';
+    if (!fs.existsSync(templatesDir)) {
+      // Create basic Mustache template structure
+      fs.mkdirSync(templatesDir, { recursive: true });
+      console.log('✅ Created templates directory');
+      console.log('   💡 Add custom .mustache template files for Markdown customization');
       results.templatesCreated = true;
     }
 

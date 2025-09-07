@@ -2,7 +2,7 @@
 
 import { program } from 'commander';
 import fs from 'node:fs';
-import { createCLI } from '@confytome/core/utils/cli-helper.js';
+import { createCLI } from '@confytome/core/utils/cli-helpers.js';
 import { DEFAULT_OUTPUT_DIR, DEFAULT_CONFIG_FILES } from '@confytome/core/constants.js';
 import { MarkdownGenerator } from './generate-markdown.js';
 

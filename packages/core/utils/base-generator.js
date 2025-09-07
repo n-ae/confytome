@@ -266,7 +266,7 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
 
   /**
    * Template method for external tool-based generation workflow
-   * For generators that use external tools like widdershins
+   * For generators that use external tools or templating engines
    */
   async generateWithExternalTool(generatorType, outputFileName, toolProcess, _description) {
     // Initialize services if not injected

@@ -1,0 +1,45 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Your API Title",
+    "version": "1.0.0",
+    "description": "Your API description here. This will appear at the top of your documentation.",
+    "contact": {
+      "name": "API Support Team",
+      "email": "api-support@yourcompany.com"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://yourcompany.com/terms"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.yourcompany.com/v1",
+      "description": "Production Server"
+    },
+    {
+      "url": "https://staging.api.yourcompany.com/v1", 
+      "description": "Staging Server"
+    },
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "Development Server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Bearer token authentication. Include the token in the Authorization header as: Bearer <token>"
+      }
+    }
+  }
+}

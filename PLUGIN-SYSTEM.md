@@ -60,7 +60,7 @@ Each generator package contains a `confytome-plugin.json` manifest file that des
 - `outputFormat`: What the generator produces
 - `standalone`: Whether it can run independently
 - `features`: Array of feature descriptions
-- `externalTools`: External tools required (e.g., ["widdershins"])
+- `externalTools`: External tools required (mostly empty for internal dependencies)
 
 ## Core Components
 

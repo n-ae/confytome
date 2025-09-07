@@ -47,7 +47,7 @@ export const OUTPUT_FILES = {
  * @type {Object}
  */
 export const TEMPLATE_DIRS = {
-  WIDDERSHINS: 'widdershins-templates'
+  MUSTACHE: 'templates'
 };
 
 /**

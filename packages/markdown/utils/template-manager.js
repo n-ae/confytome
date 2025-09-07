@@ -13,21 +13,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class TemplateManager {
   /**
-   * Get path to widdershins templates directory
-   * @returns {string} Absolute path to widdershins templates
+   * Get path to Mustache templates directory
+   * @returns {string} Absolute path to Mustache templates
    */
-  static getWiddershinsTemplatesPath() {
-    const templatePath = path.resolve(__dirname, '..', 'widdershins-templates');
-    this.validateTemplateDirectory(templatePath, 'widdershins');
+  static getMustacheTemplatesPath() {
+    const templatePath = path.resolve(__dirname, '..', 'templates');
+    this.validateTemplateDirectory(templatePath, 'mustache');
     return templatePath;
   }
 
+
   /**
-   * Get path to init templates directory
+   * Get path to init templates directory (different from Mustache templates)
    * @returns {string} Absolute path to init templates
    */
   static getInitTemplatesPath() {
-    const templatePath = path.resolve(__dirname, '..', 'templates');
+    const templatePath = path.resolve(__dirname, '../../core/templates');
     this.validateTemplateDirectory(templatePath, 'init');
     return templatePath;
   }

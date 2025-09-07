@@ -1,0 +1,134 @@
+# {{{info.title}}} {{{info.version}}}
+
+{{#info.description}}{{{info.description}}}
+
+{{/info.description}}
+{{#servers}}
+## Base URLs
+
+| Environment | Base URL |
+|-------------|----------|
+{{#servers}}
+| {{{description}}} | {{{url}}} |
+{{/servers}}
+
+{{/servers}}
+{{#info.contact}}**Contact:** {{name}}{{#email}} <{{email}}>{{/email}}
+
+{{/info.contact}}
+{{#info.license}}**License:** {{name}}{{#url}} ({{url}}){{/url}}
+
+{{/info.license}}
+{{#hasAuth}}
+This API uses JWT Bearer token authentication.
+
+**Header Example:**
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+{{/hasAuth}}
+
+## Quick Reference
+
+{{#endpoints}}
+- [{{{method}}} {{{path}}}](#{{{anchor}}}) - {{{summary}}}
+{{/endpoints}}
+
+{{#resources}}
+# {{{name}}}
+
+{{#description}}{{{description}}}
+
+{{/description}}
+{{#endpoints}}
+## {{{summary}}}
+
+```
+{{{method}}} {{{path}}}
+```
+
+{{#description}}{{{description}}}
+
+{{/description}}
+{{#parameters}}
+**Parameters:**
+
+| Name | In | Type | Required | Description |
+|------|----|----|----------|-------------|
+{{#parameters}}
+| {{{name}}} | {{{in}}} | {{{type}}} | {{#required}}Yes{{/required}}{{^required}}No{{/required}} | {{{description}}} |
+{{/parameters}}
+{{/parameters}}
+
+{{#requestBody}}
+**Request Body:**
+
+{{#description}}{{{description}}}
+
+{{/description}}
+{{#example}}
+```json
+{{{example}}}
+```
+{{/example}}
+{{/requestBody}}
+
+**Responses:**
+
+{{#responses}}
+**`{{{code}}}`** - {{{description}}}
+
+{{#example}}
+```json
+{{{example}}}
+```
+
+{{/example}}
+{{/responses}}
+
+**Code Sample:**
+
+```shell
+curl -X {{{method}}} {{{baseUrl}}}{{{path}}}{{#queryString}}{{{queryString}}}{{/queryString}}{{#hasContentType}} \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json'{{/hasContentType}}{{#headers}}{{#headers}} \
+  -H '{{{name}}}: {{{example}}}'{{/headers}}{{/headers}}{{#requestBodyExample}} \
+  -d '{{{requestBodyExample}}}'{{/requestBodyExample}}
+```
+
+*[↑](#quick-reference)*
+
+---
+
+{{/endpoints}}
+
+{{/resources}}
+{{#schemas}}
+# Schemas
+
+{{#models}}
+## {{name}}
+
+{{#description}}{{description}}
+
+{{/description}}
+```json
+{{example}}
+```
+
+{{#properties}}
+| Property | Type | Description |
+|----------|------|-------------|
+{{#properties}}
+| {{name}} | {{type}} | {{description}} |
+{{/properties}}
+
+{{/properties}}
+{{/models}}
+
+{{/schemas}}
+
+---
+
+{{#excludeBrand}}*Generated {{timestamp}} UTC*{{/excludeBrand}}{{^excludeBrand}}*Generated {{timestamp}} UTC by 🍃 confytome v{{version}} with <3*{{/excludeBrand}}

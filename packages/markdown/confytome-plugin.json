@@ -1,7 +1,7 @@
 {
   "name": "markdown",
   "type": "spec-consumer",
-  "description": "Confluence-friendly Markdown documentation generator using Widdershins",
+  "description": "Confluence-friendly Markdown documentation generator using Mustache",
   "main": "./generate-markdown.js",
   "className": "MarkdownGenerator",
   "version": "1.4.2",
@@ -9,11 +9,11 @@
   "tags": [
     "markdown",
     "confluence",
-    "widdershins"
+    "mustache"
   ],
   "dependencies": {
     "commander": "^14.0.0",
-    "widdershins": "^4.0.1"
+    "mustache": "^4.2.0"
   },
   "peerDependencies": {
     "@confytome/core": "^1.2.0"
@@ -24,7 +24,5 @@
   "inputType": "openapi-spec",
   "outputFormat": "markdown",
   "standalone": true,
-  "externalTools": [
-    "widdershins"
-  ]
+  "externalTools": []
 }

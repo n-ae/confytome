@@ -1,49 +1,60 @@
 /**
- * Custom Widdershins Template Markdown Generator
+ * Mustache Template Markdown Generator
  *
  * OpenAPI spec agnostic - consumes the generated spec from generate-openapi.js
- * Uses custom widdershins template for Confluence-friendly output with code samples
+ * Uses Mustache templates for Confluence-friendly output with code samples
+ * Uses Mustache templates for lightweight, secure markdown generation
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'url';
+import { default as Mustache } from 'mustache';
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
 import { getOutputDir, OUTPUT_FILES } from '@confytome/core/constants.js';
+import { OpenApiProcessor } from '@confytome/core/utils/openapi-processor.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 class MarkdownGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir, services = null) {
     outputDir = getOutputDir(outputDir);
-    super('generate-markdown', 'Generating Confluence-friendly Markdown (custom widdershins template)', outputDir, services);
+    super('generate-markdown', 'Generating Confluence-friendly Markdown (Mustache templates)', outputDir, services);
+    this.processor = new OpenApiProcessor();
   }
 
   async generate() {
-    console.log('📝 Generating Markdown with custom widdershins template...');
+    console.log('📝 Generating Markdown with Mustache templates...');
 
     return this.generateWithExternalTool('markdown', OUTPUT_FILES.MARKDOWN_DOCS, async(openApiSpec, services, outputPath) => {
       const specPath = path.join(this.outputDir, OUTPUT_FILES.OPENAPI_SPEC);
-      const templateDir = services.template.getWiddershinsPath();
 
       // Prepare template data
       const templateData = services.branding.getMarkdownTemplateData();
 
-      // Process the main template to inject branding data
-      await this.processWiddershinsTemplate(templateDir, templateData);
-
-      // Use widdershins as a library with proper ES module import
       try {
-        const widdershins = await import('widdershins');
+        // Load and parse OpenAPI spec
         const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
 
-        const options = {
-          user_templates: templateDir,
-          language_tabs: ['shell:cURL'],
-          omitHeader: true,
-          summary: true,
-          code: true,
-          httpsnippet: false
+        // Configure processor options
+        const processorOptions = {
+          excludeBrand: templateData.excludeBrand,
+          version: templateData.version || 'unknown',
+          baseUrl: this.getBaseUrl(spec.servers)
         };
 
-        const markdown = await widdershins.convert(spec, options);
+        // Process OpenAPI spec into template data
+        this.processor.options = { ...this.processor.options, ...processorOptions };
+        const data = this.processor.process(spec);
+
+        // Load Mustache template
+        const templatePath = path.join(__dirname, 'templates', 'main.mustache');
+        const template = fs.readFileSync(templatePath, 'utf8');
+
+        // Render template with data
+        const markdown = Mustache.render(template, data);
+
+        // Write output
         fs.writeFileSync(outputPath, markdown, 'utf8');
 
       } catch (error) {
@@ -57,30 +68,20 @@ class MarkdownGenerator extends SpecConsumerGeneratorBase {
   }
 
   /**
-   * Process widdershins templates to inject branding data instead of using environment variables
-   * For now, we'll use environment variables but in a cleaner way through the service layer
-   * Future enhancement: Create template preprocessing system
-   * @param {string} templateDir - Directory containing templates
-   * @param {Object} templateData - Data to inject into templates
+   * Get base URL from servers array
+   * @param {Array} servers - OpenAPI servers array
+   * @returns {string} Base URL
    */
-  async processWiddershinsTemplate(templateDir, templateData) {
-    // For this implementation, we still use environment variables but managed by services
-    // This is safer than regex replacement and maintains compatibility
-    // Future: implement proper template preprocessing
-
-    if (templateData.excludeBrand) {
-      process.env.CONFYTOME_NO_BRAND = 'true';
-    } else {
-      delete process.env.CONFYTOME_NO_BRAND;
-      process.env.CONFYTOME_VERSION = templateData.version || 'unknown';
-    }
+  getBaseUrl(servers) {
+    if (!servers || !servers.length) return '';
+    return servers[servers.length - 1].url; // Use last server for consistency
   }
 
   calculateDocumentStats(openApiSpec, outputPath) {
     // Use the standard stats calculation
     super.calculateDocumentStats(openApiSpec, outputPath);
     // Add custom stat for this generator
-    this.addStat('Generator', 'widdershins (custom template)');
+    this.addStat('Generator', 'Mustache (custom template)');
   }
 
   getSuccessMessage() {

@@ -12,15 +12,15 @@ export class TemplateService {
   static #templateCache = new Map();
 
   /**
-   * Get the path to widdershins templates for markdown generation
+   * Get the path to Mustache templates for markdown generation
    * @param {string} packagePath - Path to the package (typically import.meta.url)
-   * @returns {string} Path to widdershins templates directory
+   * @returns {string} Path to Mustache templates directory
    */
-  static getWiddershinsTemplatesPath(packagePath = null) {
+  static getMustacheTemplatesPath(packagePath = null) {
     // If no package path provided, assume markdown package
     if (!packagePath) {
       // Default to markdown package templates
-      return path.resolve(process.cwd(), 'packages/markdown/widdershins-templates');
+      return path.resolve(process.cwd(), 'packages/markdown/templates');
     }
 
     // Handle import.meta.url format
@@ -31,21 +31,22 @@ export class TemplateService {
       basePath = packagePath;
     }
 
-    // Look for widdershins-templates directory
-    const templatesPath = path.join(basePath, 'widdershins-templates');
+    // Look for templates directory
+    const templatesPath = path.join(basePath, 'templates');
 
     if (fs.existsSync(templatesPath)) {
       return templatesPath;
     }
 
     // Fallback to markdown package templates
-    const fallbackPath = path.resolve(process.cwd(), 'packages/markdown/widdershins-templates');
+    const fallbackPath = path.resolve(process.cwd(), 'packages/markdown/templates');
     if (fs.existsSync(fallbackPath)) {
       return fallbackPath;
     }
 
-    throw new Error('Widdershins templates directory not found');
+    throw new Error('Mustache templates directory not found');
   }
+
 
   /**
    * Read a template file with caching

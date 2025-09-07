@@ -25,14 +25,14 @@
     "template": "README-generator.template.md",
     "variables": {
       "PACKAGE_NAME": "@confytome/markdown",
-      "DESCRIPTION": "Standalone Markdown documentation generator for confytome. Generates Confluence-friendly documentation from OpenAPI specifications using custom Widdershins templates with Turkish Unicode support.",
+      "DESCRIPTION": "Standalone Markdown documentation generator for confytome. Generates Confluence-friendly documentation from OpenAPI specifications using custom Mustache templates with Turkish Unicode support.",
       "PACKAGE_TYPE": "Markdown",
-      "FEATURES_LIST": "- 📝 **Confluence-friendly Markdown** - Clean formatting without HTML tags\n- 🎨 **Custom Widdershins Templates** - Professional styling with navigation\n- 🔧 **Automatic OpenAPI Integration** - Seamless spec consumption\n- 📊 **Code Samples & Examples** - cURL requests and response examples\n- 🌍 **Unicode Support** - Full Turkish and international character support\n- ⚡ **Standalone Operation** - Works with existing OpenAPI specs\n- 🕐 **Timestamped Documentation** - Generation metadata included",
+      "FEATURES_LIST": "- 📝 **Confluence-friendly Markdown** - Clean formatting without HTML tags\n- 🎨 **Custom Mustache Templates** - Professional styling with logic-less templates\n- 🔧 **Automatic OpenAPI Integration** - Seamless spec consumption\n- 📊 **Code Samples & Examples** - cURL requests and response examples\n- 🌍 **Unicode Support** - Full Turkish and international character support\n- ⚡ **Standalone Operation** - Works with existing OpenAPI specs\n- 🕐 **Timestamped Documentation** - Generation metadata included",
       "OUTPUT_DESCRIPTION": "Creates `api-docs.md` in the specified output directory with:\\n- API overview and server information\\n- All endpoints with request/response examples\\n- Data models and schemas\\n- Timestamp and generation info",
-      "DEPENDENCIES_INFO": "- **commander**: CLI argument parsing\\n- **widdershins**: Markdown template processing engine\\n\\nWhen using `--spec` option: **No additional dependencies required**\\nWhen using `--config` option: **Requires @confytome/core** for OpenAPI spec generation",
+      "DEPENDENCIES_INFO": "- **commander**: CLI argument parsing\\n- **mustache**: Markdown template processing engine\\n\\nWhen using `--spec` option: **No additional dependencies required**\\nWhen using `--config` option: **Requires @confytome/core** for OpenAPI spec generation",
       "ADDITIONAL_OPTIONS": "| `--no-brand` | | Exclude confytome branding from documentation | |",
       "OUTPUT_EXAMPLES": "### Generated File Structure\\n\\n```\\ndocs/\\n├── api-docs.md        # Main markdown documentation\\n└── api-spec.json      # OpenAPI spec (copied from source)\\n```\\n\\n### Content Features\\n- **Quick Reference** - Table of contents with anchor links\\n- **Server Information** - Base URLs and environment details\\n- **Endpoint Documentation** - Complete request/response details\\n- **Schema Definitions** - Data model documentation\\n- **Code samples** - Ready-to-use cURL examples",
-      "ADDITIONAL_TROUBLESHOOTING": "#### \"widdershins will be installed automatically via npx\"\\nThis message appears when the widdershins dependency is being fetched. No action needed."
+      "ADDITIONAL_TROUBLESHOOTING": "#### Templates not found\\nEnsure Mustache templates are in the templates/ directory. Default templates are included with the package."
     }
   },
   "html": {

@@ -25,8 +25,8 @@ export class SimpleErrorHandler {
     // Show additional context for common errors
     if (error.message.includes('ENOENT') && error.message.includes(OUTPUT_FILES.OPENAPI_SPEC)) {
       console.log('💡 Run OpenAPI generator first: confytome openapi -c serverConfig.json -f *.js');
-    } else if (error.message.includes('widdershins')) {
-      console.log('💡 Install widdershins globally: npm i -g widdershins');
+    } else if (error.message.includes('mustache') || error.message.includes('template')) {
+      console.log('💡 Check Mustache templates in templates/ directory');
     } else if (error.message.includes('JSON')) {
       console.log('💡 Check JSON syntax in configuration file');
     }

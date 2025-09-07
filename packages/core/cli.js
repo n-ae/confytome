@@ -137,7 +137,7 @@ Sets up everything you need to start generating documentation:
 • Generates serverConfig.json template with OpenAPI 3.0.3 structure
 • Creates confytome.json for simplified project configuration
 • Creates example-router.js with JSDoc best practices
-• Sets up widdershins-templates/ for Markdown customization
+• Sets up templates/ for Markdown customization
 
 Examples:
   confytome init                       # Standard setup
