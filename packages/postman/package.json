@@ -1,6 +1,6 @@
 {
   "name": "@confytome/postman",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Plugin for @confytome/core - generates Postman collections and environment variables from OpenAPI specs for API testing and development.",
   "main": "generate-postman.js",
   "bin": {

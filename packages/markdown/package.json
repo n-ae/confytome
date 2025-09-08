@@ -1,6 +1,6 @@
 {
   "name": "@confytome/markdown",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Plugin for @confytome/core - generates Confluence-friendly Markdown documentation from OpenAPI specs using Mustache templates with Turkish Unicode support.",
   "main": "generate-markdown.js",
   "bin": {
