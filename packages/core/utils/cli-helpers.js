@@ -4,8 +4,8 @@
  * Uses the generator registry system for CLI functions.
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { GeneratorFactory } from '../services/GeneratorFactory.js';
 import { getOutputDir } from '../constants.js';
 import { ConfytomeConfig } from './confytome-config.js';

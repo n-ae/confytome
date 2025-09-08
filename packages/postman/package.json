@@ -2,7 +2,7 @@
   "name": "@confytome/postman",
   "version": "1.4.4", 
   "description": "Standalone Postman generator - creates Postman collections and environment variables from OpenAPI specs for API testing and development.",
-  "main": "generate-postman.js",
+  "main": "standalone-generator.js",
   "bin": {
     "confytome-postman": "./cli.js"
   },
@@ -31,7 +31,6 @@
   "author": "nae",
   "license": "MIT",
   "files": [
-    "generate-postman.js",
     "standalone-generator.js",
     "cli.js", 
     "utils/",

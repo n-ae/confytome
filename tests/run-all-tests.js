@@ -41,14 +41,14 @@ for (const test of tests) {
   console.log('');
 
   try {
-    const result = execSync(test.command, {
+    const _result = execSync(test.command, {
       stdio: 'inherit',
       encoding: 'utf8'
     });
 
     console.log(`✅ ${test.name} PASSED`);
     totalPassed++;
-  } catch (error) {
+  } catch {
     console.log(`❌ ${test.name} FAILED`);
     totalFailed++;
   }

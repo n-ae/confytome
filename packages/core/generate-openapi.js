@@ -6,7 +6,7 @@
  */
 
 import swaggerJSDoc from 'swagger-jsdoc';
-import path from 'path';
+import path from 'node:path';
 import { OpenAPIGeneratorBase } from './utils/base-generator.js';
 import { MetadataFactory } from './interfaces/IGenerator.js';
 import { FileManager } from './utils/file-manager.js';

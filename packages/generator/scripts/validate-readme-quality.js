@@ -6,9 +6,9 @@
  * quality and essential content as existing correct READMEs.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { generateREADME } from '../src/mustache-readme-generator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

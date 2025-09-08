@@ -2,7 +2,7 @@
   "name": "@confytome/html",
   "version": "1.4.4",
   "description": "Standalone HTML generator - creates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
-  "main": "generate-html.js",
+  "main": "standalone-generator.js",
   "bin": {
     "confytome-html": "./cli.js"
   },
@@ -31,7 +31,6 @@
   "author": "nae",
   "license": "MIT",
   "files": [
-    "generate-html.js",
     "standalone-generator.js",
     "cli.js",
     "utils/",

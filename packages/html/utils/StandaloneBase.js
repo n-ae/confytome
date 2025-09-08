@@ -30,10 +30,10 @@ export class StandaloneBase {
 
   /**
    * Validate prerequisites
-   * @param {Object} options - Validation options
+   * @param {Object} _options - Validation options
    * @returns {Promise<Object>} Validation result
    */
-  async validate(options = {}) {
+  async validate(_options = {}) {
     const errors = [];
     const warnings = [];
 
@@ -48,7 +48,7 @@ export class StandaloneBase {
         fs.writeFileSync(testFile, 'test');
         fs.unlinkSync(testFile);
       }
-    } catch (error) {
+    } catch {
       errors.push(`Cannot write to output directory: ${this.outputDir}`);
     }
 
@@ -213,7 +213,7 @@ export class StandaloneBase {
     try {
       fs.accessSync(filePath, fs.constants.R_OK);
       return true;
-    } catch (error) {
+    } catch {
       throw new Error(`Cannot read ${description}: ${filePath}`);
     }
   }
@@ -236,10 +236,10 @@ export class StandaloneBase {
 
   /**
    * Generate documentation (must be implemented by subclasses)
-   * @param {Object} options - Generation options
+   * @param {Object} _options - Generation options
    * @returns {Promise<Object>} Generation result
    */
-  async generate(options = {}) {
+  async generate(_options = {}) {
     throw new Error('generate() must be implemented by subclass');
   }
 }

@@ -5,13 +5,8 @@
  * Can run via "npx @confytome/html" without any core package dependencies.
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'url';
 import { StandaloneBase } from './utils/StandaloneBase.js';
 import { OpenApiProcessor } from './utils/OpenApiProcessor.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class StandaloneHtmlGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {
@@ -69,7 +64,7 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
    * @param {Object} options - Generation options
    * @returns {Promise<GenerationResult>} Generation result
    */
-  async generate(options = {}) {
+  async generate(_options = {}) {
     this.log('🎨 Generating HTML documentation...');
 
     try {
@@ -178,7 +173,7 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
         </div>
         ${endpoint.summary ? `<h4>${endpoint.summary}</h4>` : ''}
         ${endpoint.description ? `<p>${endpoint.description}</p>` : ''}
-        
+
         ${endpoint.parameters && endpoint.parameters.length > 0 ? `
           <div class="parameters">
             <h5>Parameters</h5>
@@ -240,7 +235,7 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
       <div class="schema">
         <h3>${schema.name}</h3>
         ${schema.description ? `<p>${schema.description}</p>` : ''}
-        
+
         ${schema.properties && schema.properties.length > 0 ? `
           <table>
             <thead>
@@ -461,12 +456,12 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
         .container {
           padding: 1rem;
         }
-        
+
         .endpoint-header {
           flex-direction: column;
           align-items: flex-start;
         }
-        
+
         .path {
           word-break: break-all;
         }

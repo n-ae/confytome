@@ -8,7 +8,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 import { default as Mustache } from 'mustache';
 import { StandaloneBase } from './utils/StandaloneBase.js';
 import { OpenApiProcessor } from './utils/OpenApiProcessor.js';
@@ -73,10 +73,10 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
 
   /**
    * Generate Markdown documentation
-   * @param {Object} options - Generation options
+   * @param {Object} _options - Generation options
    * @returns {Promise<GenerationResult>} Generation result
    */
-  async generate(options = {}) {
+  async generate(_options = {}) {
     this.log('📝 Generating Markdown with Mustache templates...');
 
     try {

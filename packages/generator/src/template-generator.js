@@ -5,9 +5,9 @@
  * to reduce repetition across generator packages.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import Mustache from 'mustache';
 import { getCLITemplateData } from './cli-template-data.js';
 

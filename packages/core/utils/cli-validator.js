@@ -7,7 +7,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { getOutputDir, OUTPUT_FILES, DEFAULT_OUTPUT_DIR, DEFAULT_CONFIG_FILES } from '../constants.js';
+import { getOutputDir, OUTPUT_FILES, DEFAULT_OUTPUT_DIR } from '../constants.js';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

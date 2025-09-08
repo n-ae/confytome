@@ -5,7 +5,7 @@
  * and providing only essential error handling functionality.
  */
 
-import fs from 'fs';
+import fs from 'node:fs';
 import { OUTPUT_FILES } from '../constants.js';
 
 /**
@@ -56,12 +56,12 @@ export class SimpleErrorHandler {
 
   /**
    * Log success message with optional stats
-   * @param {string} context - Operation context
+   * @param {string} _context - Operation context
    * @param {string} message - Success message
    * @param {number} startTime - Start timestamp (optional)
    * @param {Object} stats - Statistics object (optional)
    */
-  static logSuccess(context, message, startTime = null, stats = {}) {
+  static logSuccess(_context, message, startTime = null, stats = {}) {
     console.log(`✅ ${message}`);
 
     if (Object.keys(stats).length > 0) {

@@ -5,9 +5,9 @@
  * with support for conditionals, loops, and structured data.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import Mustache from 'mustache';
 import { README_TEMPLATE_DATA, getREADMETemplateData } from './readme-template-data.js';
 

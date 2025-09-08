@@ -6,9 +6,9 @@
  * across all generator packages to eliminate repetition.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { writeCLIFile } from '../src/template-generator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -116,8 +116,8 @@ Options:
   --validate    Validate existing files without regenerating
   --help, -h    Show this help message
 
-This script uses Mustache templates to regenerate CLI files and plugin 
-manifests across all generator packages, eliminating repetition and 
+This script uses Mustache templates to regenerate CLI files and plugin
+manifests across all generator packages, eliminating repetition and
 ensuring consistency.
   `);
 } else {

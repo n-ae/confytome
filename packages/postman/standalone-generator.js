@@ -6,12 +6,8 @@
  * Generates Postman collections and environment variables from OpenAPI specs.
  */
 
-import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'url';
 import { StandaloneBase } from './utils/StandaloneBase.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class StandalonePostmanGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {
@@ -50,10 +46,10 @@ export class StandalonePostmanGenerator extends StandaloneBase {
 
   /**
    * Generate Postman collection and environment
-   * @param {Object} options - Generation options
+   * @param {Object} _options - Generation options
    * @returns {Promise<GenerationResult>} Generation result
    */
-  async generate(options = {}) {
+  async generate(_options = {}) {
     this.log('📮 Generating Postman collection and environment...');
 
     try {
@@ -200,7 +196,6 @@ export class StandalonePostmanGenerator extends StandaloneBase {
    * Process OpenAPI endpoints into Postman items
    */
   processEndpoints(paths, baseUrl) {
-    const items = [];
     const folders = new Map();
 
     Object.entries(paths).forEach(([pathName, pathItem]) => {
@@ -232,7 +227,7 @@ export class StandalonePostmanGenerator extends StandaloneBase {
   /**
    * Create a Postman item from an OpenAPI operation
    */
-  createPostmanItem(pathName, method, operation, baseUrl) {
+  createPostmanItem(pathName, method, operation, _baseUrl) {
     const url = `{{BASE_URL}}${pathName}`;
 
     return {

@@ -5,8 +5,8 @@
  * and dependency validation for better maintainability
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { SimpleErrorHandler } from './error-handler-simple.js';
 import { OUTPUT_FILES, DEFAULT_OUTPUT_DIR } from '../constants.js';
 
@@ -55,10 +55,10 @@ export class FileManager {
   /**
    * Validate server configuration structure
    * @param {Object} config - Configuration object
-   * @param {string} configPath - Path to config file
+   * @param {string} _configPath - Path to config file
    * @param {string} generator - Generator name for error context
    */
-  static validateServerConfig(config, configPath, generator) {
+  static validateServerConfig(config, _configPath, generator) {
     const requiredFields = ['info', 'servers'];
     const requiredInfoFields = ['title', 'version'];
 

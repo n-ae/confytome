@@ -8,11 +8,9 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 import { StandaloneBase } from './utils/StandaloneBase.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 
 export class StandaloneSwaggerGenerator extends StandaloneBase {
@@ -49,7 +47,7 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
     try {
       require.resolve('swagger-ui-dist/package.json');
       this.log('Swagger UI distribution found');
-    } catch (error) {
+    } catch {
       baseValidation.errors.push('swagger-ui-dist package not found');
     }
 
@@ -71,10 +69,10 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
 
   /**
    * Generate Swagger UI documentation
-   * @param {Object} options - Generation options
+   * @param {Object} _options - Generation options
    * @returns {Promise<GenerationResult>} Generation result
    */
-  async generate(options = {}) {
+  async generate(_options = {}) {
     this.log('🌐 Generating interactive Swagger UI...');
 
     try {
@@ -138,10 +136,10 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${openApiSpec.info.title} v${openApiSpec.info.version} - Swagger UI</title>
-  
+
   <style>
     ${swaggerUICSS}
-    
+
     /* Custom branding styles */
     .custom-header {
       padding: 20px;
@@ -149,19 +147,19 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
       border-bottom: 1px solid #dee2e6;
       margin-bottom: 20px;
     }
-    
+
     .custom-header h1 {
       margin: 0 0 10px 0;
       color: #2c3e50;
       font-size: 2rem;
     }
-    
+
     .custom-header .version {
       color: #6c757d;
       font-size: 1.1rem;
       margin-bottom: 10px;
     }
-    
+
     .custom-header .description {
       color: #495057;
       line-height: 1.6;
@@ -202,7 +200,7 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
   <script>
     window.onload = function() {
       const spec = ${JSON.stringify(openApiSpec, null, 2)};
-      
+
       // Initialize Swagger UI
       const ui = SwaggerUIBundle({
         spec: spec,

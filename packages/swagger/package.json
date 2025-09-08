@@ -2,7 +2,7 @@
   "name": "@confytome/swagger",
   "version": "1.4.4",
   "description": "Standalone Swagger UI generator - creates interactive, self-contained Swagger UI documentation from OpenAPI specs with responsive design.",
-  "main": "generate-swagger.js",
+  "main": "standalone-generator.js",
   "bin": {
     "confytome-swagger": "./cli.js"
   },
@@ -30,7 +30,6 @@
   "author": "nae",
   "license": "MIT",
   "files": [
-    "generate-swagger.js",
     "standalone-generator.js", 
     "cli.js",
     "utils/",
