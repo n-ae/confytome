@@ -1,6 +1,6 @@
 /**
  * Self-Contained Base for Standalone Generators
- * 
+ *
  * Provides common functionality without any external dependencies.
  * This ensures true standalone operation for all @confytome generators.
  */
@@ -167,7 +167,7 @@ export class StandaloneBase {
    */
   generateBranding(format = 'html') {
     if (this.options.excludeBrand) {
-      return format === 'html' 
+      return format === 'html'
         ? `<p><em>Generated ${this.getTimestamp()} UTC</em></p>`
         : `*Generated ${this.getTimestamp()} UTC*`;
     }
@@ -175,12 +175,12 @@ export class StandaloneBase {
     const metadata = this.constructor.getMetadata();
 
     switch (format) {
-      case 'html':
-        return `<p><em>Generated ${this.getTimestamp()} UTC by 🍃 ${metadata.packageName} with &lt;3</em></p>`;
-      case 'markdown':
-        return `*Generated ${this.getTimestamp()} UTC by 🍃 ${metadata.packageName} with <3*`;
-      default:
-        return `Generated ${this.getTimestamp()} UTC by ${metadata.packageName}`;
+    case 'html':
+      return `<p><em>Generated ${this.getTimestamp()} UTC by 🍃 ${metadata.packageName} with &lt;3</em></p>`;
+    case 'markdown':
+      return `*Generated ${this.getTimestamp()} UTC by 🍃 ${metadata.packageName} with <3*`;
+    default:
+      return `Generated ${this.getTimestamp()} UTC by ${metadata.packageName}`;
     }
   }
 

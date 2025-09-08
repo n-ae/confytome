@@ -2,7 +2,7 @@
 
 /**
  * Standalone CLI for @confytome/swagger
- * 
+ *
  * Generates interactive, self-contained Swagger UI documentation from OpenAPI specifications.
  * Can be used independently of the core confytome system.
  */
@@ -40,47 +40,47 @@ program
   .option('-s, --spec <path>', 'path to OpenAPI specification file', './confytome/api-spec.json')
   .option('-o, --output <dir>', 'output directory', './confytome')
   .option('--no-brand', 'exclude branding from output')
-  .action(async (options) => {
+  .action(async(options) => {
     try {
       console.log('🌐 @confytome/swagger - Standalone Swagger UI Generator');
       console.log('');
-      
+
       const outputDir = getOutputDir(options.output);
       const specPath = options.spec;
-      
+
       // Ensure output directory exists
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
         console.log(`📁 Created output directory: ${outputDir}`);
       }
-      
+
       // Check if OpenAPI spec exists
       checkOpenAPISpec(specPath);
-      
+
       // If spec is not in the output directory, copy it there
       const targetSpecPath = path.join(outputDir, 'api-spec.json');
       if (path.resolve(specPath) !== path.resolve(targetSpecPath)) {
         fs.copyFileSync(specPath, targetSpecPath);
         console.log(`📋 Copied OpenAPI spec to: ${targetSpecPath}`);
       }
-      
+
       console.log(`📄 Using OpenAPI spec: ${specPath}`);
       console.log(`📁 Output directory: ${outputDir}`);
       console.log('');
-      
+
       // Create and run generator
       const generator = new StandaloneSwaggerGenerator(outputDir);
-      
+
       // Initialize generator
-      await generator.initialize({ 
-        excludeBrand: !options.brand 
+      await generator.initialize({
+        excludeBrand: !options.brand
       });
-      
+
       // Generate documentation
       const result = await generator.generate({
         excludeBrand: !options.brand
       });
-      
+
       if (result.success) {
         console.log('');
         console.log('🎉 Swagger UI generation completed successfully!');
@@ -105,7 +105,7 @@ program
         }
         process.exit(1);
       }
-      
+
     } catch (error) {
       console.error('❌ Generation failed:', error.message);
       process.exit(1);
@@ -120,58 +120,58 @@ program
     try {
       console.log('🔍 Validating OpenAPI specification...');
       console.log('');
-      
+
       checkOpenAPISpec(options.spec);
-      
+
       // Try to parse the JSON
       const content = fs.readFileSync(options.spec, 'utf8');
       const spec = JSON.parse(content);
-      
+
       // Basic validation
       const errors = [];
       const warnings = [];
-      
+
       if (!spec.openapi) {
         errors.push('Missing "openapi" version field');
       } else if (!spec.openapi.startsWith('3.')) {
         warnings.push(`OpenAPI version ${spec.openapi} detected, this generator is optimized for 3.x`);
       }
-      
+
       if (!spec.info) {
         errors.push('Missing "info" object');
       } else {
         if (!spec.info.title) warnings.push('Missing API title in info object');
         if (!spec.info.version) warnings.push('Missing API version in info object');
       }
-      
+
       if (!spec.paths || Object.keys(spec.paths).length === 0) {
         warnings.push('No API paths found - Swagger UI will be minimal');
       }
-      
+
       // Show results
       if (errors.length === 0) {
         console.log('✅ OpenAPI specification is valid');
         const pathCount = spec.paths ? Object.keys(spec.paths).length : 0;
-        const endpointCount = spec.paths ? 
+        const endpointCount = spec.paths ?
           Object.values(spec.paths).reduce((total, pathItem) => {
-            return total + Object.keys(pathItem).filter(method => 
+            return total + Object.keys(pathItem).filter(method =>
               ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)
             ).length;
           }, 0) : 0;
-        
-        console.log(`📊 Statistics:`);
+
+        console.log('📊 Statistics:');
         console.log(`   API Title: ${spec.info?.title || 'Not specified'}`);
         console.log(`   API Version: ${spec.info?.version || 'Not specified'}`);
         console.log(`   OpenAPI Version: ${spec.openapi || 'Not specified'}`);
         console.log(`   Paths: ${pathCount}`);
         console.log(`   Endpoints: ${endpointCount}`);
-        
+
         if (warnings.length > 0) {
           console.log('');
           console.log('⚠️  Warnings:');
           warnings.forEach(warning => console.log(`   - ${warning}`));
         }
-        
+
         console.log('');
         console.log('🚀 Ready for Swagger UI generation!');
       } else {
@@ -179,7 +179,7 @@ program
         errors.forEach(error => console.log(`   - ${error}`));
         process.exit(1);
       }
-      
+
     } catch (error) {
       if (error.code === 'ENOENT') {
         console.error(`❌ File not found: ${options.spec}`);

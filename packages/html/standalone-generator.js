@@ -1,6 +1,6 @@
 /**
  * Standalone HTML Generator
- * 
+ *
  * Truly independent implementation with zero external dependencies.
  * Can run via "npx @confytome/html" without any core package dependencies.
  */
@@ -43,10 +43,10 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
    */
   async validate(options = {}) {
     const baseValidation = await super.validate(options);
-    
+
     // HTML generator doesn't require additional templates - everything is inline
     this.log('HTML generator validation complete');
-    
+
     return baseValidation;
   }
 
@@ -57,10 +57,10 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
    */
   async initialize(options = {}) {
     const baseInit = await super.initialize(options);
-    
+
     // Add HTML-specific initialization here if needed
     this.log('HTML generator initialized');
-    
+
     return baseInit;
   }
 
@@ -92,7 +92,7 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
 
       // Write output using base class method
       const result = this.writeOutputFile('api-docs.html', html, 'Professional HTML documentation created');
-      
+
       // Add additional stats
       if (result.success) {
         result.stats = {

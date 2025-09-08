@@ -1,6 +1,6 @@
 /**
  * Self-Contained Base for Standalone Generators
- * 
+ *
  * Provides common functionality without any external dependencies.
  * This ensures true standalone operation for all @confytome generators.
  */

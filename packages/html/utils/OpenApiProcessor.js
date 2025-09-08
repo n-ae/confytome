@@ -1,6 +1,6 @@
 /**
  * OpenAPI Processor for HTML Generation
- * 
+ *
  * Processes OpenAPI specifications into data structures suitable for HTML rendering.
  * Self-contained without external dependencies.
  */
@@ -53,7 +53,7 @@ export class OpenApiProcessor {
 
     Object.entries(paths).forEach(([path, pathItem]) => {
       const methods = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'];
-      
+
       methods.forEach(method => {
         if (pathItem[method]) {
           const operation = pathItem[method];
@@ -83,12 +83,12 @@ export class OpenApiProcessor {
 
     Object.entries(paths).forEach(([path, pathItem]) => {
       const methods = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'];
-      
+
       methods.forEach(method => {
         if (pathItem[method]) {
           const operation = pathItem[method];
           const tags = operation.tags || ['default'];
-          
+
           tags.forEach(tag => {
             if (!resources.has(tag)) {
               resources.set(tag, {
@@ -97,7 +97,7 @@ export class OpenApiProcessor {
                 endpoints: []
               });
             }
-            
+
             resources.get(tag).endpoints.push({
               path,
               method: method.toUpperCase(),
@@ -181,7 +181,7 @@ export class OpenApiProcessor {
       description: requestBody.description || '',
       required: requestBody.required || false,
       contentType: Object.keys(requestBody.content || {})[0] || 'application/json',
-      schema: requestBody.content ? 
+      schema: requestBody.content ?
         Object.values(requestBody.content)[0]?.schema : null
     };
   }
@@ -197,7 +197,7 @@ export class OpenApiProcessor {
         statusCode,
         description: response.description || '',
         contentType: Object.keys(response.content || {})[0] || 'application/json',
-        schema: response.content ? 
+        schema: response.content ?
           Object.values(response.content)[0]?.schema : null
       });
     });

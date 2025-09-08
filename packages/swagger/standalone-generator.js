@@ -1,6 +1,6 @@
 /**
  * Standalone Swagger UI Generator
- * 
+ *
  * Truly independent implementation with zero external dependencies
  * beyond swagger-ui-dist. Can run via "npx @confytome/swagger"
  * without any core package dependencies.
@@ -44,7 +44,7 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
    */
   async validate(options = {}) {
     const baseValidation = await super.validate(options);
-    
+
     // Check swagger-ui-dist availability
     try {
       require.resolve('swagger-ui-dist/package.json');
@@ -52,7 +52,7 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
     } catch (error) {
       baseValidation.errors.push('swagger-ui-dist package not found');
     }
-    
+
     return baseValidation;
   }
 
@@ -63,9 +63,9 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
    */
   async initialize(options = {}) {
     const baseInit = await super.initialize(options);
-    
+
     this.log('Swagger UI generator initialized');
-    
+
     return baseInit;
   }
 
@@ -86,13 +86,13 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
 
       // Write output using base class method
       const result = this.writeOutputFile('swagger-ui.html', html, 'Interactive Swagger UI generated');
-      
+
       // Add additional stats
       if (result.success) {
         const pathCount = spec.paths ? Object.keys(spec.paths).length : 0;
-        const endpointCount = spec.paths ? 
+        const endpointCount = spec.paths ?
           Object.values(spec.paths).reduce((total, pathItem) => {
-            return total + Object.keys(pathItem).filter(method => 
+            return total + Object.keys(pathItem).filter(method =>
               ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)
             ).length;
           }, 0) : 0;

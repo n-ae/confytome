@@ -1,6 +1,6 @@
 /**
  * Standalone Postman Collection Generator
- * 
+ *
  * Truly independent implementation with zero external dependencies.
  * Can run via "npx @confytome/postman" without any core package dependencies.
  * Generates Postman collections and environment variables from OpenAPI specs.
@@ -42,9 +42,9 @@ export class StandalonePostmanGenerator extends StandaloneBase {
    */
   async initialize(options = {}) {
     const baseInit = await super.initialize(options);
-    
+
     this.log('Postman collection generator initialized');
-    
+
     return baseInit;
   }
 
@@ -66,7 +66,7 @@ export class StandalonePostmanGenerator extends StandaloneBase {
 
       // Write collection file
       const collectionResult = this.writeOutputFile(
-        'postman-collection.json', 
+        'postman-collection.json',
         JSON.stringify(collection, null, 2),
         'Postman collection generated'
       );
@@ -74,7 +74,7 @@ export class StandalonePostmanGenerator extends StandaloneBase {
       // Write environment file
       const environmentResult = this.writeOutputFile(
         'postman-environment.json',
-        JSON.stringify(environment, null, 2), 
+        JSON.stringify(environment, null, 2),
         'Postman environment generated'
       );
 
@@ -171,7 +171,7 @@ export class StandalonePostmanGenerator extends StandaloneBase {
         {
           key: 'API_VERSION',
           value: info.version || '1.0.0',
-          type: 'default', 
+          type: 'default',
           description: 'API version',
           enabled: true
         },
@@ -205,13 +205,13 @@ export class StandalonePostmanGenerator extends StandaloneBase {
 
     Object.entries(paths).forEach(([pathName, pathItem]) => {
       const methods = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'];
-      
+
       methods.forEach(method => {
         if (pathItem[method]) {
           const operation = pathItem[method];
           const tags = operation.tags || ['default'];
           const tag = tags[0]; // Use first tag for grouping
-          
+
           if (!folders.has(tag)) {
             folders.set(tag, {
               name: tag,
@@ -234,7 +234,7 @@ export class StandalonePostmanGenerator extends StandaloneBase {
    */
   createPostmanItem(pathName, method, operation, baseUrl) {
     const url = `{{BASE_URL}}${pathName}`;
-    
+
     return {
       name: operation.summary || `${method.toUpperCase()} ${pathName}`,
       request: {
@@ -330,7 +330,7 @@ export class StandalonePostmanGenerator extends StandaloneBase {
       _postman_previewlanguage: 'json',
       header: [],
       cookie: [],
-      body: response.content ? 
+      body: response.content ?
         JSON.stringify(this.generateExampleFromSchema(
           Object.values(response.content)[0]?.schema
         ), null, 2) : ''
@@ -373,30 +373,30 @@ export class StandalonePostmanGenerator extends StandaloneBase {
     if (schema.example) return schema.example;
 
     switch (schema.type) {
-      case 'object':
-        const obj = {};
-        if (schema.properties) {
-          Object.entries(schema.properties).forEach(([key, prop]) => {
-            obj[key] = this.generateExampleFromSchema(prop);
-          });
-        }
-        return obj;
-      
-      case 'array':
-        return schema.items ? [this.generateExampleFromSchema(schema.items)] : [];
-      
-      case 'string':
-        return this.generateExampleValue('string', schema.format);
-      
-      case 'number':
-      case 'integer':
-        return this.generateExampleValue('number');
-      
-      case 'boolean':
-        return true;
-      
-      default:
-        return null;
+    case 'object':
+      const obj = {};
+      if (schema.properties) {
+        Object.entries(schema.properties).forEach(([key, prop]) => {
+          obj[key] = this.generateExampleFromSchema(prop);
+        });
+      }
+      return obj;
+
+    case 'array':
+      return schema.items ? [this.generateExampleFromSchema(schema.items)] : [];
+
+    case 'string':
+      return this.generateExampleValue('string', schema.format);
+
+    case 'number':
+    case 'integer':
+      return this.generateExampleValue('number');
+
+    case 'boolean':
+      return true;
+
+    default:
+      return null;
     }
   }
 
@@ -405,23 +405,23 @@ export class StandalonePostmanGenerator extends StandaloneBase {
    */
   generateExampleValue(type, format) {
     switch (type) {
-      case 'string':
-        if (format === 'email') return 'user@example.com';
-        if (format === 'date') return '2024-01-01';
-        if (format === 'date-time') return '2024-01-01T00:00:00Z';
-        return 'string';
-      
-      case 'number':
-        return 123.45;
-      
-      case 'integer':
-        return 123;
-      
-      case 'boolean':
-        return true;
-      
-      default:
-        return 'value';
+    case 'string':
+      if (format === 'email') return 'user@example.com';
+      if (format === 'date') return '2024-01-01';
+      if (format === 'date-time') return '2024-01-01T00:00:00Z';
+      return 'string';
+
+    case 'number':
+      return 123.45;
+
+    case 'integer':
+      return 123;
+
+    case 'boolean':
+      return true;
+
+    default:
+      return 'value';
     }
   }
 
@@ -430,9 +430,9 @@ export class StandalonePostmanGenerator extends StandaloneBase {
    */
   countEndpoints(spec) {
     if (!spec.paths) return 0;
-    
+
     return Object.values(spec.paths).reduce((total, pathItem) => {
-      return total + Object.keys(pathItem).filter(method => 
+      return total + Object.keys(pathItem).filter(method =>
         ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)
       ).length;
     }, 0);
