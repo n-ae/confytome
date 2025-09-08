@@ -17,9 +17,6 @@
   "dependencies": {
     "mustache": "^4.2.0"
   },
-  "peerDependencies": {
-    "@confytome/core": "workspace:*"
-  },
   "keywords": [
     "confytome",
     "template",
