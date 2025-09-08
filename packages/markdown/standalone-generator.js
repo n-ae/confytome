@@ -29,7 +29,7 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
     return {
       name: 'markdown',
       description: 'Confluence-friendly Markdown documentation generator using Mustache templates',
-      version: '1.4.4',
+      version: '1.4.5',
       packageName: '@confytome/markdown',
       cliCommand: 'confytome-markdown',
       inputs: ['api-spec.json'],
