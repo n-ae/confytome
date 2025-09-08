@@ -1,5 +1,17 @@
 export default [
   {
+    // Global ignores come first
+    ignores: [
+      'node_modules/',
+      'docs/',
+      'coverage/',
+      'dist/',
+      'build/',
+      '**/*.template.js',
+      '*.min.js'
+    ]
+  },
+  {
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -45,15 +57,7 @@ export default [
       'space-infix-ops': ['error'],
       'object-curly-spacing': ['error', 'always'],
       'array-bracket-spacing': ['error', 'never']
-    },
-    ignores: [
-      'node_modules/',
-      'docs/',
-      'coverage/',
-      'dist/',
-      'build/',
-      '*.min.js'
-    ]
+    }
   },
   {
     files: ['**/test/**/*.js', '**/*.test.js'],
