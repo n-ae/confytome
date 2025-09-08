@@ -171,7 +171,7 @@ Examples:
       // 2. Copy template files
       console.log('');
       console.log('📋 Setting up configuration files...');
-      const copyResults = CliValidator.copyTemplateFiles();
+      const copyResults = CliValidator.copyTemplateFiles({ outputDir });
 
       // 3. Validate environment
       console.log('');
@@ -266,7 +266,7 @@ Examples:
 
         // Run init to create example files
         CliValidator.createProjectStructure(outputDir);
-        const copyResults = CliValidator.copyTemplateFiles();
+        const copyResults = CliValidator.copyTemplateFiles({ outputDir });
 
         if (!copyResults.exampleCreated || !copyResults.configCreated) {
           console.error('❌ Failed to create example files');

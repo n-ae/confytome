@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest && npm run test:standalone-markdown",
     "test:core": "npm test -- --selectProjects=\"@confytome/core\"",
     "test:generators": "npm test -- --selectProjects=\"@confytome/generators\"",
     "test:watch": "npm test -- --watch",
@@ -26,6 +26,9 @@
     "regenerate:readmes:validate": "npm run regenerate:readmes -- --validate",
     "regenerate:readmes:preview": "npm run regenerate:readmes -- --preview",
     "regenerate:readmes:quality": "node packages/generator/scripts/validate-readme-quality.js",
+    "test:functionality": "node scripts/test-functionality.js",
+    "test:standalone-markdown": "node tests/standalone-markdown.test.js",
+    "test:all": "node tests/run-all-tests.js",
     "publish": "npm run validate && npm publish --workspaces",
     "publish:dry-run": "npm publish --dry-run --workspaces"
   },

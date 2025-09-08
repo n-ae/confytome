@@ -3,9 +3,6 @@
   "version": "1.4.4",
   "description": "Plugin for @confytome/core - generates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
   "main": "generate-html.js",
-  "bin": {
-    "html": "cli.js"
-  },
   "type": "module",
   "repository": {
     "type": "git",
@@ -31,7 +28,6 @@
   "author": "nae",
   "license": "MIT",
   "files": [
-    "cli.js",
     "generate-html.js",
     "utils/",
     "README.md"
@@ -42,12 +38,7 @@
     "format": "eslint . --ext .js --fix",
     "clean": "rm -rf docs/* .cache",
     "validate": "npm ls",
-    "prepublishOnly": "npm run validate",
-    "security:check": "npm audit",
-    "security:fix": "npm audit fix"
-  },
-  "dependencies": {
-    "commander": "^14.0.0"
+    "prepublishOnly": "npm run validate"
   },
   "peerDependencies": {
     "@confytome/core": "^1.2.0"

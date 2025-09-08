@@ -89,9 +89,8 @@ graph TB
 
 ### Core Components
 - **GeneratorRegistry** ([services/GeneratorRegistry.js](./packages/core/services/GeneratorRegistry.js)): Plugin discovery and management
-- **GeneratorFactory** ([services/GeneratorFactory.js](./packages/core/services/GeneratorFactory.js)): Plugin instantiation with DI
+- **GeneratorFactory** ([services/GeneratorFactory.js](./packages/core/services/GeneratorFactory.js)): Consolidated plugin operations and dependency injection
 - **ServiceFactory** ([services/ServiceFactory.js](./packages/core/services/ServiceFactory.js)): Service layer management
-- **RegistryOrchestrator** ([services/RegistryOrchestrator.js](./packages/core/services/RegistryOrchestrator.js)): High-level plugin operations
 
 ### Base Classes
 - **BaseGenerator** ([utils/base-generator.js](./packages/core/utils/base-generator.js)): Common generator functionality

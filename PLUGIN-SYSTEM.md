@@ -1,53 +1,62 @@
 # Confytome Plugin System
 
-The Confytome plugin system provides a **simplified, maintainable architecture** for creating and managing documentation generators. It uses **manifest-based plugin discovery** for better maintainability and easier debugging.
+The Confytome plugin system provides a **simplified, maintainable architecture** for creating and managing documentation generators. It uses **interface-based plugin discovery** for better maintainability and type safety.
 
 ## Architecture Overview
 
 The plugin system consists of several key components:
 
-- **Plugin Manifests**: `confytome-plugin.json` files describing each generator
-- **GeneratorRegistry**: Discovers and registers generators via manifest files  
-- **GeneratorFactory**: Creates generator instances with dependency injection
-- **RegistryOrchestrator**: Manages generator execution and dependencies
+- **GeneratorRegistry**: Discovers and registers generators via interface introspection
+- **GeneratorFactory**: Creates generator instances with dependency injection and manages execution  
+- **IGenerator Interface**: Standardized contract that all generators must implement
+- **MetadataFactory**: Provides standardized metadata creation patterns
 
-## Simplified Plugin Discovery
+## Interface-Based Plugin Discovery
 
-### Manifest Files
+### Generator Interface Contract
 
-Each generator package contains a `confytome-plugin.json` manifest file that describes the plugin:
+Each generator must implement the `IGenerator` interface with these required methods:
 
-```json
-{
-  "name": "html",
-  "type": "spec-consumer",
-  "description": "Professional styled HTML documentation generator",
-  "main": "./generate-html.js",
-  "className": "SimpleDocsGenerator",
-  "version": "1.3.0",
-  "author": "nae",
-  "tags": ["html", "documentation", "responsive"],
-  "dependencies": {
-    "commander": "^14.0.0"
-  },
-  "peerDependencies": {
-    "@confytome/core": "^1.2.0"
-  },
-  "outputs": ["api-docs.html"],
-  "inputType": "openapi-spec",
-  "outputFormat": "html",
-  "standalone": true
+```javascript
+import { IGenerator, MetadataFactory } from '@confytome/core/interfaces/IGenerator.js';
+
+class MyGenerator extends IGenerator {
+  // Static metadata method (required for discovery)
+  static getMetadata() {
+    return MetadataFactory.createSpecConsumerMetadata(
+      'my-generator',
+      'My generator description',
+      'MyGenerator', 
+      'output.ext'
+    );
+  }
+
+  // Instance lifecycle methods (required)
+  async validate(options = {}) { /* Validate prerequisites */ }
+  async initialize(options = {}) { /* Initialize generator */ }
+  async generate(options = {}) { /* Generate documentation */ }
+  async cleanup() { /* Cleanup resources */ }
 }
 ```
 
-### Manifest Schema
+### Automatic Discovery Process
+
+1. **File Scanning**: Registry scans `packages/*/generate-*.js` files
+2. **Dynamic Import**: Loads each generator module
+3. **Interface Detection**: Finds classes with `getMetadata()` static method
+4. **Interface Validation**: Validates full `IGenerator` compliance
+5. **Registration**: Adds valid generators to registry
+
+### Metadata Schema
+
+The `getMetadata()` method must return an object with these fields:
 
 **Required fields:**
-- `name`: Plugin identifier (used for generator lookup)
-- `type`: Plugin type (`openapi-generator` or `spec-consumer`)
+- `name`: Generator identifier (e.g., 'html', 'markdown')
+- `type`: Generator type (`'openapi-generator'` or `'spec-consumer'`)
 - `description`: Human-readable description
-- `main`: Path to the generator file (relative to manifest)
-- `className`: Name of the generator class to instantiate
+- `className`: Class name for instantiation
+- `outputs`: Array of output file patterns
 
 **Optional fields:**
 - `version`: Plugin version
@@ -141,111 +150,138 @@ Consumes OpenAPI specifications to generate various documentation formats.
 
 ```
 packages/my-generator/
-├── confytome-plugin.json     # Plugin manifest
-├── generate-my-format.js     # Main generator file
+├── generate-my-format.js     # Main generator file (must start with 'generate-')
+├── utils/                    # Supporting utilities
+├── templates/               # Templates (if applicable)
 ├── package.json              # npm package config
 └── README.md                # Documentation
 ```
 
-### 2. Write Plugin Manifest
+### 2. Implement Generator Interface
 
-```json
-{
-  "name": "my-format",
-  "type": "spec-consumer",
-  "description": "Generates documentation in MyFormat",
-  "main": "./generate-my-format.js",
-  "className": "MyFormatGenerator",
-  "version": "1.0.0",
-  "author": "Your Name",
-  "tags": ["custom", "format"],
-  "outputs": ["api-docs.myformat"],
-  "inputType": "openapi-spec",
-  "outputFormat": "myformat",
-  "standalone": true
-}
-```
-
-### 3. Implement Generator Class
+Create your generator class implementing the `IGenerator` interface:
 
 ```javascript
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+import { MetadataFactory } from '@confytome/core/interfaces/IGenerator.js';
 
 export class MyFormatGenerator extends SpecConsumerGeneratorBase {
-  constructor(outputDir = './docs', services = null) {
+  constructor(outputDir, services = null) {
     super('generate-my-format', 'Generating MyFormat documentation', outputDir, services);
   }
 
-  async generate() {
-    console.log('🎨 Generating MyFormat documentation...');
-    
-    return this.generateDocument('myformat', 'api-docs.myformat', (openApiSpec, services) => {
-      return this.convertToMyFormat(openApiSpec);
+  // Required: Static metadata for discovery
+  static getMetadata() {
+    return MetadataFactory.createSpecConsumerMetadata(
+      'my-format',
+      'Generates documentation in MyFormat',
+      'MyFormatGenerator',
+      'api-docs.myformat'
+    );
+  }
+
+  // Required: Validate generator prerequisites
+  async validate(options = {}) {
+    const baseValidation = await super.validate(options);
+    // Add any custom validation
+    return baseValidation;
+  }
+
+  // Required: Generate documentation
+  async generate(options = {}) {
+    return this.generateDocument('myformat', 'api-docs.myformat', (spec, services) => {
+      // Your format generation logic here
+      return this.convertSpecToMyFormat(spec, services);
     });
   }
-
-  convertToMyFormat(openApiSpec) {
-    // Your custom conversion logic
-    return 'MyFormat content based on OpenAPI spec';
-  }
 }
+
+export default MyFormatGenerator;
 ```
 
-### 4. Register and Test
+### 3. Register and Test
 
-The plugin will be automatically discovered via its manifest file when the registry initializes.
+The plugin will be automatically discovered via interface introspection when the registry initializes.
 
 ```javascript
-import { generatorRegistry } from '@confytome/core/services/GeneratorRegistry.js';
+import { GeneratorRegistry } from '@confytome/core/services/GeneratorRegistry.js';
 
-await generatorRegistry.initialize();
-console.log(generatorRegistry.getAllGenerators());
-// Should include 'my-format'
+const registry = new GeneratorRegistry();
+await registry.initialize();
+console.log(registry.listGenerators());
+// Should include your new generator
+```
+
+### 4. Package Configuration
+
+Update your `package.json` for proper npm package structure:
+
+```json
+{
+  "name": "@confytome/my-format", 
+  "main": "generate-my-format.js",
+  "type": "module",
+  "peerDependencies": {
+    "@confytome/core": "^1.2.0"
+  }
+}
 ```
 
 ## Best Practices
 
 ### Plugin Development
-1. **Use descriptive manifest files** with rich metadata
+1. **Implement full IGenerator interface** for automatic discovery
 2. **Follow naming conventions**: `generate-{format}.js` for generator files
-3. **Extend base classes**: Use `SpecConsumerGeneratorBase` or `OpenAPIGeneratorBase`
-4. **Document external dependencies** in manifest `externalTools` field
-5. **Test plugin discovery**: Ensure manifest is valid JSON with required fields
+3. **Extend base classes**: Use `SpecConsumerGeneratorBase` or `OpenAPIGeneratorBase` 
+4. **Provide static metadata**: Implement `getMetadata()` with complete information
+5. **Handle errors gracefully**: Use base class error handling patterns
+6. **Test interface compliance**: Ensure all required methods are implemented
 
 ### Plugin Discovery
-1. **Prefer manifest-based discovery** over reflection
-2. **Validate plugins early** using `validateGenerator()`
+1. **Use interface introspection** for automatic discovery
+2. **Validate interface compliance** using `GeneratorValidator`
 3. **Handle plugin failures gracefully** with proper error messages
-4. **Cache plugin information** for better performance
+4. **Follow generator lifecycle** (validate → initialize → generate → cleanup)
 
 ## Debugging Plugin Issues
 
 ### Common Problems
 
-**Plugin Not Found:**
+**Plugin Not Discovered:**
 ```javascript
-// Check if manifest exists
-const manifestPath = 'packages/my-plugin/confytome-plugin.json';
-console.log(fs.existsSync(manifestPath));
+// Check if generator file follows naming convention
+const generatorPath = 'packages/my-plugin/generate-my-format.js';
+console.log('File exists:', fs.existsSync(generatorPath));
+console.log('Starts with "generate-":', path.basename(generatorPath).startsWith('generate-'));
 
-// Check manifest validity
-const manifest = JSON.parse(fs.readFileSync(manifestPath));
-console.log('Required fields:', ['name', 'type', 'main', 'className']);
+// Check if getMetadata() is implemented
+import MyGenerator from './generate-my-format.js';
+console.log('Has getMetadata():', typeof MyGenerator.getMetadata === 'function');
 ```
 
-**Class Not Found:**
+**Interface Validation Errors:**
 ```javascript
-// Verify className matches export
-console.log('Manifest className:', manifest.className);
-console.log('Available exports:', Object.keys(module));
-```
+import { GeneratorValidator } from '@confytome/core/interfaces/IGenerator.js';
 
-**Validation Errors:**
-```javascript
-const validation = generatorRegistry.validateGenerator('my-plugin');
+// Validate interface compliance
+const validation = GeneratorValidator.validateGeneratorClass(MyGenerator);
+console.log('Interface valid:', validation.valid);
 if (!validation.valid) {
-  console.error('Validation errors:', validation.errors);
-  console.warn('Validation warnings:', validation.warnings);
+  console.log('Errors:', validation.errors);
+}
+```
+
+**Metadata Issues:**
+```javascript
+// Check metadata structure
+const metadata = MyGenerator.getMetadata();
+console.log('Metadata:', metadata);
+
+// Validate required fields
+const required = ['name', 'type', 'description', 'className', 'outputs'];
+const missing = required.filter(field => !metadata[field]);
+if (missing.length > 0) {
+  console.error('Missing required metadata fields:', missing);
 }
 ```
 

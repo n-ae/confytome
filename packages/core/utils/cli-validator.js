@@ -354,6 +354,7 @@ export class CliValidator {
    */
   static copyTemplateFiles(options = {}) {
     const {
+      outputDir = '.',
       sourceTemplateDir = path.join(path.dirname(__dirname), 'templates'),
       configFileName = 'serverConfig.json',
       forceOverwrite = false
@@ -368,7 +369,7 @@ export class CliValidator {
 
     // 1. Copy server config template
     const configTemplatePath = path.join(sourceTemplateDir, 'serverConfig.template.json');
-    const configPath = `./${configFileName}`;
+    const configPath = path.join(outputDir, configFileName);
 
     if (fs.existsSync(configTemplatePath)) {
       if (!fs.existsSync(configPath) || forceOverwrite) {
@@ -382,7 +383,7 @@ export class CliValidator {
     }
 
     // 2. Copy Mustache templates if they don't exist
-    const templatesDir = './templates';
+    const templatesDir = path.join(outputDir, 'templates');
     if (!fs.existsSync(templatesDir)) {
       // Create basic Mustache template structure
       fs.mkdirSync(templatesDir, { recursive: true });
@@ -392,7 +393,7 @@ export class CliValidator {
     }
 
     // 3. Copy confytome config template if it doesn't exist
-    const confytomeConfigPath = DEFAULT_CONFIG_FILES.CONFYTOME;
+    const confytomeConfigPath = path.join(outputDir, 'confytome.json');
     const confytomeTemplatePath = path.join(sourceTemplateDir, 'confytome.template.json');
 
     if (fs.existsSync(confytomeTemplatePath) && !fs.existsSync(confytomeConfigPath)) {
@@ -406,12 +407,12 @@ export class CliValidator {
     const exampleFiles = [
       {
         template: 'example-router.js',
-        target: './example-router.js',
+        target: path.join(outputDir, 'example-router.js'),
         description: 'Created example-router.js with API endpoint examples'
       },
       {
         template: 'example-auth-routes.js',
-        target: './example-auth-routes.js',
+        target: path.join(outputDir, 'example-auth-routes.js'),
         description: 'Created example-auth-routes.js with server override examples'
       }
     ];

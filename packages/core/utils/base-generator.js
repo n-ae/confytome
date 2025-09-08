@@ -121,7 +121,10 @@ export class BaseGenerator {
   async validateDependencies(_args) {
     // Spec consumers need existing OpenAPI spec
     if (!this.requiresJSDocFiles) {
-      FileManager.validateSpecConsumerPrerequisites(this.outputDir, this.name);
+      FileManager.validateGeneratorPrerequisites({
+        outputDir: this.outputDir,
+        requiresSpec: true
+      }, this.name);
     }
   }
 

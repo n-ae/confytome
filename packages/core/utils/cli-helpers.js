@@ -140,10 +140,16 @@ function cleanupTempConfig(tempConfigPath) {
   }
 }
 
-export async function generateFromConfytomeConfig(configPath = DEFAULT_CONFIG_FILES.CONFYTOME, outputDir, options = {}) {
+export async function generateFromConfytomeConfig(configPathOrObject, outputDir, options = {}) {
   outputDir = getOutputDir(outputDir);
 
-  const confytomeConfig = await ConfytomeConfig.load(configPath);
+  // Handle both config path (string) and config object
+  let confytomeConfig;
+  if (typeof configPathOrObject === 'string') {
+    confytomeConfig = await ConfytomeConfig.load(configPathOrObject);
+  } else {
+    confytomeConfig = configPathOrObject;
+  }
 
   const routeFileNames = ConfytomeConfig.getRouteFileNames(confytomeConfig);
   const modifiedServerConfig = ConfytomeConfig.createModifiedServerConfig(confytomeConfig);

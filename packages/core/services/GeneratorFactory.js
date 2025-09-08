@@ -47,10 +47,8 @@ export class GeneratorFactory {
     // Create services if not provided
     let services = options.services;
     if (!services && options.contextUrl) {
-      const metadata = generatorRegistry.getMetadata(generatorName);
-      services = ServiceFactory.createGeneratorServices(
+      services = ServiceFactory.createServices(
         options.contextUrl,
-        metadata.type,
         options
       );
     }

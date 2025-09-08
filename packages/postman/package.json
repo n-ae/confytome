@@ -3,9 +3,6 @@
   "version": "1.4.4",
   "description": "Plugin for @confytome/core - generates Postman collections and environment variables from OpenAPI specs for API testing and development.",
   "main": "generate-postman.js",
-  "bin": {
-    "postman": "cli.js"
-  },
   "type": "module",
   "repository": {
     "type": "git",
@@ -31,7 +28,6 @@
   "author": "nae",
   "license": "MIT",
   "files": [
-    "cli.js",
     "generate-postman.js",
     "utils/",
     "README.md"
@@ -42,12 +38,7 @@
     "format": "eslint . --ext .js --fix",
     "clean": "rm -rf docs/* .cache",
     "validate": "npm ls",
-    "prepublishOnly": "npm run validate",
-    "security:check": "npm audit",
-    "security:fix": "npm audit fix"
-  },
-  "dependencies": {
-    "commander": "^14.0.0"
+    "prepublishOnly": "npm run validate"
   },
   "peerDependencies": {
     "@confytome/core": "^1.2.0"
