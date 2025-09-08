@@ -168,10 +168,10 @@ Examples:
       console.log('🏗️  Creating directory structure...');
       CliValidator.createProjectStructure(outputDir);
 
-      // 2. Copy template files
+      // 2. Copy template files to root directory
       console.log('');
       console.log('📋 Setting up configuration files...');
-      const copyResults = CliValidator.copyTemplateFiles({ outputDir });
+      const copyResults = CliValidator.copyTemplateFiles({ outputDir: '.' });
 
       // 3. Validate environment
       console.log('');
