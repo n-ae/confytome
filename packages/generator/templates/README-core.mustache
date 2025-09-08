@@ -1,7 +1,7 @@
 # {{{packageName}}}
 
 {{#badges}}
-[![{{{name}}}]({{{url}})]({{{link}}})
+[![{{name}}]({{&url}})]({{&link}})
 {{/badges}}
 
 {{{description}}}
@@ -210,7 +210,7 @@ const generators = registry.getAllGenerators();
 const validation = registry.validateGenerator('html');
 ```
 
-#### GeneratorFactory  
+#### GeneratorFactory
 ```javascript
 // Create generator instance
 const generator = await GeneratorFactory.createGenerator('html', './docs', options);
@@ -249,7 +249,7 @@ npm run test:watch
 # Lint code
 npm run lint
 
-# Fix linting issues  
+# Fix linting issues
 npm run lint:fix
 
 # Regenerate CLI templates

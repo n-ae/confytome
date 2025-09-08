@@ -1,13 +1,14 @@
 {
   "name": "@confytome/core",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Core plugin system and OpenAPI 3.0.3 generator from JSDoc comments. Plugin registry, service layer, and CLI for extensible API documentation generation.",
   "main": "generate-openapi.js",
   "exports": {
     ".": "./generate-openapi.js",
     "./constants.js": "./constants.js",
     "./utils/*": "./utils/*",
-    "./services/*": "./services/*"
+    "./services/*": "./services/*",
+    "./interfaces/*": "./interfaces/*"
   },
   "bin": {
     "confytome": "cli.js"
@@ -50,18 +51,16 @@
   ],
   "scripts": {
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
-    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
-    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+    "test:watch": "npm test -- --watch",
+    "test:coverage": "npm test -- --coverage",
     "lint": "eslint . --ext .js",
-    "format": "eslint . --ext .js --fix",
+    "lint:fix": "npm run lint -- --fix",
     "clean": "rm -rf docs/* .cache",
-    "validate": "npm run lint && npm run test",
-    "prepublishOnly": "npm run validate",
-    "preversion": "npm run validate",
-    "version": "git add -A .",
-    "postversion": "git push && git push --tags",
-    "security:check": "npm audit",
-    "security:fix": "npm audit fix"
+    "dev": "npm run clean && npm run validate",
+    "validate": "npm run lint && npm test",
+    "audit": "npm audit",
+    "audit:fix": "npm audit fix",
+    "prepublishOnly": "npm run validate"
   },
   "dependencies": {
     "commander": "^14.0.0",

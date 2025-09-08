@@ -59,15 +59,13 @@ function processTemplate(template, variables) {
  * Get output path for package README
  */
 function getOutputPath(packageName) {
-  if (packageName === 'workspace') {
-    return path.join(rootDir, 'README.md');
+  let dir = rootDir;
+
+  if (packageName !== 'workspace') {
+    dir = path.join(rootDir, 'packages', packageName);
   }
 
-  const packageDir = packageName === 'core' ?
-    path.join(rootDir, 'packages/core') :
-    path.join(rootDir, 'packages', packageName);
-
-  return path.join(packageDir, 'README.md');
+  return path.join(dir, 'README.md');
 }
 
 /**

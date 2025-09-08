@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
  * Regenerate README Files Script
- * 
+ *
  * Uses Mustache templates to regenerate README files with enhanced
  * features like conditionals, loops, and structured data.
  */
 
-import { generateAllREADMEs, validateREADMETemplates, compareREADMEApproaches } from '../utils/mustache-readme-generator.js';
+import { generateAllREADMEs, validateREADMETemplates, compareREADMEApproaches } from '../src/mustache-readme-generator.js';
 
 /**
  * Main regeneration function
@@ -30,14 +30,14 @@ async function regenerateREADMEs() {
   const successful = results.filter(r => r.path);
   const failed = results.filter(r => r.error);
 
-  console.log(`\n📊 Summary:`);
+  console.log('\n📊 Summary:');
   console.log(`✅ Successfully generated: ${successful.length} READMEs`);
   if (failed.length > 0) {
     console.log(`❌ Failed: ${failed.length}`);
     failed.forEach(f => console.log(`   - ${f.type}: ${f.error}`));
     process.exit(1);
   } else {
-    console.log(`🎉 All READMEs updated successfully!`);
+    console.log('🎉 All READMEs updated successfully!');
   }
 }
 
@@ -48,10 +48,10 @@ async function compareApproaches() {
   console.log('🔍 Comparing old vs new README generation approaches...\n');
 
   const packageTypes = ['workspace', 'core', 'html', 'markdown', 'swagger', 'postman'];
-  
+
   for (const packageType of packageTypes) {
     const comparison = compareREADMEApproaches(packageType);
-    
+
     console.log(`📄 ${packageType}:`);
     if (comparison.error) {
       console.log(`   ❌ Error: ${comparison.error}`);
@@ -70,11 +70,11 @@ async function previewREADMEs() {
   console.log('👀 Previewing generated README content...\n');
 
   const packageTypes = ['workspace', 'core', 'html', 'markdown'];
-  
+
   for (const packageType of packageTypes) {
     try {
       const comparison = compareREADMEApproaches(packageType);
-      
+
       console.log(`📄 ${packageType.toUpperCase()} README Preview:`);
       console.log('─'.repeat(50));
       console.log(comparison.newContent);

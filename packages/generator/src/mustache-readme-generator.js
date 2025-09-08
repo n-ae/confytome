@@ -1,6 +1,6 @@
 /**
  * Mustache-based README Generator
- * 
+ *
  * Enhanced README generation using real Mustache templating
  * with support for conditionals, loops, and structured data.
  */
@@ -51,7 +51,7 @@ export function generateREADME(packageType, options = {}) {
 
   // Add numbered ordering for usage steps if needed
   if (finalData.outputExamples?.usage) {
-    finalData.outputExamples.usage = finalData.outputExamples.usage.map((step, index) => 
+    finalData.outputExamples.usage = finalData.outputExamples.usage.map((step, index) =>
       `${index + 1}. ${step}`
     );
   }
@@ -106,7 +106,7 @@ export async function generateAllREADMEs(options = {}) {
 
       console.log(`📝 Generating README for ${pkg.type}...`);
       const readmePath = writeREADME(pkg.type, pkg.path, options);
-      
+
       results.push({
         type: pkg.type,
         path: readmePath,
@@ -136,7 +136,7 @@ export function validateREADMETemplates() {
 
   const templates = [
     'README-workspace.mustache',
-    'README-core.mustache', 
+    'README-core.mustache',
     'README-generator.mustache'
   ];
 
@@ -144,7 +144,7 @@ export function validateREADMETemplates() {
 
   for (const templateName of templates) {
     const templatePath = path.join(templatesDir, templateName);
-    
+
     if (!fs.existsSync(templatePath)) {
       console.error(`❌ Template not found: ${templateName}`);
       allValid = false;
@@ -153,7 +153,7 @@ export function validateREADMETemplates() {
 
     try {
       const template = fs.readFileSync(templatePath, 'utf8');
-      
+
       // Basic Mustache syntax validation
       const unclosedTags = template.match(/\{\{[^}]*$/gm);
       if (unclosedTags) {
@@ -184,14 +184,14 @@ export function compareREADMEApproaches(packageType) {
   try {
     // Generate with new Mustache approach
     const newContent = generateREADME(packageType);
-    
+
     // Try to read existing README for comparison
-    const packagePath = packageType === 'workspace' 
-      ? rootDir 
+    const packagePath = packageType === 'workspace'
+      ? rootDir
       : path.join(rootDir, 'packages', packageType);
-    
+
     const existingPath = path.join(packagePath, 'README.md');
-    const existingContent = fs.existsSync(existingPath) 
+    const existingContent = fs.existsSync(existingPath)
       ? fs.readFileSync(existingPath, 'utf8')
       : '';
 
@@ -201,8 +201,8 @@ export function compareREADMEApproaches(packageType) {
       existingLength: existingContent.length,
       sizeDiff: newContent.length - existingContent.length,
       hasChanges: newContent !== existingContent,
-      newContent: newContent.substring(0, 500) + '...',
-      existingContent: existingContent.substring(0, 500) + '...'
+      newContent: `${newContent.substring(0, 500)}...`,
+      existingContent: `${existingContent.substring(0, 500)}...`
     };
   } catch (error) {
     return {

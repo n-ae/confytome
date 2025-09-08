@@ -37,7 +37,7 @@ npx {{{packageName}}} --config ./confytome.json --output ./api-docs
 | Option | Short | Description | Default |
 |--------|-------|-------------|---------|
 {{#options}}
-| `{{{flag}}}` | `{{{short}}}` | {{{description}}} | `{{{default}}}` |
+| `{{{flag}}}` | {{#short}}`{{{short}}}`{{/short}}{{^short}}{{/short}} | {{{description}}} | {{#default}}`{{{default}}}`{{/default}}{{^default}}{{/default}} |
 {{/options}}
 
 ## 🎯 Two Usage Scenarios
@@ -82,15 +82,13 @@ If @confytome/core is not installed, you'll see helpful guidance:
 ```
 docs/
 {{#outputExamples.fileStructure}}
-├── {{{file}}}      # {{{description}}}
+├── {{{file}}}
 {{/outputExamples.fileStructure}}
 ```
 
-{{#outputExamples.features}}
 ### Content Features
 {{#outputExamples.features}}
 - {{{.}}}
-{{/outputExamples.features}}
 {{/outputExamples.features}}
 
 {{#outputExamples.usage}}
@@ -136,7 +134,7 @@ npx {{{packageName}}} \\
    --spec ./specs/prod-api.json \\
    --output ./docs/prod
 
-# Staging docs  
+# Staging docs
 npx {{{packageName}}} \\
    --spec ./specs/staging-api.json \\
    --output ./docs/staging
@@ -172,7 +170,7 @@ This means you're using config mode but don't have @confytome/core installed.
 # Option 1: Install core
 npm install -g @confytome/core
 
-# Option 2: Use existing spec instead  
+# Option 2: Use existing spec instead
 npx {{{packageName}}} --spec ./path/to/existing-spec.json
 ```
 
@@ -182,7 +180,7 @@ npx {{{packageName}}} --spec ./path/to/existing-spec.json
 
 - **[@confytome/core](https://npmjs.com/package/@confytome/core)** - Plugin system & OpenAPI generator
 - **[@confytome/markdown](https://npmjs.com/package/@confytome/markdown)** - Confluence-friendly Markdown docs
-- **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML docs  
+- **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML docs
 - **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** - Interactive Swagger UI
 - **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** - Postman collections
 

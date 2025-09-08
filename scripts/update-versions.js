@@ -9,8 +9,7 @@ const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 async function updateVersion(targetVersion) {
   const files = [
     'package.json',
-    ...(await glob('packages/*/package.json', { cwd: rootDir })),
-    ...(await glob('packages/*/confytome-plugin.json', { cwd: rootDir }))
+    ...(await glob('packages/*/package.json', { cwd: rootDir }))
   ];
 
   console.log(`🔄 Updating to ${targetVersion}...`);

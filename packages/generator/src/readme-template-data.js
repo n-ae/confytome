@@ -1,6 +1,6 @@
 /**
  * README Template Data Provider
- * 
+ *
  * Enhanced template data for Mustache-based README generation
  * with support for conditionals, loops, and structured data.
  */
@@ -136,7 +136,7 @@ export function getREADMETemplateData(generatorType) {
         '⚡ **Standalone Operation** - Works with existing OpenAPI specs',
         '🕐 **Timestamped Documentation** - Generation metadata included'
       ],
-      outputDescription: 'Creates `api-docs.md` in the specified output directory with:\n- API overview and server information\n- All endpoints with request/response examples\n- Data models and schemas\n- Timestamp and generation info',
+      outputDescription: 'Creates `api-docs.md` in the specified output directory with:\n\n- API overview and server information\n- All endpoints with request/response examples\n- Data models and schemas\n- Timestamp and generation info',
       dependencies: [
         { name: 'commander', description: 'CLI argument parsing' },
         { name: 'mustache', description: 'Markdown template processing engine' }
@@ -146,8 +146,8 @@ export function getREADMETemplateData(generatorType) {
       ],
       outputExamples: {
         fileStructure: [
-          { file: 'api-docs.md', description: 'Main markdown documentation' },
-          { file: 'api-spec.json', description: 'OpenAPI spec (copied from source)' }
+          { file: 'api-docs.md        # Main markdown documentation', description: '' },
+          { file: 'api-spec.json      # OpenAPI spec (copied from source)', description: '' }
         ],
         features: [
           '**Quick Reference** - Table of contents with anchor links',
@@ -259,7 +259,7 @@ export function getREADMETemplateData(generatorType) {
     options: [...commonOptions, ...(data.additionalOptions || [])],
     hasAdditionalOptions: (data.additionalOptions || []).length > 0,
     hasTroubleshooting: (data.troubleshooting || []).length > 0,
-    dependencyRequirement: data.dependencies.some(dep => dep.name === 'mustache') 
+    dependencyRequirement: data.dependencies.some(dep => dep.name === 'mustache')
       ? 'When using `--spec` option: **No additional dependencies required**\nWhen using `--config` option: **Requires @confytome/core** for OpenAPI spec generation'
       : 'When using `--spec` option: **No additional dependencies required**\nWhen using `--config` option: **Requires @confytome/core** for OpenAPI spec generation'
   };

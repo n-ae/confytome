@@ -28,10 +28,10 @@ For more granular control over individual generators:
 # Generate OpenAPI spec first
 confytome openapi -c serverConfig.json -f your-router.js
 
-# Run specific plugins
+# Run specific generators
 confytome run generate-html generate-markdown
 
-# Or run all spec consumer plugins
+# Or run all spec consumer generators
 confytome run-all
 ```
 
@@ -43,7 +43,7 @@ confytome generators
 # Get detailed plugin information
 confytome info generate-html
 
-# Validate plugin compatibility
+# Validate generator interface compliance
 confytome validate
 ```
 
@@ -125,11 +125,21 @@ These templates also serve as examples for plugin developers:
 ### Generator Plugin Structure
 ```javascript
 // Example from template files
+import { MetadataFactory } from '@confytome/core/interfaces/IGenerator.js';
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
 
 class CustomGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir = './docs', services = null) {
     super('generate-custom', 'Custom format generator', outputDir, services);
+  }
+
+  static getMetadata() {
+    return MetadataFactory.createSpecConsumerMetadata(
+      'generate-custom',
+      'Custom format generator',
+      'CustomGenerator',
+      'output.custom'
+    );
   }
   
   async generate() {
@@ -143,12 +153,12 @@ class CustomGenerator extends SpecConsumerGeneratorBase {
 export default CustomGenerator;
 ```
 
-### External Plugin Development
-For creating external plugins as npm packages:
-- Follow `confytome-plugin-*` naming convention
+### External Generator Development
+For creating external generators as npm packages:
+- Implement `IGenerator` interface from `@confytome/core/interfaces/IGenerator.js`
 - Use `@confytome/core` as peer dependency
-- Implement generator discovery pattern
-- See [PLUGIN-SYSTEM.md](../../../PLUGIN-SYSTEM.md) for comprehensive guide
+- Follow `generate-*.js` naming convention for automatic discovery
+- See [Interface-Based Generator System ADR](../docs/adrs/adr-011-interface-based-generator-system.md) for implementation guide
 
 ## Template Customization
 
@@ -164,4 +174,4 @@ Templates work seamlessly with the plugin registry:
 1. **Project Init**: `confytome init` creates template files
 2. **Plugin Discovery**: Templates work with both workspace and external plugins  
 3. **Service Integration**: Templates support dependency injection and service layer
-4. **Validation**: Templates include plugin compatibility validation
+4. **Validation**: Templates include generator interface validation

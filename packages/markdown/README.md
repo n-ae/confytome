@@ -42,11 +42,10 @@ npx @confytome/markdown --config ./confytome.json --output ./api-docs
 |--------|-------|-------------|---------|
 | `--config` | `-c` | Path to confytome.json config file | `./confytome.json` |
 | `--output` | `-o` | Output directory for generated files | `./docs` |
-| `--spec` | | Path to existing OpenAPI spec file | |
-| `--version` | `-V` | Show version number | |
-| `--help` | `-h` | Show help information | |
-
-| `--no-brand` | | Exclude confytome branding from documentation | |
+| `--spec` |  | Path to existing OpenAPI spec file |  |
+| `--version` | `-V` | Show version number |  |
+| `--help` | `-h` | Show help information |  |
+| `--no-brand` |  | Exclude confytome branding from documentation |  |
 
 ## 🎯 Two Usage Scenarios
 
@@ -75,49 +74,88 @@ npx @confytome/markdown --config ./confytome.json
 If @confytome/core is not installed, you'll see helpful guidance:
 ```
 💡 You have two options:
-   1. Install @confytome/core: npm install -g @confytome/core
-   2. Provide existing OpenAPI spec: npx @confytome/markdown --spec path/to/spec.json
+   1. Install @confytome/core:
+      npm install -g @confytome/core
+   2. Provide existing OpenAPI spec:
+      npx @confytome/markdown --spec path/to/spec.json
 ```
 
 ## 📁 Generated Output
 
-Creates `api-docs.md` in the specified output directory with:\n- API overview and server information\n- All endpoints with request/response examples\n- Data models and schemas\n- Timestamp and generation info
+Creates `api-docs.md` in the specified output directory with:
 
-### Generated File Structure\n\n```\ndocs/\n├── api-docs.md        # Main markdown documentation\n└── api-spec.json      # OpenAPI spec (copied from source)\n```\n\n### Content Features\n- **Quick Reference** - Table of contents with anchor links\n- **Server Information** - Base URLs and environment details\n- **Endpoint Documentation** - Complete request/response details\n- **Schema Definitions** - Data model documentation\n- **Code samples** - Ready-to-use cURL examples
+- API overview and server information
+- All endpoints with request/response examples
+- Data models and schemas
+- Timestamp and generation info
+
+### Generated File Structure
+
+```
+docs/
+├── api-docs.md        # Main markdown documentation
+├── api-spec.json      # OpenAPI spec (copied from source)
+```
+
+### Content Features
+- **Quick Reference** - Table of contents with anchor links
+- **Server Information** - Base URLs and environment details
+- **Endpoint Documentation** - Complete request/response details
+- **Schema Definitions** - Data model documentation
+- **Code samples** - Ready-to-use cURL examples
+
 
 ## 🔧 Dependencies
 
-- **commander**: CLI argument parsing\n- **mustache**: Markdown template processing engine\n\nWhen using `--spec` option: **No additional dependencies required**\nWhen using `--config` option: **Requires @confytome/core** for OpenAPI spec generation
+- **commander**: CLI argument parsing
+- **mustache**: Markdown template processing engine
+
+When using `--spec` option: **No additional dependencies required**
+When using `--config` option: **Requires @confytome/core** for OpenAPI spec generation
 
 ## 💡 Examples
 
 ### Basic Usage
+
 ```bash
 # Simple generation with existing spec
 npx @confytome/markdown --spec ./docs/api-spec.json --output ./public
 ```
 
 ### CI/CD Integration
+
 ```bash
 #!/bin/bash
 # Generate Markdown documentation in CI
-npx @confytome/markdown --spec ./build/api-spec.json --output ./dist/docs
+npx @confytome/markdown \\
+   --spec ./build/api-spec.json \\
+   --output ./dist/docs
 ```
 
 ### Multiple Environments
+
 ```bash
 # Production docs
-npx @confytome/markdown --spec ./specs/prod-api.json --output ./docs/prod
+npx @confytome/markdown \\
+   --spec ./specs/prod-api.json \\
+   --output ./docs/prod
 
-# Staging docs  
-npx @confytome/markdown --spec ./specs/staging-api.json --output ./docs/staging
+# Staging docs
+npx @confytome/markdown \\
+   --spec ./specs/staging-api.json \\
+   --output ./docs/staging
 ```
 
 ## 🛠️ Troubleshooting
 
 ### Common Issues
 
+#### Templates not found
+Ensure Mustache templates are in the templates/ directory. Default templates are included with the package.
+
+
 #### "Specified OpenAPI spec file not found"
+
 ```bash
 # Check file path exists
 ls -la ./path/to/your-spec.json
@@ -127,17 +165,16 @@ npx @confytome/markdown --spec $(pwd)/api-spec.json
 ```
 
 #### "OpenAPI spec not found, generating it first"
+
 This means you're using config mode but don't have @confytome/core installed.
 
 ```bash
 # Option 1: Install core
 npm install -g @confytome/core
 
-# Option 2: Use existing spec instead  
+# Option 2: Use existing spec instead
 npx @confytome/markdown --spec ./path/to/existing-spec.json
 ```
-
-#### Templates not found\nEnsure Mustache templates are in the templates/ directory. Default templates are included with the package.
 
 ## 🌟 Part of confytome Ecosystem
 
@@ -145,7 +182,7 @@ npx @confytome/markdown --spec ./path/to/existing-spec.json
 
 - **[@confytome/core](https://npmjs.com/package/@confytome/core)** - Plugin system & OpenAPI generator
 - **[@confytome/markdown](https://npmjs.com/package/@confytome/markdown)** - Confluence-friendly Markdown docs
-- **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML docs  
+- **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML docs
 - **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** - Interactive Swagger UI
 - **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** - Postman collections
 

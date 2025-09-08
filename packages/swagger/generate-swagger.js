@@ -186,6 +186,7 @@ function generateSwaggerUI(openApiSpec, options = {}) {
 }
 
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+import { MetadataFactory } from '@confytome/core/interfaces/IGenerator.js';
 
 class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir, services = null) {
@@ -193,17 +194,84 @@ class SwaggerUIGenerator extends SpecConsumerGeneratorBase {
     super('generate-swagger', 'Generating Swagger UI static HTML (OpenAPI spec agnostic)', outputDir, services);
   }
 
-  async generate() {
+  /**
+   * Get generator metadata (implements IGenerator interface)
+   * @returns {GeneratorMetadata}
+   */
+  static getMetadata() {
+    return MetadataFactory.createSpecConsumerMetadata(
+      'swagger',
+      'Interactive Swagger UI documentation generator',
+      'SwaggerUIGenerator',
+      'api-swagger.html'
+    );
+  }
+
+  /**
+   * Validate generator prerequisites (extends base validation)
+   */
+  async validate(options = {}) {
+    // Get base validation
+    const baseValidation = await super.validate(options);
+
+    // Check if swagger-ui-dist is available
+    try {
+      const require = createRequire(import.meta.url);
+      require.resolve('swagger-ui-dist/package.json');
+    } catch {
+      baseValidation.errors.push('swagger-ui-dist package not found - required for Swagger UI generation');
+    }
+
+    // Recalculate valid status after adding errors
+    baseValidation.valid = baseValidation.errors.length === 0;
+
+    return baseValidation;
+  }
+
+  /**
+   * Initialize generator (implements IGenerator interface)
+   */
+  async initialize(options = {}) {
+    // Setup any configuration based on options
+    if (options.excludeBrand !== undefined) {
+      this.excludeBrand = options.excludeBrand;
+    }
+
+    // Call parent initialization if available
+    if (super.initialize) {
+      await super.initialize(options);
+    }
+  }
+
+  async generate(_options = {}) {
     console.log('🎨 Generating Swagger UI HTML...');
 
-    const result = await this.generateDocument('swagger', OUTPUT_FILES.SWAGGER_UI, (openApiSpec, services) => {
-      return this.generateSwaggerUI(openApiSpec, services);
-    });
+    try {
+      const result = await this.generateDocument('swagger', OUTPUT_FILES.SWAGGER_UI, (openApiSpec, services) => {
+        return this.generateSwaggerUI(openApiSpec, services);
+      });
 
-    console.log(`\n🌐 You can open the file in browser: file://${path.resolve(result.outputPath)}`);
+      console.log(`\n🌐 You can open the file in browser: file://${path.resolve(result.outputPath)}`);
 
-    return result;
+      return {
+        success: true,
+        outputs: [result.outputPath],
+        stats: {
+          outputPath: result.outputPath,
+          fileSize: result.size,
+          ...this.stats
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        outputs: [],
+        stats: { error: error.message }
+      };
+    }
   }
+
+  // Uses base class cleanup - no override needed
 
   generateSwaggerUI(openApiSpec, services) {
     // Generate branding using injected services

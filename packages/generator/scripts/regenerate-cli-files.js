@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
  * Regenerate CLI Files Script
- * 
- * Uses Mustache templates to regenerate CLI files and plugin manifests
+ *
+ * Uses Mustache templates to regenerate CLI files
  * across all generator packages to eliminate repetition.
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { writeCLIFile, writePluginManifest } from '../utils/template-generator.js';
+import { writeCLIFile } from '../src/template-generator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = path.resolve(__dirname, '../../..');
@@ -23,13 +23,13 @@ const GENERATORS = [
     cliHelper: 'cli-helper.js' // Note: some use cli-helper vs cli-helpers
   },
   {
-    type: 'markdown', 
+    type: 'markdown',
     path: path.join(packagesDir, 'markdown'),
     cliHelper: 'cli-helpers.js'
   },
   {
     type: 'swagger',
-    path: path.join(packagesDir, 'swagger'), 
+    path: path.join(packagesDir, 'swagger'),
     cliHelper: 'cli-helper.js'
   },
   {
@@ -43,7 +43,7 @@ const GENERATORS = [
  * Main regeneration function
  */
 async function regenerateFiles() {
-  console.log('🚀 Regenerating CLI files and plugin manifests...\n');
+  console.log('🚀 Regenerating CLI files...\n');
 
   let successCount = 0;
   let errorCount = 0;
@@ -62,14 +62,9 @@ async function regenerateFiles() {
       const cliOptions = {
         cliHelper: generator.cliHelper
       };
-      
+
       const cliPath = await writeCLIFile(generator.type, generator.path, cliOptions);
       console.log(`✅ Generated CLI: ${path.relative(workspaceRoot, cliPath)}`);
-
-      // Generate plugin manifest
-      // Skip plugin manifest generation for now due to template complexity
-      // const manifestPath = await writePluginManifest(generator.type, generator.path);
-      // console.log(`✅ Generated manifest: ${path.relative(workspaceRoot, manifestPath)}`);
 
       successCount++;
       console.log('');
@@ -81,13 +76,13 @@ async function regenerateFiles() {
   }
 
   // Summary
-  console.log(`\n📊 Summary:`);
+  console.log('\n📊 Summary:');
   console.log(`✅ Successfully processed: ${successCount} generators`);
   if (errorCount > 0) {
     console.log(`❌ Errors: ${errorCount}`);
     process.exit(1);
   } else {
-    console.log(`🎉 All generators updated successfully!`);
+    console.log('🎉 All generators updated successfully!');
   }
 }
 

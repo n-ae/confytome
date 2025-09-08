@@ -63,8 +63,6 @@ export const ENV = {
  * @type {Object}
  */
 export const PACKAGE_INFO = {
-  NAMESPACE: '@confytome',
-  PLUGIN_PREFIX: 'confytome-plugin-',
-  MANIFEST_FILE: 'confytome-plugin.json'
+  NAMESPACE: '@confytome'
 };
 

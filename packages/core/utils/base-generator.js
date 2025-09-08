@@ -189,13 +189,13 @@ export class OpenAPIGeneratorBase extends BaseGenerator {
   }
 
   async validateDependencies(args) {
-    // Use centralized validation for OpenAPI prerequisites
-    FileManager.validateOpenAPIPrerequisites(
-      args.serverConfigPath,
-      args.jsdocFiles,
-      this.outputDir,
-      this.name
-    );
+    // Use consolidated validation for OpenAPI prerequisites
+    FileManager.validateGeneratorPrerequisites({
+      outputDir: this.outputDir,
+      configPath: args.serverConfigPath,
+      jsdocFiles: args.jsdocFiles,
+      requiresSpec: false
+    }, this.name);
   }
 
   /**
@@ -222,6 +222,67 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
   loadOpenAPISpec() {
     const specPath = path.join(this.outputDir, OUTPUT_FILES.OPENAPI_SPEC);
     return FileManager.readOpenAPISpec(specPath, this.name);
+  }
+
+  /**
+   * Standard validation for spec-consumer generators
+   * Can be extended by individual generators
+   */
+  async validate(_options = {}) {
+    try {
+      // Use consolidated validation for spec-consumer prerequisites
+      FileManager.validateGeneratorPrerequisites({
+        outputDir: this.outputDir,
+        requiresSpec: true
+      }, this.name);
+
+      return {
+        valid: true,
+        errors: [],
+        warnings: []
+      };
+    } catch (error) {
+      return {
+        valid: false,
+        errors: [error.message],
+        warnings: []
+      };
+    }
+  }
+
+  /**
+   * Standard initialization for spec-consumer generators
+   * Can be extended by individual generators
+   */
+  async initialize(options = {}) {
+    // Setup processor options if processor exists
+    if (this.processor && options.excludeBrand !== undefined) {
+      this.processor.options = {
+        ...this.processor.options,
+        excludeBrand: options.excludeBrand
+      };
+    }
+
+    // Call parent initialization if available
+    if (super.initialize) {
+      await super.initialize(options);
+    }
+  }
+
+  /**
+   * Standard cleanup for spec-consumer generators
+   * Can be extended by individual generators
+   */
+  async cleanup() {
+    // Clean up processor resources if needed
+    if (this.processor?.cleanup) {
+      await this.processor.cleanup();
+    }
+
+    // Call parent cleanup if available
+    if (super.cleanup) {
+      await super.cleanup();
+    }
   }
 
   /**

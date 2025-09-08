@@ -12,6 +12,19 @@ import { OUTPUT_FILES } from '../constants.js';
  * Simple error handler with consistent formatting
  */
 export class SimpleErrorHandler {
+  constructor(context) {
+    this.context = context;
+  }
+
+  /**
+   * Handle and display errors for this instance
+   * @param {Error} error - The error to handle
+   * @param {boolean} exit - Whether to exit process (default: true)
+   */
+  handleError(error, exit = true) {
+    SimpleErrorHandler.handle(error, this.context, exit);
+  }
+
   /**
    * Handle and display errors with helpful context
    * @param {Error} error - The error to handle

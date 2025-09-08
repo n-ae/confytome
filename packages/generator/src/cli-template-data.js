@@ -1,6 +1,6 @@
 /**
  * CLI Template Data Provider
- * 
+ *
  * Provides standardized template data for CLI descriptions and help text
  * to eliminate repetition across generator packages.
  */
@@ -131,8 +131,8 @@ export function generateCLIOptions(generatorType) {
   return templateData.options.map(option => ({
     ...option,
     // Resolve default value references
-    defaultValue: option.defaultValue?.startsWith('DEFAULT_') 
-      ? option.defaultValue 
+    defaultValue: option.defaultValue?.startsWith('DEFAULT_')
+      ? option.defaultValue
       : option.defaultValue
   }));
 }

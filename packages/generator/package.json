@@ -1,0 +1,38 @@
+{
+  "name": "@confytome/generator",
+  "version": "1.4.3",
+  "description": "Template generation system for confytome CLI files, manifests, and documentation",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "confytome-generator": "./scripts/cli.js"
+  },
+  "scripts": {
+    "clean": "rm -rf temp/* .cache",
+    "regenerate:cli": "node scripts/regenerate-cli-files.js",
+    "regenerate:readmes": "node scripts/regenerate-readmes.js",
+    "regenerate:readmes:quality": "node scripts/validate-readme-quality.js",
+    "test": "echo \"Tests not implemented yet\" && exit 0"
+  },
+  "dependencies": {
+    "mustache": "^4.2.0"
+  },
+  "peerDependencies": {
+    "@confytome/core": "workspace:*"
+  },
+  "keywords": [
+    "confytome",
+    "template",
+    "generator",
+    "cli",
+    "mustache",
+    "documentation"
+  ],
+  "author": "nae",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-ae/confytome.git",
+    "directory": "packages/generator"
+  }
+}

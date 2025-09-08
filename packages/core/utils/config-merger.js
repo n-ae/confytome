@@ -86,25 +86,4 @@ export class ConfigMerger {
     return cleaned;
   }
 
-  /**
-   * Create temporary config - simplified to just return the config object
-   * @param {Object} config - Configuration object
-   * @returns {Object} Config wrapper with backward compatibility
-   */
-  static createTemporaryConfig(config) {
-    return {
-      configPath: null, // No file created
-      isTemporary: false, // No cleanup needed
-      config
-    };
-  }
-
-  /**
-   * Cleanup method for backward compatibility - no-op
-   * @param {string} _configPath - Ignored
-   * @param {boolean} _isTemporary - Ignored
-   */
-  static cleanup(_configPath, _isTemporary) {
-    // No-op - no temporary files to clean up
-  }
 }

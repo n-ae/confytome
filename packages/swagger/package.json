@@ -1,6 +1,6 @@
 {
   "name": "@confytome/swagger",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Plugin for @confytome/core - generates interactive, self-contained Swagger UI documentation from OpenAPI specs with responsive design.",
   "main": "generate-swagger.js",
   "bin": {

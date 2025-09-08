@@ -5,7 +5,6 @@
  */
 
 import { GeneratorFactory } from '../services/GeneratorFactory.js';
-import { registryOrchestrator } from '../services/RegistryOrchestrator.js';
 import { SimpleErrorHandler } from './error-handler-simple.js';
 import { DEFAULT_OUTPUT_DIR } from '../constants.js';
 
@@ -13,11 +12,9 @@ import { DEFAULT_OUTPUT_DIR } from '../constants.js';
  * List all available generators
  */
 export async function listGenerators(options = {}) {
-  const errorHandler = new SimpleErrorHandler('list-generators');
-
   try {
     await GeneratorFactory.initialize();
-    const generators = await registryOrchestrator.listGeneratorsWithStatus();
+    const generators = await GeneratorFactory.listGeneratorsWithStatus();
 
     if (options.json) {
       console.log(JSON.stringify(generators, null, 2));
@@ -58,7 +55,7 @@ export async function listGenerators(options = {}) {
     }
 
   } catch (error) {
-    errorHandler.handleError(error);
+    SimpleErrorHandler.handle(error, 'CLI');
   }
 }
 
@@ -66,11 +63,10 @@ export async function listGenerators(options = {}) {
  * Show detailed information about a specific generator
  */
 export async function showGeneratorInfo(generatorName, options = {}) {
-  const errorHandler = new SimpleErrorHandler('generator-info');
 
   try {
     await GeneratorFactory.initialize();
-    const info = await registryOrchestrator.getGeneratorInfo(generatorName);
+    const info = await GeneratorFactory.getGeneratorInfo(generatorName);
 
     if (!info.metadata) {
       console.error(`❌ Generator not found: ${generatorName}`);
@@ -127,7 +123,7 @@ export async function showGeneratorInfo(generatorName, options = {}) {
     }
 
   } catch (error) {
-    errorHandler.handleError(error);
+    SimpleErrorHandler.handle(error, 'CLI');
   }
 }
 
@@ -135,7 +131,6 @@ export async function showGeneratorInfo(generatorName, options = {}) {
  * Show recommended generators based on available dependencies
  */
 export async function showRecommendedGenerators(options = {}) {
-  const errorHandler = new SimpleErrorHandler('recommended-generators');
 
   try {
     await GeneratorFactory.initialize();
@@ -163,7 +158,7 @@ export async function showRecommendedGenerators(options = {}) {
     });
 
   } catch (error) {
-    errorHandler.handleError(error);
+    SimpleErrorHandler.handle(error, 'CLI');
   }
 }
 
@@ -171,7 +166,6 @@ export async function showRecommendedGenerators(options = {}) {
  * Validate generators and their dependencies
  */
 export async function validateGenerators(generatorNames, options = {}) {
-  const errorHandler = new SimpleErrorHandler('validate-generators');
 
   try {
     await GeneratorFactory.initialize();
@@ -183,7 +177,7 @@ export async function validateGenerators(generatorNames, options = {}) {
       generators = allGens.map(gen => gen.name);
     }
 
-    const results = await registryOrchestrator.validateGenerators(generators);
+    const results = await GeneratorFactory.validateGenerators(generators);
 
     if (options.json) {
       console.log(JSON.stringify(results, null, 2));
@@ -215,7 +209,7 @@ export async function validateGenerators(generatorNames, options = {}) {
     }
 
   } catch (error) {
-    errorHandler.handleError(error);
+    SimpleErrorHandler.handle(error, 'CLI');
   }
 }
 
@@ -223,7 +217,6 @@ export async function validateGenerators(generatorNames, options = {}) {
  * Execute specific generators using the registry system
  */
 export async function executeGenerators(generatorNames, options = {}) {
-  const errorHandler = new SimpleErrorHandler('execute-generators');
 
   try {
     await GeneratorFactory.initialize();
@@ -239,7 +232,7 @@ export async function executeGenerators(generatorNames, options = {}) {
     console.log(`📁 Output directory: ${outputDir}`);
     console.log('');
 
-    const results = await registryOrchestrator.executeGenerators(
+    const results = await GeneratorFactory.executeGenerators(
       generatorNames,
       outputDir,
       executionOptions
@@ -266,7 +259,7 @@ export async function executeGenerators(generatorNames, options = {}) {
     }
 
   } catch (error) {
-    errorHandler.handleError(error);
+    SimpleErrorHandler.handle(error, 'CLI');
   }
 }
 
@@ -274,12 +267,11 @@ export async function executeGenerators(generatorNames, options = {}) {
  * Execute all spec consumer generators
  */
 export async function executeAllSpecConsumers(options = {}) {
-  const errorHandler = new SimpleErrorHandler('execute-all-spec-consumers');
 
   try {
     await GeneratorFactory.initialize();
 
-    const specConsumers = await registryOrchestrator.getSpecConsumerGenerators();
+    const specConsumers = await GeneratorFactory.getGeneratorsByGeneratorType('spec-consumer');
     const generatorNames = specConsumers.map(gen => gen.name);
 
     if (generatorNames.length === 0) {
@@ -293,6 +285,6 @@ export async function executeAllSpecConsumers(options = {}) {
     await executeGenerators(generatorNames, options);
 
   } catch (error) {
-    errorHandler.handleError(error);
+    SimpleErrorHandler.handle(error, 'CLI');
   }
 }

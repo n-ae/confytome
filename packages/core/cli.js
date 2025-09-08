@@ -21,6 +21,17 @@ import { getOutputDir, DEFAULT_OUTPUT_DIR, DEFAULT_CONFIG_FILES, OUTPUT_FILES } 
 // Simplified helper functions - no complex plugin system initialization needed
 // All generators are dynamically discovered by the plugin registry system
 
+// Common CLI options to reduce duplication
+const commonOptions = {
+  output: '-o, --output <dir>',
+  outputDir: '-o, --output-dir <dir>',
+  outputDesc: `output directory (default: ${DEFAULT_OUTPUT_DIR})`,
+  json: '--json',
+  jsonDesc: 'output in JSON format',
+  noBrand: '--no-brand',
+  noBrandDesc: 'exclude confytome branding from output'
+};
+
 program
   .name('confytome')
   .description(`
@@ -65,7 +76,7 @@ Examples:
   confytome generate --output ./api-docs
 `)
   .option('-c, --config <path>', `confytome config file (default: ${DEFAULT_CONFIG_FILES.CONFYTOME})`)
-  .option('-o, --output <dir>', `output directory (default: ${DEFAULT_OUTPUT_DIR})`)
+  .option(commonOptions.output, commonOptions.outputDesc)
   .option('--no-brand', 'exclude confytome branding from generated documentation')
   .action(async(options) => {
     try {
@@ -101,7 +112,7 @@ Examples:
 `)
   .option('-c, --config <path>', 'server config JSON file (required)')
   .option('-f, --files <files...>', 'JSDoc files to process (required)')
-  .option('-o, --output <dir>', `output directory (default: ${DEFAULT_OUTPUT_DIR})`)
+  .option(commonOptions.output, commonOptions.outputDesc)
   .action(async(options) => {
     const files = options.files || [];
     if (!options.config || files.length === 0) {
@@ -141,9 +152,9 @@ Sets up everything you need to start generating documentation:
 
 Examples:
   confytome init                       # Standard setup
-  confytome init --output ./api     # Custom documentation directory
+  confytome init --output ./api        # Custom documentation directory
 `)
-  .option('-o, --output <dir>', `output directory for documentation (default: ${DEFAULT_OUTPUT_DIR})`)
+  .option(commonOptions.output, `output directory for documentation (default: ${DEFAULT_OUTPUT_DIR})`)
   .action((options) => {
     console.log('🚀 Initializing confytome documentation structure...');
     console.log('');
@@ -202,11 +213,11 @@ Examples:
 
       console.log('');
       console.log('🔗 Additional commands:');
-      console.log('   confytome generate                          # Use confytome.json config');
+      console.log('   confytome generate                           # Use confytome.json config');
       console.log('   confytome openapi -c config.json -f file.js  # Generate OpenAPI spec only');
-      console.log('   confytome swagger                           # Generate Swagger UI only');
-      console.log('   confytome markdown                          # Generate Markdown only');
-      console.log('   confytome postman                           # Generate Postman collection only');
+      console.log('   confytome swagger                            # Generate Swagger UI only');
+      console.log('   confytome markdown                           # Generate Markdown only');
+      console.log('   confytome postman                            # Generate Postman collection only');
 
       if (outputDir !== DEFAULT_OUTPUT_DIR) {
         console.log('');
@@ -235,7 +246,7 @@ Examples:
   confytome demo                       # Generate demo
   confytome demo --output ./demo    # Custom output directory
 `)
-  .option('-o, --output <dir>', `output directory (default: ${DEFAULT_OUTPUT_DIR})`)
+  .option(commonOptions.output, commonOptions.outputDesc)
   .action(async(options) => {
     const outputDir = getOutputDir(options.output);
 
@@ -319,7 +330,7 @@ Examples:
   confytome generators              # List all generators
   confytome generators --json       # JSON output for scripting
 `)
-  .option('--json', 'output in JSON format')
+  .option(commonOptions.json, commonOptions.jsonDesc)
   .action(listGenerators);
 
 program
@@ -334,7 +345,7 @@ Examples:
   confytome info generate-html      # Show HTML generator details
   confytome info generate-markdown  # Show Markdown generator details
 `)
-  .option('--json', 'output in JSON format')
+  .option(commonOptions.json, commonOptions.jsonDesc)
   .action(showGeneratorInfo);
 
 program
@@ -349,7 +360,7 @@ Examples:
   confytome recommended             # Show recommended generators
   confytome recommended --json      # JSON output
 `)
-  .option('--json', 'output in JSON format')
+  .option(commonOptions.json, commonOptions.jsonDesc)
   .action(showRecommendedGenerators);
 
 program
@@ -365,7 +376,7 @@ Examples:
   confytome validate generate-html  # Validate specific generator
   confytome validate generate-html generate-markdown
 `)
-  .option('--json', 'output in JSON format')
+  .option(commonOptions.json, commonOptions.jsonDesc)
   .action(validateGenerators);
 
 program
@@ -381,9 +392,9 @@ Examples:
   confytome run generate-html generate-markdown generate-swagger
   confytome run generate-html --no-brand  # Run without branding
 `)
-  .option('-o, --output-dir <dir>', `output directory (default: ${DEFAULT_OUTPUT_DIR})`)
+  .option(commonOptions.outputDir, commonOptions.outputDesc)
   .option('--fail-fast', 'stop on first generator failure')
-  .option('--no-brand', 'exclude confytome branding from output')
+  .option(commonOptions.noBrand, commonOptions.noBrandDesc)
   .action(executeGenerators);
 
 program
@@ -398,9 +409,9 @@ Examples:
   confytome run-all                 # Run all spec consumers
   confytome run-all --no-brand      # Run without branding
 `)
-  .option('-o, --output-dir <dir>', `output directory (default: ${DEFAULT_OUTPUT_DIR})`)
+  .option(commonOptions.outputDir, commonOptions.outputDesc)
   .option('--fail-fast', 'stop on first generator failure')
-  .option('--no-brand', 'exclude confytome branding from output')
+  .option(commonOptions.noBrand, commonOptions.noBrandDesc)
   .action(executeAllSpecConsumers);
 
 program.parse();

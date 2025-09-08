@@ -11,8 +11,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'url';
 import { default as Mustache } from 'mustache';
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+import { MetadataFactory } from '@confytome/core/interfaces/IGenerator.js';
 import { getOutputDir, OUTPUT_FILES } from '@confytome/core/constants.js';
-import { OpenApiProcessor } from '@confytome/core/utils/openapi-processor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -23,49 +23,100 @@ class MarkdownGenerator extends SpecConsumerGeneratorBase {
     this.processor = new OpenApiProcessor();
   }
 
-  async generate() {
+  /**
+   * Get generator metadata (implements IGenerator interface)
+   * @returns {GeneratorMetadata}
+   */
+  static getMetadata() {
+    return MetadataFactory.createSpecConsumerMetadata(
+      'markdown',
+      'Confluence-friendly Markdown documentation generator using Mustache',
+      'MarkdownGenerator',
+      'api-docs.md'
+    );
+  }
+
+  /**
+   * Validate generator prerequisites (extends base validation)
+   */
+  async validate(options = {}) {
+    // Get base validation
+    const baseValidation = await super.validate(options);
+
+    // Add template-specific validation
+    const templateDir = path.join(__dirname, 'templates');
+    if (!fs.existsSync(templateDir)) {
+      baseValidation.warnings.push('Templates directory not found - will use default templates');
+    }
+
+    return baseValidation;
+  }
+
+  // Uses base class initialization - no override needed
+
+  async generate(_options = {}) {
     console.log('📝 Generating Markdown with Mustache templates...');
 
-    return this.generateWithExternalTool('markdown', OUTPUT_FILES.MARKDOWN_DOCS, async(openApiSpec, services, outputPath) => {
-      const specPath = path.join(this.outputDir, OUTPUT_FILES.OPENAPI_SPEC);
+    try {
+      const result = await this.generateWithExternalTool('markdown', OUTPUT_FILES.MARKDOWN_DOCS, async(openApiSpec, services, outputPath) => {
+        const specPath = path.join(this.outputDir, OUTPUT_FILES.OPENAPI_SPEC);
 
-      // Prepare template data
-      const templateData = services.branding.getMarkdownTemplateData();
+        // Prepare template data
+        const templateData = services.branding.getMarkdownTemplateData();
 
-      try {
+        try {
         // Load and parse OpenAPI spec
-        const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
+          const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
 
-        // Configure processor options
-        const processorOptions = {
-          excludeBrand: templateData.excludeBrand,
-          version: templateData.version || 'unknown',
-          baseUrl: this.getBaseUrl(spec.servers)
-        };
+          // Configure processor options
+          const processorOptions = {
+            excludeBrand: templateData.excludeBrand,
+            version: templateData.version || 'unknown',
+            baseUrl: this.getBaseUrl(spec.servers)
+          };
 
-        // Process OpenAPI spec into template data
-        this.processor.options = { ...this.processor.options, ...processorOptions };
-        const data = this.processor.process(spec);
+          // Process OpenAPI spec into template data
+          this.processor.options = { ...this.processor.options, ...processorOptions };
+          const data = this.processor.process(spec);
 
-        // Load Mustache template
-        const templatePath = path.join(__dirname, 'templates', 'main.mustache');
-        const template = fs.readFileSync(templatePath, 'utf8');
+          // Load Mustache template
+          const templatePath = path.join(__dirname, 'templates', 'main.mustache');
+          const template = fs.readFileSync(templatePath, 'utf8');
 
-        // Render template with data
-        const markdown = Mustache.render(template, data);
+          // Render template with data
+          const markdown = Mustache.render(template, data);
 
-        // Write output
-        fs.writeFileSync(outputPath, markdown, 'utf8');
+          // Write output
+          fs.writeFileSync(outputPath, markdown, 'utf8');
 
-      } catch (error) {
-        throw new Error(`Failed to generate Markdown documentation: ${error.message}`);
-      }
+        } catch (error) {
+          throw new Error(`Failed to generate Markdown documentation: ${error.message}`);
+        }
 
-      // Write output file for standard handling
-      const content = fs.readFileSync(outputPath, 'utf8');
-      this.writeOutputFile(outputPath, content, 'Confluence-ready Markdown documentation created');
-    }, 'Confluence-ready Markdown documentation created');
+        // Write output file for standard handling
+        const content = fs.readFileSync(outputPath, 'utf8');
+        this.writeOutputFile(outputPath, content, 'Confluence-ready Markdown documentation created');
+      }, 'Confluence-ready Markdown documentation created');
+
+      return {
+        success: true,
+        outputs: [result.outputPath],
+        stats: {
+          outputPath: result.outputPath,
+          fileSize: result.size,
+          ...this.stats
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        outputs: [],
+        stats: { error: error.message }
+      };
+    }
   }
+
+  // Uses base class cleanup - no override needed
 
   /**
    * Get base URL from servers array

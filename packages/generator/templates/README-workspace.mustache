@@ -1,7 +1,7 @@
-{{{projectName}}}
+# {{{projectName}}}
 
 {{#badges}}
-[![{{{name}}}]({{{url}})]({{{link}}})
+[![{{name}}]({{&url}})]({{&link}})
 {{/badges}}
 
 {{{description}}}
@@ -45,7 +45,7 @@ npx @confytome/html --spec ./path/to/your-spec.json --output ./docs
 ## 📦 Package Ecosystem
 
 | Package | Purpose | Installation | Documentation |
-|---------|---------|-------------|---------------|
+|---------|---------|--------------|---------------|
 | **[@confytome/core](https://npmjs.com/package/@confytome/core)** | Plugin system & OpenAPI generator | `npm i -g @confytome/core` | [📚 Docs](./packages/core/README.md) |
 | **[@confytome/markdown](https://npmjs.com/package/@confytome/markdown)** | Confluence-friendly Markdown | `npm i -g @confytome/markdown` | [📚 Docs](./packages/markdown/README.md) |
 | **[@confytome/html](https://npmjs.com/package/@confytome/html)** | Professional HTML docs | `npm i -g @confytome/html` | [📚 Docs](./packages/html/README.md) |
@@ -99,11 +99,11 @@ graph TB
     Registry --> Factory[Generator Factory]
     Factory --> Services[Service Layer]
     Services --> Generators[Generator Plugins]
-    
+
     Services --> Branding[Branding Service]
     Services --> Version[Version Service]
     Services --> Template[Template Service]
-    
+
     Generators --> HTML[HTML Generator]
     Generators --> Markdown[Markdown Generator]
     Generators --> Swagger[Swagger Generator]
@@ -215,7 +215,7 @@ export class MyCustomGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir, services) {
     super('my-generator', 'Generating custom format', outputDir, services);
   }
-  
+
   async generate() {
     // Your generation logic
   }

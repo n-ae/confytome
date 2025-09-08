@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+import { MetadataFactory } from '@confytome/core/interfaces/IGenerator.js';
 import { getOutputDir } from '@confytome/core/constants.js';
 
 // Create Postman environment from OpenAPI spec
@@ -245,41 +246,73 @@ class PostmanGenerator extends SpecConsumerGeneratorBase {
     super('generate-postman', 'Generating Postman collection and environment (OpenAPI spec agnostic)', outputDir, services);
   }
 
-  async generate() {
-    // Load OpenAPI spec
-    const openApiSpec = this.loadOpenAPISpec();
-
-    // Generate Postman collection
-    console.log('📥 Generating Postman collection...');
-    const collection = generatePostmanCollection(openApiSpec);
-
-    // Write collection file
-    const collectionPath = path.join(this.outputDir, 'api-postman.json');
-    this.writeOutputFile(
-      collectionPath,
-      JSON.stringify(collection, null, '\t'),
-      'Postman collection created'
+  /**
+   * Get generator metadata (implements IGenerator interface)
+   * @returns {GeneratorMetadata}
+   */
+  static getMetadata() {
+    return MetadataFactory.createSpecConsumerMetadata(
+      'postman',
+      'Postman collection and environment generator',
+      'PostmanGenerator',
+      ['api-postman.json', 'api-postman-env.json']
     );
-
-    // Generate environment variables
-    console.log('🌍 Generating environment variables...');
-    const environment = createPostmanEnvironment(openApiSpec);
-    const envPath = path.join(this.outputDir, 'api-postman-env.json');
-    this.writeOutputFile(
-      envPath,
-      JSON.stringify(environment, null, '\t'),
-      'Environment variables created'
-    );
-
-    // Calculate stats
-    this.calculateStats(openApiSpec, collectionPath, envPath);
-
-    return {
-      collectionPath,
-      environmentPath: envPath,
-      requestCount: Object.keys(openApiSpec.paths || {}).length
-    };
   }
+
+  // Uses base class validation - no override needed
+
+  // Uses base class initialization - no override needed
+
+  async generate(_options = {}) {
+    try {
+      // Load OpenAPI spec
+      const openApiSpec = this.loadOpenAPISpec();
+
+      // Generate Postman collection
+      console.log('📥 Generating Postman collection...');
+      const collection = generatePostmanCollection(openApiSpec);
+
+      // Write collection file
+      const collectionPath = path.join(this.outputDir, 'api-postman.json');
+      this.writeOutputFile(
+        collectionPath,
+        JSON.stringify(collection, null, '\t'),
+        'Postman collection created'
+      );
+
+      // Generate environment variables
+      console.log('🌍 Generating environment variables...');
+      const environment = createPostmanEnvironment(openApiSpec);
+      const envPath = path.join(this.outputDir, 'api-postman-env.json');
+      this.writeOutputFile(
+        envPath,
+        JSON.stringify(environment, null, '\t'),
+        'Environment variables created'
+      );
+
+      // Calculate stats
+      this.calculateStats(openApiSpec, collectionPath, envPath);
+
+      return {
+        success: true,
+        outputs: [collectionPath, envPath],
+        stats: {
+          collectionPath,
+          environmentPath: envPath,
+          requestCount: Object.keys(openApiSpec.paths || {}).length,
+          ...this.stats
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        outputs: [],
+        stats: { error: error.message }
+      };
+    }
+  }
+
+  // Uses base class cleanup - no override needed
 
   calculateStats(spec, collectionPath, envPath) {
     const pathCount = Object.keys(spec.paths || {}).length;

@@ -104,9 +104,9 @@ export class FileManager {
       const specContent = fs.readFileSync(specPath, 'utf8');
       const spec = JSON.parse(specContent);
 
-      // Basic validation - support both OpenAPI 3.x and Swagger 2.0
-      if ((!spec.openapi && !spec.swagger) || !spec.info || !spec.paths) {
-        throw new Error('Invalid OpenAPI/Swagger specification format');
+      // Basic validation - OpenAPI 3.x only
+      if (!spec.openapi || !spec.info || !spec.paths) {
+        throw new Error('Invalid OpenAPI specification format');
       }
 
       return spec;
@@ -129,27 +129,23 @@ export class FileManager {
    * @returns {Array<string>} Validated file paths
    */
   static validateJSDocFiles(filePaths, generator) {
-    const validFiles = [];
-    const missingFiles = [];
-
-    for (const filePath of filePaths) {
+    const { validFiles, missingFiles } = filePaths.reduce((acc, filePath) => {
       try {
         if (fs.existsSync(filePath)) {
-          // Check if file is readable
           fs.accessSync(filePath, fs.constants.R_OK);
-          validFiles.push(filePath);
+          acc.validFiles.push(filePath);
           console.log(`📄 JSDoc file found: ${filePath}`);
         } else {
-          missingFiles.push(filePath);
+          acc.missingFiles.push(filePath);
         }
       } catch (error) {
         SimpleErrorHandler.handle(error, generator);
       }
-    }
+      return acc;
+    }, { validFiles: [], missingFiles: [] });
 
     if (missingFiles.length > 0) {
-      const error = new Error(`JSDoc files not found: ${missingFiles.join(', ')}`);
-      throw new FileError(error.message, generator, missingFiles[0], error);
+      SimpleErrorHandler.handle(new Error(`JSDoc files not found: ${missingFiles.join(', ')}`), generator);
     }
 
     return validFiles;
@@ -225,58 +221,55 @@ export class FileManager {
     }
   }
 
-  /**
-   * Validate generation prerequisites for spec consumer generators
-   * @param {string} outputDir - Output directory path
-   * @param {string} _generator - Generator name for error context
-   * @throws {Error} If prerequisites are not met
-   */
-  static validateSpecConsumerPrerequisites(outputDir, _generator) {
-    // Ensure output directory exists
-    this.ensureDocsDir(outputDir);
-
-    // Check if OpenAPI spec exists
-    const specPath = path.join(outputDir, OUTPUT_FILES.OPENAPI_SPEC);
-    if (!fs.existsSync(specPath)) {
-      throw new Error('OpenAPI spec not found. Run OpenAPI generator first.');
-    }
-
-    // Validate spec is readable and valid JSON
-    try {
-      const specContent = fs.readFileSync(specPath, 'utf8');
-      const spec = JSON.parse(specContent);
-
-      // Basic validation - support both OpenAPI 3.x and Swagger 2.0
-      if ((!spec.openapi && !spec.swagger) || !spec.info || !spec.paths) {
-        throw new Error('Invalid OpenAPI/Swagger specification format');
-      }
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        throw new Error('OpenAPI spec contains invalid JSON');
-      }
-      throw error;
-    }
-  }
+  // validateSpecConsumerPrerequisites consolidated into validateGeneratorPrerequisites
 
   /**
-   * Validate OpenAPI generator prerequisites
-   * @param {string} configPath - Server config file path
-   * @param {Array<string>} jsdocFiles - JSDoc files to validate
-   * @param {string} outputDir - Output directory path
+   * Validate generator prerequisites (consolidated method)
+   * @param {Object} options - Validation options
+   * @param {string} options.outputDir - Output directory path
+   * @param {string} options.configPath - Server config file path (for OpenAPI generators)
+   * @param {Array<string>} options.jsdocFiles - JSDoc files (for OpenAPI generators)
+   * @param {boolean} options.requiresSpec - Whether generator needs existing OpenAPI spec
    * @param {string} generator - Generator name for error context
    * @throws {Error} If prerequisites are not met
    */
-  static validateOpenAPIPrerequisites(configPath, jsdocFiles, outputDir, generator) {
+  static validateGeneratorPrerequisites(options, generator) {
+    const { outputDir, configPath, jsdocFiles, requiresSpec } = options;
+
     // Ensure output directory exists
     this.ensureDocsDir(outputDir);
 
-    // Validate server config
-    if (!fs.existsSync(configPath)) {
+    // Validate server config (for OpenAPI generators)
+    if (configPath && !fs.existsSync(configPath)) {
       throw new Error(`Server config file not found: ${configPath}`);
     }
 
-    // Validate JSDoc files
-    this.validateJSDocFiles(jsdocFiles, generator);
+    // Validate JSDoc files (for OpenAPI generators)
+    if (jsdocFiles && jsdocFiles.length > 0) {
+      this.validateJSDocFiles(jsdocFiles, generator);
+    }
+
+    // Validate existing OpenAPI spec (for spec consumers)
+    if (requiresSpec) {
+      const specPath = path.join(outputDir, OUTPUT_FILES.OPENAPI_SPEC);
+      if (!fs.existsSync(specPath)) {
+        throw new Error('OpenAPI spec not found. Run OpenAPI generator first.');
+      }
+
+      try {
+        const specContent = fs.readFileSync(specPath, 'utf8');
+        const spec = JSON.parse(specContent);
+
+        if (!spec.openapi || !spec.info || !spec.paths) {
+          throw new Error('Invalid OpenAPI specification format');
+        }
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          throw new Error('OpenAPI spec contains invalid JSON');
+        }
+        throw error;
+      }
+    }
   }
 
   /**
@@ -303,27 +296,24 @@ export class FileManager {
       const docsDir = DEFAULT_OUTPUT_DIR;
       if (!fs.existsSync(docsDir)) return;
 
-      const files = fs.readdirSync(docsDir);
-      let cleaned = 0;
-
-      for (const file of files) {
-        if (!filesToKeep.includes(file) && file !== '.gitkeep') {
-          const filePath = path.join(docsDir, file);
-          const stats = fs.statSync(filePath);
-
-          // Only clean files older than 1 hour
-          if (Date.now() - stats.mtime.getTime() > 3600000) {
-            fs.unlinkSync(filePath);
-            cleaned++;
+      const oneHourAgo = Date.now() - 3600000;
+      const filesToClean = fs.readdirSync(docsDir)
+        .filter(file => !filesToKeep.includes(file) && file !== '.gitkeep')
+        .map(file => ({ file, path: path.join(docsDir, file) }))
+        .filter(({ path: filePath }) => {
+          try {
+            return fs.statSync(filePath).mtime.getTime() < oneHourAgo;
+          } catch {
+            return false;
           }
-        }
-      }
+        });
 
-      if (cleaned > 0) {
-        console.log(`🧹 Cleaned ${cleaned} old files from docs directory`);
+      filesToClean.forEach(({ path: filePath }) => fs.unlinkSync(filePath));
+
+      if (filesToClean.length > 0) {
+        console.log(`🧹 Cleaned ${filesToClean.length} old files from docs directory`);
       }
     } catch (error) {
-      // Don't fail generation for cleanup issues
       console.warn('⚠️  Could not clean docs directory:', error.message);
     }
   }

@@ -99,7 +99,7 @@ node packages/core/scripts/regenerate-cli-files.js
 ### Programmatic Usage
 
 ```javascript
-import { writeCLIFile, writePluginManifest } from '@confytome/core/utils/template-generator.js';
+import { writeCLIFile } from '@confytome/core/utils/template-generator.js';
 
 // Generate CLI file for html generator
 await writeCLIFile('html', '/path/to/html/package', {

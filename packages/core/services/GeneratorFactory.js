@@ -18,6 +18,16 @@ export class GeneratorFactory {
   }
 
   /**
+   * Ensure registry is initialized (used by all public methods)
+   * @private
+   */
+  static async ensureInitialized() {
+    if (!generatorRegistry.initialized) {
+      await this.initialize();
+    }
+  }
+
+  /**
    * Create a generator by name
    * @param {string} generatorName - Name of the generator (e.g., 'generate-html')
    * @param {string} outputDir - Output directory for generated files
@@ -26,10 +36,7 @@ export class GeneratorFactory {
    */
   static async createGenerator(generatorName, outputDir, options = {}) {
     outputDir = getOutputDir(outputDir);
-    // Ensure registry is initialized
-    if (!generatorRegistry.initialized) {
-      await this.initialize();
-    }
+    await this.ensureInitialized();
 
     // Validate generator exists and dependencies are met
     const validation = generatorRegistry.validateGenerator(generatorName);
@@ -40,7 +47,7 @@ export class GeneratorFactory {
     // Create services if not provided
     let services = options.services;
     if (!services && options.contextUrl) {
-      const metadata = generatorRegistry.getGeneratorMetadata(generatorName);
+      const metadata = generatorRegistry.getMetadata(generatorName);
       services = ServiceFactory.createGeneratorServices(
         options.contextUrl,
         metadata.type,
@@ -56,6 +63,18 @@ export class GeneratorFactory {
       generator.excludeBrand = options.excludeBrand;
     }
 
+    // Validate the generator instance (required by interface)
+    const instanceValidation = await generator.validate(options);
+    if (!instanceValidation.valid) {
+      throw new Error(`Generator instance validation failed for ${generatorName}:\\n${instanceValidation.errors.join('\\n')}`);
+    }
+
+    // Log warnings if any
+    if (instanceValidation.warnings && instanceValidation.warnings.length > 0) {
+      console.warn(`Generator warnings for ${generatorName}:`);
+      instanceValidation.warnings.forEach(warning => console.warn(`  - ${warning}`));
+    }
+
     return generator;
   }
 
@@ -64,9 +83,7 @@ export class GeneratorFactory {
    * @returns {Array} Array of generator metadata
    */
   static async listGenerators() {
-    if (!generatorRegistry.initialized) {
-      await this.initialize();
-    }
+    await this.ensureInitialized();
     return generatorRegistry.listGenerators();
   }
 
@@ -76,9 +93,7 @@ export class GeneratorFactory {
    * @returns {Array} Array of generators of the specified type
    */
   static async getGeneratorsByType(type) {
-    if (!generatorRegistry.initialized) {
-      await this.initialize();
-    }
+    await this.ensureInitialized();
     return generatorRegistry.getGeneratorsByType(type);
   }
 
@@ -88,11 +103,9 @@ export class GeneratorFactory {
    * @returns {Object} Generator metadata
    */
   static async getGeneratorInfo(generatorName) {
-    if (!generatorRegistry.initialized) {
-      await this.initialize();
-    }
+    await this.ensureInitialized();
 
-    const metadata = generatorRegistry.getGeneratorMetadata(generatorName);
+    const metadata = generatorRegistry.getMetadata(generatorName);
     const validation = generatorRegistry.validateGenerator(generatorName);
 
     return {
@@ -108,9 +121,7 @@ export class GeneratorFactory {
    * @returns {boolean} True if generator is available and valid
    */
   static async isGeneratorAvailable(generatorName) {
-    if (!generatorRegistry.initialized) {
-      await this.initialize();
-    }
+    await this.ensureInitialized();
 
     const validation = generatorRegistry.validateGenerator(generatorName);
     return validation.valid;
@@ -121,35 +132,20 @@ export class GeneratorFactory {
    * @returns {Array} Array of recommended generators
    */
   static async getRecommendedGenerators() {
-    if (!generatorRegistry.initialized) {
-      await this.initialize();
-    }
+    await this.ensureInitialized();
 
     const allGenerators = generatorRegistry.listGenerators();
-    const recommended = [];
 
-    for (const generator of allGenerators) {
-      const validation = generatorRegistry.validateGenerator(generator.name);
-      if (validation.valid) {
-        recommended.push({
+    return allGenerators
+      .map(generator => {
+        const validation = generatorRegistry.validateGenerator(generator.name);
+        return validation.valid || validation.errors.length === 0 ? {
           ...generator,
-          reason: 'All dependencies available'
-        });
-      } else if (validation.errors.length === 0) {
-        recommended.push({
-          ...generator,
-          reason: 'Basic generator, no external dependencies'
-        });
-      }
-    }
-
-    return recommended.sort((a, b) => {
-      // Prioritize workspace generators over external plugins
-      if (a.isExternal !== b.isExternal) {
-        return a.isExternal ? 1 : -1;
-      }
-      return a.name.localeCompare(b.name);
-    });
+          reason: validation.valid ? 'All dependencies available' : 'Basic generator, no external dependencies'
+        } : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.isExternal !== b.isExternal ? (a.isExternal ? 1 : -1) : a.name.localeCompare(b.name));
   }
 
   /**
@@ -193,15 +189,21 @@ export class GeneratorFactory {
    */
   static async executeGenerator(generatorName, outputDir, options = {}) {
     outputDir = getOutputDir(outputDir);
+    let generator = null;
     try {
-      const generator = await this.createGenerator(generatorName, outputDir, options);
-      const result = await generator.run();
+      generator = await this.createGenerator(generatorName, outputDir, options);
+
+      // Initialize the generator (required by interface)
+      await generator.initialize(options);
+
+      // Generate output (required by interface)
+      const result = await generator.generate(options);
 
       return {
         success: true,
         generatorName,
         result,
-        metadata: generator.getStats ? generator.getStats() : null
+        metadata: generator.getStats?.() || null
       };
     } catch (error) {
       return {
@@ -210,6 +212,11 @@ export class GeneratorFactory {
         error: error.message,
         result: null
       };
+    } finally {
+      // Cleanup (required by interface)
+      if (generator) {
+        await generator.cleanup();
+      }
     }
   }
 
@@ -235,6 +242,64 @@ export class GeneratorFactory {
     }
 
     return results;
+  }
+
+  /**
+   * Validate multiple generators at once
+   * @param {Array<string>} generatorNames - Names of generators to validate
+   * @returns {Promise<Array<Object>>} Validation results
+   */
+  static async validateGenerators(generatorNames) {
+    await this.ensureInitialized();
+
+    const results = [];
+    for (const name of generatorNames) {
+      const isAvailable = await this.isGeneratorAvailable(name);
+      const info = await this.getGeneratorInfo(name);
+
+      results.push({
+        name,
+        available: isAvailable,
+        validation: info.validation,
+        metadata: info.metadata
+      });
+    }
+
+    return results;
+  }
+
+  /**
+   * List generators with their status
+   * @returns {Promise<Array<Object>>} Generators with status info
+   */
+  static async listGeneratorsWithStatus() {
+    await this.ensureInitialized();
+
+    const allGenerators = await this.listGenerators();
+    const results = [];
+
+    for (const generator of allGenerators) {
+      const info = await this.getGeneratorInfo(generator.name);
+      results.push({
+        ...generator,
+        available: info.available,
+        validation: info.validation
+      });
+    }
+
+    return results;
+  }
+
+  /**
+   * Get generators by type (spec-consumer, openapi-generator)
+   * @param {string} type - Generator type
+   * @returns {Promise<Array<Object>>} Filtered generators
+   */
+  static async getGeneratorsByGeneratorType(type) {
+    await this.ensureInitialized();
+
+    const allGenerators = await this.listGenerators();
+    return allGenerators.filter(gen => gen.type === type);
   }
 
   /**

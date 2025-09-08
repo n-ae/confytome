@@ -6,8 +6,8 @@
  */
 
 import { SpecConsumerGeneratorBase } from '@confytome/core/utils/base-generator.js';
+import { MetadataFactory } from '@confytome/core/interfaces/IGenerator.js';
 import { getOutputDir, OUTPUT_FILES } from '@confytome/core/constants.js';
-import { OpenApiProcessor } from '@confytome/core/utils/openapi-processor.js';
 
 class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
   constructor(outputDir, services = null) {
@@ -16,13 +16,50 @@ class SimpleDocsGenerator extends SpecConsumerGeneratorBase {
     this.processor = new OpenApiProcessor();
   }
 
-  async generate() {
+  /**
+   * Get generator metadata (implements IGenerator interface)
+   * @returns {GeneratorMetadata}
+   */
+  static getMetadata() {
+    return MetadataFactory.createSpecConsumerMetadata(
+      'html',
+      'Professional styled HTML documentation generator',
+      'SimpleDocsGenerator',
+      'api-docs.html'
+    );
+  }
+
+  // Uses base class validation - no override needed
+
+  // Uses base class initialization - no override needed
+
+  async generate(_options = {}) {
     console.log('🎨 Generating HTML documentation...');
 
-    return this.generateDocument('html', OUTPUT_FILES.HTML_DOCS, (openApiSpec, services) => {
-      return this.generateHTML(openApiSpec, services);
-    });
+    try {
+      const result = await this.generateDocument('html', OUTPUT_FILES.HTML_DOCS, (openApiSpec, services) => {
+        return this.generateHTML(openApiSpec, services);
+      });
+
+      return {
+        success: true,
+        outputs: [result.outputPath],
+        stats: {
+          outputPath: result.outputPath,
+          fileSize: result.size,
+          ...this.stats
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        outputs: [],
+        stats: { error: error.message }
+      };
+    }
   }
+
+  // Uses base class cleanup - no override needed
 
   generateHTML(openApiSpec, services) {
     // Use OpenApiProcessor to get structured data
