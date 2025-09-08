@@ -43,11 +43,10 @@
     "generate-openapi.js",
     "utils/",
     "services/",
+    "interfaces/",
     "templates/",
-    "README.md",
-    "CHANGELOG.md",
-    "CONTRIBUTING.md",
-    "SECURITY.md"
+    "constants.js",
+    "README.md"
   ],
   "scripts": {
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
@@ -63,7 +62,7 @@
     "prepublishOnly": "npm run validate"
   },
   "dependencies": {
-    "commander": "^12.0.0",
+    "commander": "^14.0.0",
     "swagger-jsdoc": "^6.2.8",
     "glob": "^11.0.0"
   },
