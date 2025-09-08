@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { GeneratorFactory } from '../services/GeneratorFactory.js';
-import { getOutputDir, DEFAULT_CONFIG_FILES } from '../constants.js';
+import { getOutputDir } from '../constants.js';
 import { ConfytomeConfig } from './confytome-config.js';
 
 /**

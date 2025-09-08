@@ -1,8 +1,8 @@
 /**
- * Self-Contained Base for Standalone Markdown Generator
- *
+ * Self-Contained Base for Standalone Generators
+ * 
  * Provides common functionality without any external dependencies.
- * This ensures true standalone operation for @confytome/markdown.
+ * This ensures true standalone operation for all @confytome generators.
  */
 
 import fs from 'node:fs';
@@ -165,21 +165,13 @@ export class StandaloneBase {
    * @param {string} format - Format type ('markdown', 'html', etc.)
    * @returns {string} Branding text
    */
-  generateBranding(format = 'markdown') {
+  generateBranding(format = 'json') {
     if (this.options.excludeBrand) {
-      return `*Generated ${this.getTimestamp()} UTC*`;
+      return `Generated ${this.getTimestamp()} UTC`;
     }
 
     const metadata = this.constructor.getMetadata();
-
-    switch (format) {
-    case 'html':
-      return `<p><em>Generated ${this.getTimestamp()} UTC by 🍃 ${metadata.packageName} with &lt;3</em></p>`;
-    case 'markdown':
-      return `*Generated ${this.getTimestamp()} UTC by 🍃 ${metadata.packageName} with <3*`;
-    default:
-      return `Generated ${this.getTimestamp()} UTC by ${metadata.packageName}`;
-    }
+    return `Generated ${this.getTimestamp()} UTC by ${metadata.packageName}`;
   }
 
   /**

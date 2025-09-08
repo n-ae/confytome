@@ -9,50 +9,50 @@ import fs from 'node:fs';
 
 // Create a test OpenAPI spec
 const testSpec = {
-  "openapi": "3.0.3",
-  "info": {
-    "title": "Test API",
-    "version": "1.0.0",
-    "description": "A simple test API for markdown generation"
+  'openapi': '3.0.3',
+  'info': {
+    'title': 'Test API',
+    'version': '1.0.0',
+    'description': 'A simple test API for markdown generation'
   },
-  "servers": [
+  'servers': [
     {
-      "url": "https://api.example.com/v1",
-      "description": "Test server"
+      'url': 'https://api.example.com/v1',
+      'description': 'Test server'
     }
   ],
-  "paths": {
-    "/users": {
-      "get": {
-        "summary": "Get all users",
-        "description": "Retrieve a list of all users",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "example": [{"id": 1, "name": "John Doe"}]
+  'paths': {
+    '/users': {
+      'get': {
+        'summary': 'Get all users',
+        'description': 'Retrieve a list of all users',
+        'responses': {
+          '200': {
+            'description': 'Success',
+            'content': {
+              'application/json': {
+                'example': [{ 'id': 1, 'name': 'John Doe' }]
               }
             }
           }
         }
       },
-      "post": {
-        "summary": "Create user",
-        "description": "Create a new user",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "example": {"name": "Jane Doe"}
+      'post': {
+        'summary': 'Create user',
+        'description': 'Create a new user',
+        'requestBody': {
+          'content': {
+            'application/json': {
+              'example': { 'name': 'Jane Doe' }
             }
           }
         },
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "example": {"id": 2, "name": "Jane Doe"}
+        'responses': {
+          '201': {
+            'description': 'Created',
+            'content': {
+              'application/json': {
+                'example': { 'id': 2, 'name': 'Jane Doe' }
               }
             }
           }
@@ -102,7 +102,7 @@ async function testMarkdownGeneration() {
       console.log(`📏 File size: ${result.size} bytes`);
       console.log(`🔗 Endpoints: ${result.stats.endpoints}`);
       console.log(`📚 Resources: ${result.stats.resources}`);
-      
+
       // Show a snippet of the generated content
       const content = fs.readFileSync(result.outputPath, 'utf8');
       const preview = content.substring(0, 200);
@@ -111,7 +111,7 @@ async function testMarkdownGeneration() {
       console.log('─'.repeat(50));
       console.log(preview + (content.length > 200 ? '...' : ''));
       console.log('─'.repeat(50));
-      
+
     } else {
       console.error('❌ Test failed');
       console.error(`   Error: ${result.stats?.error || 'Unknown error'}`);

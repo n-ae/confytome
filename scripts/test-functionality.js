@@ -42,10 +42,10 @@ class FunctionalityTester {
       });
       return { success: true, output: result, error: null };
     } catch (error) {
-      return { 
-        success: false, 
-        output: error.stdout || '', 
-        error: error.stderr || error.message 
+      return {
+        success: false,
+        output: error.stdout || '',
+        error: error.stderr || error.message
       };
     }
   }
@@ -69,11 +69,11 @@ class FunctionalityTester {
     if (!fs.existsSync(fullPath)) {
       return { exists: false, size: 0, valid: false };
     }
-    
+
     const stats = fs.statSync(fullPath);
     const size = stats.size;
     const valid = size > minSize;
-    
+
     return { exists: true, size, valid };
   }
 
@@ -102,7 +102,7 @@ class FunctionalityTester {
       const srcPath = path.join(projectRoot, file);
       const fileName = path.basename(file).replace('.template', '');
       const destPath = path.join(TEST_DIR, fileName);
-      
+
       if (fs.existsSync(srcPath)) {
         fs.copyFileSync(srcPath, destPath);
       }
@@ -116,7 +116,7 @@ class FunctionalityTester {
    */
   async testBasicCLI() {
     console.log('🔧 Testing basic CLI functionality...');
-    
+
     const tests = [
       {
         name: 'CLI help command',
@@ -134,14 +134,14 @@ class FunctionalityTester {
     for (const test of tests) {
       const result = this.runCommand(test.command, { silent: true });
       const passed = result.success && (
-        typeof test.expectOutput === 'string' 
+        typeof test.expectOutput === 'string'
           ? result.output.includes(test.expectOutput)
           : test.expectOutput.test(result.output)
       );
-      
+
       allPassed &= this.logResult(
-        test.name, 
-        passed, 
+        test.name,
+        passed,
         passed ? '' : `Expected: ${test.expectOutput}, Got: ${result.output.slice(0, 100)}...`
       );
     }
@@ -154,9 +154,9 @@ class FunctionalityTester {
    */
   async testProjectInit() {
     console.log('🏗️ Testing project initialization...');
-    
+
     const result = this.runCommand(`node ${CONFYTOME_BIN} init --output ./confytome`, { silent: false });
-    
+
     if (!result.success) {
       return this.logResult('Project init command', false, result.error);
     }
@@ -173,8 +173,8 @@ class FunctionalityTester {
       const validation = this.validateFile(file.path, file.minSize);
       const passed = validation.exists && validation.valid;
       allFilesValid &= this.logResult(
-        `Generated ${file.path}`, 
-        passed, 
+        `Generated ${file.path}`,
+        passed,
         passed ? `${validation.size} bytes` : 'File missing or too small'
       );
     }
@@ -187,7 +187,7 @@ class FunctionalityTester {
    */
   async testOpenAPIGeneration() {
     console.log('📄 Testing OpenAPI specification generation...');
-    
+
     const result = this.runCommand(
       `node ${CONFYTOME_BIN} openapi -c ./confytome/serverConfig.json -f ./confytome/example-router.js`,
       { silent: true }
@@ -206,11 +206,11 @@ class FunctionalityTester {
     try {
       const specContent = fs.readFileSync(path.join(TEST_DIR, 'confytome/api-spec.json'), 'utf8');
       const spec = JSON.parse(specContent);
-      
+
       const hasRequiredFields = spec.openapi && spec.info && spec.paths;
       return this.logResult(
-        'OpenAPI spec validation', 
-        hasRequiredFields, 
+        'OpenAPI spec validation',
+        hasRequiredFields,
         hasRequiredFields ? `${Object.keys(spec.paths).length} paths found` : 'Missing required fields'
       );
     } catch (error) {
@@ -223,9 +223,9 @@ class FunctionalityTester {
    */
   async testGeneratorDiscovery() {
     console.log('🔍 Testing generator discovery...');
-    
+
     const result = this.runCommand(`node ${CONFYTOME_BIN} generators`, { silent: true });
-    
+
     if (!result.success) {
       return this.logResult('Generator discovery', false, result.error);
     }
@@ -247,12 +247,12 @@ class FunctionalityTester {
    */
   async testGeneratorValidation() {
     console.log('✅ Testing generator validation...');
-    
+
     const result = this.runCommand(`node ${CONFYTOME_BIN} validate`, { silent: true });
-    
+
     return this.logResult(
-      'Generator validation', 
-      result.success, 
+      'Generator validation',
+      result.success,
       result.success ? 'All generators valid' : result.error
     );
   }
@@ -262,22 +262,22 @@ class FunctionalityTester {
    */
   async testGeneratorExecution() {
     console.log('⚡ Testing generator execution...');
-    
+
     // First ensure we have an OpenAPI spec
     await this.testOpenAPIGeneration();
-    
+
     const generators = ['html', 'markdown', 'swagger'];
     let allPassed = true;
 
     for (const generator of generators) {
       const result = this.runCommand(
-        `node ${CONFYTOME_BIN} run ${generator} --output-dir ./confytome`, 
+        `node ${CONFYTOME_BIN} run ${generator} --output-dir ./confytome`,
         { silent: true }
       );
-      
+
       allPassed &= this.logResult(
-        `Generator ${generator} execution`, 
-        result.success, 
+        `Generator ${generator} execution`,
+        result.success,
         result.success ? '' : result.error
       );
     }
@@ -292,8 +292,8 @@ class FunctionalityTester {
     for (const output of expectedOutputs) {
       const validation = this.validateFile(output.file, output.minSize);
       allPassed &= this.logResult(
-        `Generated ${output.generator} output`, 
-        validation.valid, 
+        `Generated ${output.generator} output`,
+        validation.valid,
         validation.valid ? `${validation.size} bytes` : 'File missing or too small'
       );
     }
@@ -306,15 +306,15 @@ class FunctionalityTester {
    */
   async testUnifiedGenerate() {
     console.log('🎯 Testing unified generate command...');
-    
+
     const result = this.runCommand(
       `node ${CONFYTOME_BIN} generate --config ./confytome/confytome.json --output ./confytome`,
       { silent: true }
     );
 
     return this.logResult(
-      'Unified generate command', 
-      result.success, 
+      'Unified generate command',
+      result.success,
       result.success ? 'Generated from confytome.json' : result.error
     );
   }
@@ -324,7 +324,7 @@ class FunctionalityTester {
    */
   async testErrorHandling() {
     console.log('🚨 Testing error handling...');
-    
+
     const errorTests = [
       {
         name: 'Missing config file',
@@ -347,10 +347,10 @@ class FunctionalityTester {
     for (const test of errorTests) {
       const result = this.runCommand(test.command, { silent: true });
       const passed = test.expectFailure ? !result.success : result.success;
-      
+
       allPassed &= this.logResult(
-        test.name, 
-        passed, 
+        test.name,
+        passed,
         passed ? 'Error handled correctly' : 'Unexpected result'
       );
     }
@@ -363,13 +363,13 @@ class FunctionalityTester {
    */
   async testDemo() {
     console.log('🎬 Testing demo functionality...');
-    
+
     // Copy example files from confytome directory to root for demo to find them
     if (fs.existsSync('confytome/example-router.js') && fs.existsSync('confytome/serverConfig.json')) {
       fs.copyFileSync('confytome/example-router.js', './example-router.js');
       fs.copyFileSync('confytome/serverConfig.json', './serverConfig.json');
     }
-    
+
     const result = this.runCommand(
       `node ${CONFYTOME_BIN} demo --output ./demo`,
       { silent: true, timeout: 30000 }
@@ -391,7 +391,7 @@ class FunctionalityTester {
     for (const file of demoFiles) {
       const validation = this.validateFile(file, 100);
       allValid &= this.logResult(
-        `Demo file ${path.basename(file)}`, 
+        `Demo file ${path.basename(file)}`,
         validation.valid,
         validation.valid ? `${validation.size} bytes` : 'Missing or invalid'
       );
@@ -407,7 +407,7 @@ class FunctionalityTester {
     console.log('');
     console.log('📊 Test Results Summary');
     console.log('='.repeat(50));
-    
+
     const totalTests = this.testResults.length;
     const passedTests = this.testResults.filter(r => r.success).length;
     const failedTests = totalTests - passedTests;
@@ -429,7 +429,7 @@ class FunctionalityTester {
 
     const success = failedTests === 0;
     console.log(success ? '🎉 All tests passed!' : '💥 Some tests failed!');
-    
+
     return success;
   }
 
@@ -459,34 +459,34 @@ class FunctionalityTester {
       // Core functionality tests
       await this.testBasicCLI();
       console.log('');
-      
+
       await this.testProjectInit();
       console.log('');
-      
+
       await this.testOpenAPIGeneration();
       console.log('');
-      
+
       await this.testGeneratorDiscovery();
       console.log('');
-      
+
       await this.testGeneratorValidation();
       console.log('');
-      
+
       await this.testGeneratorExecution();
       console.log('');
-      
+
       await this.testUnifiedGenerate();
       console.log('');
-      
+
       await this.testErrorHandling();
       console.log('');
-      
+
       await this.testDemo();
       console.log('');
 
       // Generate report
       const success = this.generateReport();
-      
+
       return success;
     } catch (error) {
       console.error('💥 Test suite failed with error:', error);
@@ -501,7 +501,7 @@ class FunctionalityTester {
 // Run tests if script is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   const tester = new FunctionalityTester();
-  
+
   tester.runAllTests()
     .then(success => {
       process.exit(success ? 0 : 1);

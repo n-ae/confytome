@@ -2,7 +2,7 @@
 
 /**
  * Test Suite: Standalone @confytome/markdown Package
- * 
+ *
  * Ensures that @confytome/markdown can operate independently without @confytome/core
  * dependency and generates correct Markdown documentation from OpenAPI specifications.
  */
@@ -54,268 +54,268 @@ class StandaloneMarkdownTest {
    */
   createTestOpenAPISpec() {
     const testSpec = {
-      "openapi": "3.0.3",
-      "info": {
-        "title": "Standalone Markdown Test API",
-        "version": "1.0.0",
-        "description": "Comprehensive API for testing standalone markdown generation with various OpenAPI features",
-        "contact": {
-          "name": "Test Support",
-          "email": "test@example.com"
+      'openapi': '3.0.3',
+      'info': {
+        'title': 'Standalone Markdown Test API',
+        'version': '1.0.0',
+        'description': 'Comprehensive API for testing standalone markdown generation with various OpenAPI features',
+        'contact': {
+          'name': 'Test Support',
+          'email': 'test@example.com'
         },
-        "license": {
-          "name": "MIT",
-          "url": "https://opensource.org/licenses/MIT"
+        'license': {
+          'name': 'MIT',
+          'url': 'https://opensource.org/licenses/MIT'
         }
       },
-      "servers": [
+      'servers': [
         {
-          "url": "https://api.test.com/v1",
-          "description": "Production server"
+          'url': 'https://api.test.com/v1',
+          'description': 'Production server'
         },
         {
-          "url": "http://localhost:3000/v1", 
-          "description": "Development server"
+          'url': 'http://localhost:3000/v1',
+          'description': 'Development server'
         }
       ],
-      "security": [
+      'security': [
         {
-          "bearerAuth": []
+          'bearerAuth': []
         }
       ],
-      "components": {
-        "securitySchemes": {
-          "bearerAuth": {
-            "type": "http",
-            "scheme": "bearer",
-            "bearerFormat": "JWT"
+      'components': {
+        'securitySchemes': {
+          'bearerAuth': {
+            'type': 'http',
+            'scheme': 'bearer',
+            'bearerFormat': 'JWT'
           }
         },
-        "schemas": {
-          "User": {
-            "type": "object",
-            "required": ["id", "name", "email"],
-            "properties": {
-              "id": {
-                "type": "integer",
-                "format": "int64",
-                "description": "User ID"
+        'schemas': {
+          'User': {
+            'type': 'object',
+            'required': ['id', 'name', 'email'],
+            'properties': {
+              'id': {
+                'type': 'integer',
+                'format': 'int64',
+                'description': 'User ID'
               },
-              "name": {
-                "type": "string",
-                "description": "User's full name"
+              'name': {
+                'type': 'string',
+                'description': 'User\'s full name'
               },
-              "email": {
-                "type": "string",
-                "format": "email",
-                "description": "User's email address"
+              'email': {
+                'type': 'string',
+                'format': 'email',
+                'description': 'User\'s email address'
               },
-              "role": {
-                "type": "string",
-                "enum": ["admin", "user", "guest"],
-                "description": "User role"
+              'role': {
+                'type': 'string',
+                'enum': ['admin', 'user', 'guest'],
+                'description': 'User role'
               }
             },
-            "example": {
-              "id": 123,
-              "name": "John Doe",
-              "email": "john@example.com",
-              "role": "user"
+            'example': {
+              'id': 123,
+              'name': 'John Doe',
+              'email': 'john@example.com',
+              'role': 'user'
             }
           },
-          "CreateUserRequest": {
-            "type": "object",
-            "required": ["name", "email"],
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "User's full name"
+          'CreateUserRequest': {
+            'type': 'object',
+            'required': ['name', 'email'],
+            'properties': {
+              'name': {
+                'type': 'string',
+                'description': 'User\'s full name'
               },
-              "email": {
-                "type": "string",
-                "format": "email",
-                "description": "User's email address"
+              'email': {
+                'type': 'string',
+                'format': 'email',
+                'description': 'User\'s email address'
               },
-              "role": {
-                "type": "string",
-                "enum": ["admin", "user", "guest"],
-                "default": "user",
-                "description": "User role"
+              'role': {
+                'type': 'string',
+                'enum': ['admin', 'user', 'guest'],
+                'default': 'user',
+                'description': 'User role'
               }
             },
-            "example": {
-              "name": "Jane Doe",
-              "email": "jane@example.com",
-              "role": "user"
+            'example': {
+              'name': 'Jane Doe',
+              'email': 'jane@example.com',
+              'role': 'user'
             }
           },
-          "Error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "integer",
-                "description": "Error code"
+          'Error': {
+            'type': 'object',
+            'properties': {
+              'code': {
+                'type': 'integer',
+                'description': 'Error code'
               },
-              "message": {
-                "type": "string",
-                "description": "Error message"
+              'message': {
+                'type': 'string',
+                'description': 'Error message'
               }
             }
           }
         }
       },
-      "paths": {
-        "/users": {
-          "get": {
-            "summary": "List all users",
-            "description": "Retrieve a paginated list of all users in the system",
-            "tags": ["Users"],
-            "parameters": [
+      'paths': {
+        '/users': {
+          'get': {
+            'summary': 'List all users',
+            'description': 'Retrieve a paginated list of all users in the system',
+            'tags': ['Users'],
+            'parameters': [
               {
-                "name": "page",
-                "in": "query",
-                "description": "Page number for pagination",
-                "required": false,
-                "schema": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "default": 1
+                'name': 'page',
+                'in': 'query',
+                'description': 'Page number for pagination',
+                'required': false,
+                'schema': {
+                  'type': 'integer',
+                  'minimum': 1,
+                  'default': 1
                 }
               },
               {
-                "name": "limit",
-                "in": "query", 
-                "description": "Number of users per page",
-                "required": false,
-                "schema": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 100,
-                  "default": 20
+                'name': 'limit',
+                'in': 'query',
+                'description': 'Number of users per page',
+                'required': false,
+                'schema': {
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 100,
+                  'default': 20
                 }
               },
               {
-                "name": "role",
-                "in": "query",
-                "description": "Filter by user role",
-                "required": false,
-                "schema": {
-                  "type": "string",
-                  "enum": ["admin", "user", "guest"]
+                'name': 'role',
+                'in': 'query',
+                'description': 'Filter by user role',
+                'required': false,
+                'schema': {
+                  'type': 'string',
+                  'enum': ['admin', 'user', 'guest']
                 }
               }
             ],
-            "responses": {
-              "200": {
-                "description": "Successful response with user list",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/User"
+            'responses': {
+              '200': {
+                'description': 'Successful response with user list',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      'type': 'array',
+                      'items': {
+                        '$ref': '#/components/schemas/User'
                       }
                     },
-                    "example": [
+                    'example': [
                       {
-                        "id": 1,
-                        "name": "John Doe",
-                        "email": "john@example.com",
-                        "role": "admin"
+                        'id': 1,
+                        'name': 'John Doe',
+                        'email': 'john@example.com',
+                        'role': 'admin'
                       },
                       {
-                        "id": 2,
-                        "name": "Jane Smith",
-                        "email": "jane@example.com", 
-                        "role": "user"
+                        'id': 2,
+                        'name': 'Jane Smith',
+                        'email': 'jane@example.com',
+                        'role': 'user'
                       }
                     ]
                   }
                 }
               },
-              "400": {
-                "description": "Bad request - invalid parameters",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+              '400': {
+                'description': 'Bad request - invalid parameters',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/Error'
                     },
-                    "example": {
-                      "code": 400,
-                      "message": "Invalid pagination parameters"
+                    'example': {
+                      'code': 400,
+                      'message': 'Invalid pagination parameters'
                     }
                   }
                 }
               },
-              "401": {
-                "description": "Unauthorized - authentication required",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+              '401': {
+                'description': 'Unauthorized - authentication required',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/Error'
                     }
                   }
                 }
               }
             }
           },
-          "post": {
-            "summary": "Create a new user",
-            "description": "Create a new user account in the system",
-            "tags": ["Users"],
-            "requestBody": {
-              "description": "User data for creation",
-              "required": true,
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/CreateUserRequest"
+          'post': {
+            'summary': 'Create a new user',
+            'description': 'Create a new user account in the system',
+            'tags': ['Users'],
+            'requestBody': {
+              'description': 'User data for creation',
+              'required': true,
+              'content': {
+                'application/json': {
+                  'schema': {
+                    '$ref': '#/components/schemas/CreateUserRequest'
                   },
-                  "example": {
-                    "name": "Bob Wilson",
-                    "email": "bob@example.com",
-                    "role": "user"
+                  'example': {
+                    'name': 'Bob Wilson',
+                    'email': 'bob@example.com',
+                    'role': 'user'
                   }
                 }
               }
             },
-            "responses": {
-              "201": {
-                "description": "User created successfully",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/User"
+            'responses': {
+              '201': {
+                'description': 'User created successfully',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/User'
                     },
-                    "example": {
-                      "id": 3,
-                      "name": "Bob Wilson",
-                      "email": "bob@example.com",
-                      "role": "user"
+                    'example': {
+                      'id': 3,
+                      'name': 'Bob Wilson',
+                      'email': 'bob@example.com',
+                      'role': 'user'
                     }
                   }
                 }
               },
-              "400": {
-                "description": "Bad request - validation error",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+              '400': {
+                'description': 'Bad request - validation error',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/Error'
                     },
-                    "example": {
-                      "code": 400,
-                      "message": "Invalid email format"
+                    'example': {
+                      'code': 400,
+                      'message': 'Invalid email format'
                     }
                   }
                 }
               },
-              "409": {
-                "description": "Conflict - user already exists",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+              '409': {
+                'description': 'Conflict - user already exists',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/Error'
                     }
                   }
                 }
@@ -323,188 +323,188 @@ class StandaloneMarkdownTest {
             }
           }
         },
-        "/users/{id}": {
-          "get": {
-            "summary": "Get user by ID",
-            "description": "Retrieve a specific user by their unique identifier",
-            "tags": ["Users"],
-            "parameters": [
+        '/users/{id}': {
+          'get': {
+            'summary': 'Get user by ID',
+            'description': 'Retrieve a specific user by their unique identifier',
+            'tags': ['Users'],
+            'parameters': [
               {
-                "name": "id",
-                "in": "path",
-                "description": "User ID",
-                "required": true,
-                "schema": {
-                  "type": "integer",
-                  "format": "int64"
+                'name': 'id',
+                'in': 'path',
+                'description': 'User ID',
+                'required': true,
+                'schema': {
+                  'type': 'integer',
+                  'format': 'int64'
                 }
               }
             ],
-            "responses": {
-              "200": {
-                "description": "User found",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/User"
+            'responses': {
+              '200': {
+                'description': 'User found',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/User'
                     }
                   }
                 }
               },
-              "404": {
-                "description": "User not found",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+              '404': {
+                'description': 'User not found',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/Error'
                     }
                   }
                 }
               }
             }
           },
-          "put": {
-            "summary": "Update user",
-            "description": "Update an existing user's information",
-            "tags": ["Users"],
-            "parameters": [
+          'put': {
+            'summary': 'Update user',
+            'description': 'Update an existing user\'s information',
+            'tags': ['Users'],
+            'parameters': [
               {
-                "name": "id",
-                "in": "path",
-                "description": "User ID",
-                "required": true,
-                "schema": {
-                  "type": "integer",
-                  "format": "int64"
+                'name': 'id',
+                'in': 'path',
+                'description': 'User ID',
+                'required': true,
+                'schema': {
+                  'type': 'integer',
+                  'format': 'int64'
                 }
               }
             ],
-            "requestBody": {
-              "description": "Updated user data",
-              "required": true,
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/CreateUserRequest"
+            'requestBody': {
+              'description': 'Updated user data',
+              'required': true,
+              'content': {
+                'application/json': {
+                  'schema': {
+                    '$ref': '#/components/schemas/CreateUserRequest'
                   }
                 }
               }
             },
-            "responses": {
-              "200": {
-                "description": "User updated successfully",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/User"
+            'responses': {
+              '200': {
+                'description': 'User updated successfully',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/User'
                     }
                   }
                 }
               },
-              "404": {
-                "description": "User not found"
+              '404': {
+                'description': 'User not found'
               },
-              "400": {
-                "description": "Bad request - validation error"
+              '400': {
+                'description': 'Bad request - validation error'
               }
             }
           },
-          "delete": {
-            "summary": "Delete user",
-            "description": "Remove a user from the system",
-            "tags": ["Users"],
-            "parameters": [
+          'delete': {
+            'summary': 'Delete user',
+            'description': 'Remove a user from the system',
+            'tags': ['Users'],
+            'parameters': [
               {
-                "name": "id",
-                "in": "path",
-                "description": "User ID",
-                "required": true,
-                "schema": {
-                  "type": "integer",
-                  "format": "int64"
+                'name': 'id',
+                'in': 'path',
+                'description': 'User ID',
+                'required': true,
+                'schema': {
+                  'type': 'integer',
+                  'format': 'int64'
                 }
               }
             ],
-            "responses": {
-              "204": {
-                "description": "User deleted successfully"
+            'responses': {
+              '204': {
+                'description': 'User deleted successfully'
               },
-              "404": {
-                "description": "User not found"
+              '404': {
+                'description': 'User not found'
               },
-              "403": {
-                "description": "Forbidden - insufficient permissions"
+              '403': {
+                'description': 'Forbidden - insufficient permissions'
               }
             }
           }
         },
-        "/auth/login": {
-          "post": {
-            "summary": "User login",
-            "description": "Authenticate user and return JWT token",
-            "tags": ["Authentication"],
-            "requestBody": {
-              "description": "Login credentials",
-              "required": true,
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "required": ["email", "password"],
-                    "properties": {
-                      "email": {
-                        "type": "string",
-                        "format": "email",
-                        "description": "User email"
+        '/auth/login': {
+          'post': {
+            'summary': 'User login',
+            'description': 'Authenticate user and return JWT token',
+            'tags': ['Authentication'],
+            'requestBody': {
+              'description': 'Login credentials',
+              'required': true,
+              'content': {
+                'application/json': {
+                  'schema': {
+                    'type': 'object',
+                    'required': ['email', 'password'],
+                    'properties': {
+                      'email': {
+                        'type': 'string',
+                        'format': 'email',
+                        'description': 'User email'
                       },
-                      "password": {
-                        "type": "string",
-                        "description": "User password"
+                      'password': {
+                        'type': 'string',
+                        'description': 'User password'
                       }
                     },
-                    "example": {
-                      "email": "john@example.com",
-                      "password": "securepassword123"
+                    'example': {
+                      'email': 'john@example.com',
+                      'password': 'securepassword123'
                     }
                   }
                 }
               }
             },
-            "responses": {
-              "200": {
-                "description": "Login successful",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "type": "object",
-                      "properties": {
-                        "token": {
-                          "type": "string",
-                          "description": "JWT access token"
+            'responses': {
+              '200': {
+                'description': 'Login successful',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      'type': 'object',
+                      'properties': {
+                        'token': {
+                          'type': 'string',
+                          'description': 'JWT access token'
                         },
-                        "user": {
-                          "$ref": "#/components/schemas/User"
+                        'user': {
+                          '$ref': '#/components/schemas/User'
                         }
                       },
-                      "example": {
-                        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                        "user": {
-                          "id": 1,
-                          "name": "John Doe",
-                          "email": "john@example.com",
-                          "role": "admin"
+                      'example': {
+                        'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                        'user': {
+                          'id': 1,
+                          'name': 'John Doe',
+                          'email': 'john@example.com',
+                          'role': 'admin'
                         }
                       }
                     }
                   }
                 }
               },
-              "401": {
-                "description": "Invalid credentials",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+              '401': {
+                'description': 'Invalid credentials',
+                'content': {
+                  'application/json': {
+                    'schema': {
+                      '$ref': '#/components/schemas/Error'
                     }
                   }
                 }
@@ -517,7 +517,7 @@ class StandaloneMarkdownTest {
 
     const specPath = path.join(testDir, 'api-spec.json');
     fs.writeFileSync(specPath, JSON.stringify(testSpec, null, 2), 'utf8');
-    
+
     return this.logResult('OpenAPI specification created', true, `${Object.keys(testSpec.paths).length} paths, ${Object.keys(testSpec.components.schemas).length} schemas`);
   }
 
@@ -528,15 +528,15 @@ class StandaloneMarkdownTest {
     try {
       // Import the standalone generator
       const { StandaloneMarkdownGenerator } = await import(`${projectRoot}/packages/markdown/standalone-generator.js`);
-      
+
       const generator = new StandaloneMarkdownGenerator(testDir);
       const hasRequiredMethods = [
         'initialize',
-        'generate', 
+        'generate',
         'cleanup'
       ].every(method => typeof generator[method] === 'function');
 
-      return this.logResult('Standalone generator instantiation', hasRequiredMethods, 
+      return this.logResult('Standalone generator instantiation', hasRequiredMethods,
         hasRequiredMethods ? 'All required methods present' : 'Missing required methods');
     } catch (error) {
       return this.logResult('Standalone generator instantiation', false, error.message);
@@ -549,19 +549,19 @@ class StandaloneMarkdownTest {
   testCLIAvailability() {
     try {
       const cliPath = path.join(projectRoot, 'packages/markdown/cli.js');
-      
+
       // Test CLI exists
       if (!fs.existsSync(cliPath)) {
         return this.logResult('CLI availability', false, 'CLI file not found');
       }
 
       // Test help command
-      const helpResult = execSync(`node ${cliPath} --help`, { 
-        encoding: 'utf8', 
-        cwd: testDir 
+      const helpResult = execSync(`node ${cliPath} --help`, {
+        encoding: 'utf8',
+        cwd: testDir
       });
-      
-      const hasRequiredCommands = ['generate', 'validate', 'info'].every(cmd => 
+
+      const hasRequiredCommands = ['generate', 'validate', 'info'].every(cmd =>
         helpResult.includes(cmd)
       );
 
@@ -583,7 +583,7 @@ class StandaloneMarkdownTest {
         cwd: testDir
       });
 
-      const validationPassed = result.includes('OpenAPI specification is valid') && 
+      const validationPassed = result.includes('OpenAPI specification is valid') &&
                                result.includes('Ready for Markdown generation');
 
       return this.logResult('Validation command', validationPassed,
@@ -648,7 +648,7 @@ class StandaloneMarkdownTest {
     try {
       const outputPath = path.join(testDir, 'api-docs.md');
       const content = fs.readFileSync(outputPath, 'utf8');
-      
+
       // Quality checks
       const qualityChecks = {
         'Has proper markdown headers': /^#{1,6} /.test(content),
@@ -668,7 +668,7 @@ class StandaloneMarkdownTest {
       const passedChecks = Object.entries(qualityChecks).filter(([_, passed]) => passed);
       const allPassed = passedChecks.length === Object.keys(qualityChecks).length;
 
-      return this.logResult('Content quality', allPassed, 
+      return this.logResult('Content quality', allPassed,
         `${passedChecks.length}/${Object.keys(qualityChecks).length} quality checks passed`);
 
     } catch (error) {
@@ -708,7 +708,7 @@ class StandaloneMarkdownTest {
   testErrorHandling() {
     try {
       const cliPath = path.join(projectRoot, 'packages/markdown/cli.js');
-      
+
       // Test with missing spec file
       try {
         execSync(`node ${cliPath} generate --spec nonexistent.json`, {
@@ -717,7 +717,7 @@ class StandaloneMarkdownTest {
         });
         return this.logResult('Error handling', false, 'Should have failed with missing spec');
       } catch (error) {
-        const properErrorHandling = error.stderr?.includes('not found') || 
+        const properErrorHandling = error.stderr?.includes('not found') ||
                                   error.stdout?.includes('not found');
         return this.logResult('Error handling', properErrorHandling,
           properErrorHandling ? 'Proper error messages for missing files' : 'Poor error handling');
@@ -738,10 +738,10 @@ class StandaloneMarkdownTest {
       const configChecks = {
         'Has bin entry': packageJson.bin && packageJson.bin['confytome-markdown'],
         'Has standalone script': packageJson.scripts && packageJson.scripts.standalone,
-        'Has required dependencies': packageJson.dependencies && 
+        'Has required dependencies': packageJson.dependencies &&
                                    packageJson.dependencies.mustache &&
                                    packageJson.dependencies.commander,
-        'Has correct files': packageJson.files && 
+        'Has correct files': packageJson.files &&
                            packageJson.files.includes('cli.js') &&
                            packageJson.files.includes('standalone-generator.js'),
         'Is ES module': packageJson.type === 'module'
@@ -764,7 +764,7 @@ class StandaloneMarkdownTest {
     console.log('');
     console.log('📊 Standalone @confytome/markdown Test Results');
     console.log('='.repeat(60));
-    
+
     const totalTests = this.results.length;
     const passedTests = this.results.filter(r => r.success).length;
     const failedTests = totalTests - passedTests;
@@ -785,11 +785,11 @@ class StandaloneMarkdownTest {
     }
 
     const success = failedTests === 0;
-    console.log(success ? 
-      '🎉 All standalone tests passed! @confytome/markdown is ready for independent use.' : 
+    console.log(success ?
+      '🎉 All standalone tests passed! @confytome/markdown is ready for independent use.' :
       '💥 Some standalone tests failed!'
     );
-    
+
     return success;
   }
 
@@ -829,7 +829,7 @@ class StandaloneMarkdownTest {
 
       // Generate report
       const success = this.generateReport();
-      
+
       return success;
     } catch (error) {
       console.error('💥 Test suite failed with error:', error);
@@ -844,7 +844,7 @@ class StandaloneMarkdownTest {
 // Run tests if script is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   const tester = new StandaloneMarkdownTest();
-  
+
   tester.runAllTests()
     .then(success => {
       process.exit(success ? 0 : 1);

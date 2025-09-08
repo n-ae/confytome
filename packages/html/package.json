@@ -1,8 +1,11 @@
 {
   "name": "@confytome/html",
   "version": "1.4.4",
-  "description": "Plugin for @confytome/core - generates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
+  "description": "Standalone HTML generator - creates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
   "main": "generate-html.js",
+  "bin": {
+    "confytome-html": "./cli.js"
+  },
   "type": "module",
   "repository": {
     "type": "git",
@@ -29,18 +32,21 @@
   "license": "MIT",
   "files": [
     "generate-html.js",
+    "standalone-generator.js",
+    "cli.js",
     "utils/",
     "README.md"
   ],
   "scripts": {
     "test": "echo \"Tests in main confytome package\" && exit 0",
+    "standalone": "node cli.js",
     "lint": "eslint . --ext .js",
     "format": "eslint . --ext .js --fix",
     "clean": "rm -rf docs/* .cache",
     "validate": "npm ls",
     "prepublishOnly": "npm run validate"
   },
-  "peerDependencies": {
-    "@confytome/core": "^1.2.0"
+  "dependencies": {
+    "commander": "^12.0.0"
   }
 }

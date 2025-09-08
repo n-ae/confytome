@@ -1,8 +1,11 @@
 {
   "name": "@confytome/postman",
-  "version": "1.4.4",
-  "description": "Plugin for @confytome/core - generates Postman collections and environment variables from OpenAPI specs for API testing and development.",
+  "version": "1.4.4", 
+  "description": "Standalone Postman generator - creates Postman collections and environment variables from OpenAPI specs for API testing and development.",
   "main": "generate-postman.js",
+  "bin": {
+    "confytome-postman": "./cli.js"
+  },
   "type": "module",
   "repository": {
     "type": "git",
@@ -29,18 +32,21 @@
   "license": "MIT",
   "files": [
     "generate-postman.js",
+    "standalone-generator.js",
+    "cli.js", 
     "utils/",
     "README.md"
   ],
   "scripts": {
     "test": "echo \"Tests in main confytome package\" && exit 0",
+    "standalone": "node cli.js",
     "lint": "eslint . --ext .js",
     "format": "eslint . --ext .js --fix",
     "clean": "rm -rf docs/* .cache",
     "validate": "npm ls",
     "prepublishOnly": "npm run validate"
   },
-  "peerDependencies": {
-    "@confytome/core": "^1.2.0"
+  "dependencies": {
+    "commander": "^12.0.0"
   }
 }

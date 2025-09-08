@@ -10,11 +10,11 @@ import path from 'node:path';
 import { SimpleErrorHandler } from './error-handler-simple.js';
 import { FileManager } from './file-manager.js';
 import { CliValidator } from './cli-validator.js';
-import { ServiceFactory } from '../services/ServiceFactory.js';
+// ServiceFactory import removed - services deprecated
 import { getOutputDir, OUTPUT_FILES } from '../constants.js';
 
 export class BaseGenerator {
-  constructor(name, description, requiresJSDocFiles = false, outputDir, services = null) {
+  constructor(name, description, requiresJSDocFiles = false, outputDir, _services = null) {
     outputDir = getOutputDir(outputDir);
     this.name = name;
     this.description = description;
@@ -23,46 +23,25 @@ export class BaseGenerator {
     this.startTime = null;
     this.stats = {};
 
-    // Dependency injection - services can be injected or created automatically
-    this.services = services;
+    // Legacy services parameter is ignored - services are deprecated
+    // Generators now use direct service calls like BrandingService.generateHtmlBranding()
   }
 
   /**
-   * Get or create services for this generator
-   * @param {string} contextUrl - import.meta.url from the generator
-   * @param {string} generatorType - Type of generator
-   * @param {Object} options - Generator options
-   * @returns {Object} Service container
+   * Legacy method - services are no longer used
+   * @deprecated Generators now use direct service calls like BrandingService.generateHtmlBranding()
    */
-  getServices(contextUrl, generatorType = null, options = {}) {
-    if (!this.services) {
-      // Auto-create services if not injected
-      const opts = {
-        excludeBrand: this.excludeBrand || false,
-        ...options
-      };
-
-      this.services = generatorType
-        ? ServiceFactory.createGeneratorServices(contextUrl, generatorType, opts)
-        : ServiceFactory.createServices(contextUrl, opts);
-    }
-
-    return this.services;
+  getServices(_contextUrl, _generatorType = null, _options = {}) {
+    // Services deprecated - generators use direct service calls
+    return null;
   }
 
   /**
-   * Initialize services for this generator
-   * @param {string} contextUrl - import.meta.url from the generator
-   * @param {string} generatorType - Type of generator
+   * Legacy method - services are no longer used
+   * @deprecated Generators now use direct service calls
    */
-  initializeServices(contextUrl, generatorType = null) {
-    const options = {
-      excludeBrand: this.excludeBrand || false
-    };
-
-    this.services = generatorType
-      ? ServiceFactory.createGeneratorServices(contextUrl, generatorType, options)
-      : ServiceFactory.createServices(contextUrl, options);
+  initializeServices(_contextUrl, _generatorType = null) {
+    // Services deprecated - no action needed
   }
 
   /**
@@ -306,14 +285,13 @@ export class SpecConsumerGeneratorBase extends BaseGenerator {
    * Eliminates code duplication across all generators
    */
   async generateDocument(generatorType, outputFileName, generateContent) {
-    // Initialize services if not injected
-    const services = this.getServices(import.meta.url, generatorType);
+    // Services are no longer used - generators use direct service calls
 
     // Load OpenAPI spec
     const openApiSpec = this.loadOpenAPISpec();
 
     // Generate content using provided function
-    const content = await generateContent(openApiSpec, services);
+    const content = await generateContent(openApiSpec);
 
     // Write output file
     const outputPath = path.join(this.outputDir, outputFileName);

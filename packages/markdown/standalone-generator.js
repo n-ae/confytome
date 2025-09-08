@@ -1,6 +1,6 @@
 /**
  * Standalone Markdown Generator
- * 
+ *
  * Truly independent implementation with zero external dependencies
  * beyond mustache and commander. Can run via "npx @confytome/markdown"
  * without any core package dependencies.
@@ -45,7 +45,7 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
    */
   async validate(options = {}) {
     const baseValidation = await super.validate(options);
-    
+
     // Add template-specific validation
     const templatePath = path.join(__dirname, 'templates', 'main.mustache');
     try {
@@ -64,10 +64,10 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
    */
   async initialize(options = {}) {
     const baseInit = await super.initialize(options);
-    
+
     // Add any markdown-specific initialization here
     this.log('Markdown generator initialized');
-    
+
     return baseInit;
   }
 
@@ -109,7 +109,7 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
 
       // Write output using base class method
       const result = this.writeOutputFile('api-docs.md', markdown, 'Confluence-ready Markdown documentation created');
-      
+
       // Add additional stats
       if (result.success) {
         result.stats = {

@@ -2,9 +2,9 @@
 
 /**
  * Standalone Isolation Test
- * 
+ *
  * Verifies that @confytome/markdown can truly operate in complete isolation
- * without any dependencies on @confytome/core. This test simulates the 
+ * without any dependencies on @confytome/core. This test simulates the
  * behavior when a user runs `npx @confytome/markdown` in a clean environment.
  */
 
@@ -34,7 +34,7 @@ class StandaloneIsolationTester {
       await this.testValidationWithoutCore();
       await this.testGenerationWithMockData();
       await this.testCleanupOperations();
-      
+
       this.printResults();
     } catch (error) {
       console.error(`❌ Test suite failed: ${error.message}`);
@@ -49,7 +49,7 @@ class StandaloneIsolationTester {
    */
   async setupTestEnvironment() {
     console.log('📁 Setting up isolated test environment...');
-    
+
     // Create test directory
     if (fs.existsSync(this.testDir)) {
       fs.rmSync(this.testDir, { recursive: true, force: true });
@@ -236,10 +236,10 @@ class StandaloneIsolationTester {
 
     try {
       const generator = new StandaloneMarkdownGenerator(this.testDir);
-      
+
       // Test that cleanup doesn't throw errors
       await generator.cleanup();
-      
+
       this.addResult('✅ Cleanup operations', 'SUCCESS');
     } catch (error) {
       this.addResult('❌ Cleanup operations', `FAILED: ${error.message}`);
@@ -260,10 +260,10 @@ class StandaloneIsolationTester {
   printResults() {
     console.log('\n📋 Test Results Summary:');
     console.log('=' * 50);
-    
+
     let passed = 0;
     let failed = 0;
-    
+
     for (const { test, result } of this.testResults) {
       console.log(`${test}: ${result}`);
       if (result === 'SUCCESS') {
@@ -272,12 +272,12 @@ class StandaloneIsolationTester {
         failed++;
       }
     }
-    
+
     console.log('=' * 50);
     console.log(`Total Tests: ${this.testResults.length}`);
     console.log(`✅ Passed: ${passed}`);
     console.log(`❌ Failed: ${failed}`);
-    
+
     if (failed === 0) {
       console.log('\n🎉 All tests passed! @confytome/markdown operates in true isolation!');
       console.log('✨ The package successfully achieved standalone operation without @confytome/core dependencies.');

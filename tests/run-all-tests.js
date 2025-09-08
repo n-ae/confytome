@@ -2,7 +2,7 @@
 
 /**
  * Test Runner for Confytome Project
- * 
+ *
  * Orchestrates all test types including unit tests, functional tests,
  * and standalone package tests.
  */
@@ -39,20 +39,20 @@ for (const test of tests) {
   console.log(`🔬 Running: ${test.name}`);
   console.log(`📝 ${test.description}`);
   console.log('');
-  
+
   try {
-    const result = execSync(test.command, { 
+    const result = execSync(test.command, {
       stdio: 'inherit',
       encoding: 'utf8'
     });
-    
+
     console.log(`✅ ${test.name} PASSED`);
     totalPassed++;
   } catch (error) {
     console.log(`❌ ${test.name} FAILED`);
     totalFailed++;
   }
-  
+
   console.log('');
   console.log('-'.repeat(50));
   console.log('');

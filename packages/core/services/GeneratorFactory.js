@@ -6,7 +6,6 @@
  */
 
 import { generatorRegistry } from './GeneratorRegistry.js';
-import { ServiceFactory } from './ServiceFactory.js';
 import { getOutputDir } from '../constants.js';
 
 export class GeneratorFactory {
@@ -44,17 +43,8 @@ export class GeneratorFactory {
       throw new Error(`Generator validation failed for ${generatorName}:\\n${validation.errors.join('\\n')}`);
     }
 
-    // Create services if not provided
-    let services = options.services;
-    if (!services && options.contextUrl) {
-      services = ServiceFactory.createServices(
-        options.contextUrl,
-        options
-      );
-    }
-
-    // Create generator instance
-    const generator = generatorRegistry.createGenerator(generatorName, outputDir, services);
+    // Create generator instance (services are no longer injected - generators call services directly)
+    const generator = generatorRegistry.createGenerator(generatorName, outputDir, null);
 
     // Apply any additional configuration
     if (options.excludeBrand !== undefined) {

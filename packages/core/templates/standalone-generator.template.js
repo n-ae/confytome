@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * {{GENERATOR_NAME}} Standalone Generator Template
  * 

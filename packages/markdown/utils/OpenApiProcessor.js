@@ -1,7 +1,7 @@
 /**
  * OpenAPI Specification Processor for Markdown Generation
- * 
- * Processes OpenAPI 3.0.x specifications into a structure suitable for 
+ *
+ * Processes OpenAPI 3.0.x specifications into a structure suitable for
  * Mustache template rendering with Confluence-friendly output.
  */
 
@@ -85,7 +85,7 @@ export class OpenApiProcessor {
         if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
           endpoints.push({
             method: method.toUpperCase(),
-            path: path,
+            path,
             summary: operation.summary || `${method.toUpperCase()} ${path}`,
             anchor: this.createAnchor(method, path)
           });
@@ -106,7 +106,7 @@ export class OpenApiProcessor {
 
     for (const [path, pathItem] of Object.entries(paths)) {
       const resourceName = this.extractResourceName(path);
-      
+
       if (!resources.has(resourceName)) {
         resources.set(resourceName, {
           name: resourceName,
@@ -119,7 +119,7 @@ export class OpenApiProcessor {
         if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
           const endpoint = {
             method: method.toUpperCase(),
-            path: path,
+            path,
             summary: operation.summary || `${method.toUpperCase()} ${path}`,
             description: operation.description || '',
             parameters: this.processParameters(operation.parameters || []),
@@ -191,7 +191,7 @@ export class OpenApiProcessor {
     return Object.entries(responses).map(([code, response]) => {
       const content = response.content?.['application/json'];
       return {
-        code: code,
+        code,
         description: response.description || '',
         example: content?.example ? JSON.stringify(content.example, null, 2) : null
       };
@@ -209,14 +209,14 @@ export class OpenApiProcessor {
     }
 
     const models = Object.entries(schemas).map(([name, schema]) => ({
-      name: name,
+      name,
       description: schema.description || '',
       example: this.generateSchemaExample(schema),
       properties: this.processSchemaProperties(schema.properties || {})
     }));
 
     return {
-      models: models
+      models
     };
   }
 
@@ -227,7 +227,7 @@ export class OpenApiProcessor {
    */
   processSchemaProperties(properties) {
     return Object.entries(properties).map(([name, property]) => ({
-      name: name,
+      name,
       type: property.type || 'object',
       description: property.description || ''
     }));
@@ -271,19 +271,19 @@ export class OpenApiProcessor {
    */
   generateExampleValue(schema) {
     switch (schema.type) {
-      case 'string':
-        return schema.example || 'string';
-      case 'number':
-      case 'integer':
-        return schema.example || 0;
-      case 'boolean':
-        return schema.example || true;
-      case 'array':
-        return [this.generateExampleValue(schema.items || { type: 'string' })];
-      case 'object':
-        return this.generateExampleFromSchema(schema);
-      default:
-        return null;
+    case 'string':
+      return schema.example || 'string';
+    case 'number':
+    case 'integer':
+      return schema.example || 0;
+    case 'boolean':
+      return schema.example || true;
+    case 'array':
+      return [this.generateExampleValue(schema.items || { type: 'string' })];
+    case 'object':
+      return this.generateExampleFromSchema(schema);
+    default:
+      return null;
     }
   }
 
@@ -305,7 +305,7 @@ export class OpenApiProcessor {
   buildQueryString(parameters) {
     const queryParams = parameters.filter(param => param.in === 'query');
     if (queryParams.length === 0) return '';
-    
+
     const queryString = queryParams.map(param => `${param.name}=value`).join('&');
     return `?${queryString}`;
   }
@@ -331,12 +331,12 @@ export class OpenApiProcessor {
    */
   getRequestBodyExample(requestBody) {
     if (!requestBody) return null;
-    
+
     const content = requestBody.content?.['application/json'];
     if (content?.example) {
       return JSON.stringify(content.example);
     }
-    
+
     return '{}';
   }
 

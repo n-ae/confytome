@@ -1,8 +1,11 @@
 {
   "name": "@confytome/swagger",
   "version": "1.4.4",
-  "description": "Plugin for @confytome/core - generates interactive, self-contained Swagger UI documentation from OpenAPI specs with responsive design.",
+  "description": "Standalone Swagger UI generator - creates interactive, self-contained Swagger UI documentation from OpenAPI specs with responsive design.",
   "main": "generate-swagger.js",
+  "bin": {
+    "confytome-swagger": "./cli.js"
+  },
   "type": "module",
   "repository": {
     "type": "git",
@@ -28,21 +31,22 @@
   "license": "MIT",
   "files": [
     "generate-swagger.js",
+    "standalone-generator.js", 
+    "cli.js",
     "utils/",
     "README.md"
   ],
   "scripts": {
     "test": "echo \"Tests in main confytome package\" && exit 0",
+    "standalone": "node cli.js",
     "lint": "eslint . --ext .js",
-    "format": "eslint . --ext .js --fix",
+    "format": "eslint . --ext .js --fix", 
     "clean": "rm -rf docs/* .cache",
     "validate": "npm ls",
     "prepublishOnly": "npm run validate"
   },
   "dependencies": {
-    "swagger-ui-dist": "^5.0.0"
-  },
-  "peerDependencies": {
-    "@confytome/core": "^1.2.0"
+    "swagger-ui-dist": "^5.0.0",
+    "commander": "^12.0.0"
   }
 }
