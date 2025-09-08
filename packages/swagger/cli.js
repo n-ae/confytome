@@ -18,13 +18,13 @@ program
   .option('-s, --spec <path>', 'Path to OpenAPI spec file', './api-spec.json')
   .option('-o, --output <path>', 'Output directory for generated files', './confytome')
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
-  .action(async (options) => {
+  .action(async(options) => {
     try {
       const generator = new StandaloneSwaggerGenerator(options.output, {
         specPath: path.resolve(options.spec),
         excludeBrand: !options.brand
       });
-      
+
       const result = await generator.generate();
       if (result.success) {
         console.log('✅ Swagger UI generation completed successfully');
@@ -43,12 +43,12 @@ program
   .command('validate')
   .description('Validate OpenAPI spec file')
   .option('-s, --spec <path>', 'Path to OpenAPI spec file', './api-spec.json')
-  .action(async (options) => {
+  .action(async(options) => {
     try {
       const generator = new StandaloneSwaggerGenerator('./', {
         specPath: path.resolve(options.spec)
       });
-      
+
       const result = await generator.validate();
       if (result.success) {
         console.log('✅ OpenAPI specification is valid');
@@ -70,10 +70,10 @@ program
   .action(() => {
     const metadata = StandaloneSwaggerGenerator.getMetadata();
     console.log(`${metadata.packageName}`);
-    console.log(`Standalone Swagger UI Generator`);
+    console.log('Standalone Swagger UI Generator');
     console.log(`${metadata.description}`);
-    console.log(`OpenAPI 3.x support`);
-    console.log(`Interactive Swagger UI`);
+    console.log('OpenAPI 3.x support');
+    console.log('Interactive Swagger UI');
     console.log(`${metadata.cliCommand}`);
     console.log(`Version: ${metadata.version}`);
   });

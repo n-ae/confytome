@@ -164,7 +164,7 @@ class FunctionalityTester {
     // Validate generated files (files are created in the output directory)
     const expectedFiles = [
       { path: 'confytome/serverConfig.json', minSize: 100 },
-      { path: 'confytome/confytome.json', minSize: 50 },  
+      { path: 'confytome/confytome.json', minSize: 50 },
       { path: 'confytome/example-router.js', minSize: 1000 }
     ];
 
@@ -235,11 +235,11 @@ class FunctionalityTester {
     // The standalone generators work independently
     const coreGeneratorFound = output.includes('core') && output.includes('OpenAPI');
     this.logResult('Generator core discovered', coreGeneratorFound);
-    
+
     // Test that standalone generators are available
     const standaloneGenerators = ['markdown', 'swagger', 'postman', 'html'];
     let allStandaloneAvailable = true;
-    
+
     for (const generator of standaloneGenerators) {
       const testResult = this.runCommand(`node ../packages/${generator}/cli.js --help`, { silent: true });
       const available = testResult.success;
@@ -278,7 +278,7 @@ class FunctionalityTester {
 
     // Test markdown generator specifically since we know it works
     const markdownResult = this.runCommand(
-      `node ../packages/markdown/cli.js generate --spec ./confytome/api-spec.json --output ./confytome`,
+      'node ../packages/markdown/cli.js generate --spec ./confytome/api-spec.json --output ./confytome',
       { silent: true }
     );
 
@@ -287,7 +287,7 @@ class FunctionalityTester {
       markdownResult.success,
       markdownResult.success ? '' : markdownResult.error
     );
-    
+
     // For other generators, just test CLI availability (since some may have implementation issues)
     const otherGenerators = ['html', 'swagger'];
     for (const generator of otherGenerators) {
@@ -306,7 +306,7 @@ class FunctionalityTester {
       markdownValidation.valid,
       markdownValidation.valid ? `${markdownValidation.size} bytes` : 'File missing or too small'
     );
-    
+
     // For other generators, just note they're tested via CLI availability
     this.logResult('Generated html output', true, 'CLI available (not tested end-to-end)');
     this.logResult('Generated swagger output', true, 'CLI available (not tested end-to-end)');
