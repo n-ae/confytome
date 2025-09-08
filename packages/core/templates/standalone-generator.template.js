@@ -9,7 +9,7 @@
  */
 
 import path from 'node:path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 import { StandaloneBase } from './utils/StandaloneBase.js';
 // Import additional dependencies as needed
 // import { MyProcessor } from './utils/MyProcessor.js';

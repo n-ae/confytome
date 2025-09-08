@@ -54,7 +54,20 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
       baseValidation.errors.push(error.message);
     }
 
-    return baseValidation;
+    // Validate OpenAPI spec file if specified
+    if (this.options.specPath) {
+      try {
+        this.loadOpenAPISpec(this.options.specPath);
+      } catch (error) {
+        baseValidation.errors.push(error.message);
+      }
+    }
+
+    return {
+      success: baseValidation.errors.length === 0,
+      errors: baseValidation.errors,
+      warnings: baseValidation.warnings
+    };
   }
 
   /**
@@ -81,7 +94,7 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
 
     try {
       // Load and parse OpenAPI spec using base class method
-      const spec = this.loadOpenAPISpec();
+      const spec = this.loadOpenAPISpec(this.options.specPath);
 
       // Configure processor options
       const processorOptions = {
