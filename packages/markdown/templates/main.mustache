@@ -70,6 +70,16 @@ Authorization: Bearer <your-token>
 {{#description}}{{{description}}}
 
 {{/description}}
+{{#hasProperties}}
+**Properties:**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+{{#properties}}
+| {{name}} | {{type}} | {{#required}}Yes{{/required}}{{^required}}No{{/required}} | {{description}} |
+{{/properties}}
+
+{{/hasProperties}}
 {{#example}}
 ```json
 {{{example}}}
@@ -133,4 +143,4 @@ curl -X {{{method}}} \
 
 {{/schemas}}
 
-{{#excludeBrand}}*Generated {{timestamp}} UTC*{{/excludeBrand}}{{^excludeBrand}}*Generated {{timestamp}} UTC by 🍃 confytome v{{version}} with <3*{{/excludeBrand}}
+{{#excludeBrand}}*Generated at {{timestamp}} UTC*{{/excludeBrand}}{{^excludeBrand}}*Generated {{timestamp}} UTC by 🍃 confytome v{{version}} with <3*{{/excludeBrand}}

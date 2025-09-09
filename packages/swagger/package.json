@@ -1,6 +1,6 @@
 {
   "name": "@confytome/swagger",
-  "version": "1.4.21",
+  "version": "1.4.24",
   "description": "Standalone Swagger UI generator - creates interactive, self-contained Swagger UI documentation from OpenAPI specs with responsive design.",
   "main": "standalone-generator.js",
   "bin": {
@@ -47,5 +47,13 @@
   "dependencies": {
     "swagger-ui-dist": "^5.0.0",
     "commander": "^12.0.0"
+  },
+  "peerDependencies": {
+    "@confytome/core": "^1.4.0"
+  },
+  "peerDependenciesMeta": {
+    "@confytome/core": {
+      "optional": true
+    }
   }
 }

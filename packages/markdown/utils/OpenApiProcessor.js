@@ -223,6 +223,7 @@ export class OpenApiProcessor {
 
     const content = requestBody.content?.['application/json'];
     let example = null;
+    let properties = [];
 
     if (content?.example) {
       example = JSON.stringify(content.example, null, 2);
@@ -233,10 +234,52 @@ export class OpenApiProcessor {
       }
     }
 
+    // Extract properties information for documentation
+    if (content?.schema?.properties) {
+      properties = this.extractSchemaProperties(content.schema);
+    }
+
     return {
       description: requestBody.description || '',
-      example
+      example,
+      properties,
+      hasProperties: properties.length > 0
     };
+  }
+
+  /**
+   * Extract properties from schema for documentation
+   * @param {Object} schema - JSON Schema object
+   * @returns {Array} Array of property objects
+   */
+  extractSchemaProperties(schema) {
+    if (!schema.properties) return [];
+
+    const required = schema.required || [];
+    return Object.entries(schema.properties).map(([name, prop]) => ({
+      name,
+      type: this.getSchemaType(prop),
+      required: required.includes(name),
+      description: prop.description || ''
+    }));
+  }
+
+  /**
+   * Get schema type with enum values if present
+   * @param {Object} schema - Property schema
+   * @returns {string} Type description with enum values
+   */
+  getSchemaType(schema) {
+    if (!schema) return 'string';
+
+    let type = schema.type || 'string';
+
+    if (schema.enum && Array.isArray(schema.enum)) {
+      const enumValues = schema.enum.map(val => `"${val}"`).join(', ');
+      type += ` (${enumValues})`;
+    }
+
+    return type;
   }
 
   /**
