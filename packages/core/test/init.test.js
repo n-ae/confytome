@@ -37,11 +37,11 @@ describe('confytome init', () => {
     expect(testEnv.fileExists('confytome')).toBe(true);
     expect(testEnv.fileExists('confytome/assets')).toBe(true); // Should also create assets subdirectory
 
-    // Check that serverConfig.json was created
-    expect(testEnv.fileExists('serverConfig.json')).toBe(true);
+    // Check that serverConfig.json was created in the output directory
+    expect(testEnv.fileExists('confytome/serverConfig.json')).toBe(true);
 
     // Validate serverConfig.json content
-    const configContent = testEnv.readFile('serverConfig.json');
+    const configContent = testEnv.readFile('confytome/serverConfig.json');
     expect(isValidJSON(configContent)).toBe(true);
 
     const config = JSON.parse(configContent);
@@ -55,7 +55,7 @@ describe('confytome init', () => {
     expect(config.components.securitySchemes).toBeDefined();
 
     // Check file sizes are reasonable (not empty)
-    expect(testEnv.getFileSize('serverConfig.json')).toBeGreaterThan(100);
+    expect(testEnv.getFileSize('confytome/serverConfig.json')).toBeGreaterThan(100);
   });
 
   test('should create example-router.js with JSDoc examples', () => {
@@ -63,11 +63,11 @@ describe('confytome init', () => {
     const result = testEnv.runConfytome('init');
     expect(result.success).toBe(true);
 
-    // Check that example-router.js was created
-    expect(testEnv.fileExists('example-router.js')).toBe(true);
+    // Check that example-router.js was created in the output directory
+    expect(testEnv.fileExists('confytome/example-router.js')).toBe(true);
 
     // Validate example router content
-    const routerContent = testEnv.readFile('example-router.js');
+    const routerContent = testEnv.readFile('confytome/example-router.js');
 
     // Should contain JSDoc examples
     expect(routerContent).toContain('@swagger');
@@ -78,7 +78,7 @@ describe('confytome init', () => {
     expect(routerContent).toContain('Users');
 
     // Should be a substantial file with examples
-    expect(testEnv.getFileSize('example-router.js')).toBeGreaterThan(1000);
+    expect(testEnv.getFileSize('confytome/example-router.js')).toBeGreaterThan(1000);
   });
 
   test('should create templates directory', () => {
@@ -86,8 +86,8 @@ describe('confytome init', () => {
     const result = testEnv.runConfytome('init');
     expect(result.success).toBe(true);
 
-    // Check that templates directory was created
-    expect(testEnv.fileExists('templates')).toBe(true);
+    // Check that templates directory was created in the output directory
+    expect(testEnv.fileExists('confytome/templates')).toBe(true);
   });
 
   test('should handle custom output directory', () => {
@@ -101,29 +101,28 @@ describe('confytome init', () => {
     expect(testEnv.fileExists('api-documentation')).toBe(true);
     expect(testEnv.fileExists('api-documentation/assets')).toBe(true);
 
-    // Config and examples should still be in root
-    expect(testEnv.fileExists('serverConfig.json')).toBe(true);
-    expect(testEnv.fileExists('example-router.js')).toBe(true);
-    expect(testEnv.fileExists('templates')).toBe(true);
+    // Config and examples should be in the custom output directory
+    expect(testEnv.fileExists('api-documentation/serverConfig.json')).toBe(true);
+    expect(testEnv.fileExists('api-documentation/example-router.js')).toBe(true);
+    expect(testEnv.fileExists('api-documentation/templates')).toBe(true);
   });
 
   test('should not overwrite existing files', () => {
-    // Create an existing serverConfig.json
-    const existingConfig = {
+    // Create an existing serverConfig.json in the output directory
+    testEnv.createFile('confytome/serverConfig.json', JSON.stringify({
       openapi: '3.0.0',
       info: {
         title: 'Existing API',
         version: '2.0.0'
       }
-    };
-    testEnv.createFile('serverConfig.json', JSON.stringify(existingConfig, null, 2));
+    }, null, 2));
 
     // Run init command
     const result = testEnv.runConfytome('init');
     expect(result.success).toBe(true);
 
     // Check that existing config was NOT overwritten
-    const configContent = testEnv.readFile('serverConfig.json');
+    const configContent = testEnv.readFile('confytome/serverConfig.json');
     const config = JSON.parse(configContent);
     expect(config.info.title).toBe('Existing API');
     expect(config.info.version).toBe('2.0.0');
@@ -155,9 +154,9 @@ describe('confytome init', () => {
     const result = testEnv.runConfytome('init');
     expect(result.success).toBe(true);
 
-    // Should still create other files
-    expect(testEnv.fileExists('serverConfig.json')).toBe(true);
-    expect(testEnv.fileExists('example-router.js')).toBe(true);
+    // Should still create other files in the output directory
+    expect(testEnv.fileExists('confytome/serverConfig.json')).toBe(true);
+    expect(testEnv.fileExists('confytome/example-router.js')).toBe(true);
 
     // Should create assets subdirectory
     expect(testEnv.fileExists('confytome/assets')).toBe(true);
@@ -189,12 +188,12 @@ describe('confytome init', () => {
     // Validate complete directory structure
     const createdFiles = testEnv.listFiles('.');
     expect(createdFiles).toContain('confytome');
-    expect(createdFiles).toContain('serverConfig.json');
-    expect(createdFiles).toContain('example-router.js');
-    expect(createdFiles).toContain('templates');
 
-    // Validate subdirectory structure
+    // Validate files are created in the output directory
     const confytomeFiles = testEnv.listFiles('confytome');
+    expect(confytomeFiles).toContain('serverConfig.json');
+    expect(confytomeFiles).toContain('example-router.js');
+    expect(confytomeFiles).toContain('templates');
     expect(confytomeFiles).toContain('assets');
   });
 });

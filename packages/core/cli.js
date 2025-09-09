@@ -281,20 +281,19 @@ Examples:
       console.log('🔄 Generating demo documentation...');
       console.log('');
 
-      // Run demo generation using simplified system
-      await generateDemo(outputDir);
+      // Run OpenAPI generation only (standalone generators work independently)
+      await generateOpenAPI(exampleConfig, [exampleRouter], outputDir);
 
-      console.log('\n🎉 Demo documentation generated successfully!');
+      console.log('\n🎉 Demo OpenAPI specification generated successfully!');
       console.log('');
       console.log(`Generated demo files in ${outputDir}:`);
       console.log(`- ${OUTPUT_FILES.OPENAPI_SPEC} (OpenAPI 3.0.3 specification)`);
-      console.log(`- ${OUTPUT_FILES.HTML_DOCS} (Professional HTML documentation)`);
-      console.log(`- ${OUTPUT_FILES.SWAGGER_UI} (Interactive Swagger UI)`);
-      console.log(`- ${OUTPUT_FILES.MARKDOWN_DOCS} (Confluence-friendly Markdown)`);
-      console.log(`- ${OUTPUT_FILES.POSTMAN_COLLECTION} (Postman collection)`);
-      console.log(`- ${OUTPUT_FILES.POSTMAN_ENVIRONMENT} (Postman environment)`);
       console.log('');
-      console.log(`🌟 Open ${OUTPUT_FILES.SWAGGER_UI} in your browser to explore the API!`);
+      console.log('📝 To generate additional formats, use standalone generators:');
+      console.log(`- confytome-markdown generate --spec ${outputDir}/${OUTPUT_FILES.OPENAPI_SPEC}`);
+      console.log(`- confytome-swagger generate --spec ${outputDir}/${OUTPUT_FILES.OPENAPI_SPEC}`);
+      console.log(`- confytome-html generate --spec ${outputDir}/${OUTPUT_FILES.OPENAPI_SPEC}`);
+      console.log(`- confytome-postman generate --spec ${outputDir}/${OUTPUT_FILES.OPENAPI_SPEC}`);
 
     } catch (error) {
       console.error('❌ Demo generation failed');
