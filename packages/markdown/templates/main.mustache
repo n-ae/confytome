@@ -31,7 +31,7 @@
 
 This API uses JWT Bearer token authentication.
 
-**Header Example:**
+## Header Example
 ```
 Authorization: Bearer <your-token>
 ```
@@ -55,7 +55,7 @@ Authorization: Bearer <your-token>
 
 {{/description}}
 {{#parameters.length}}
-**Parameters:**
+### Parameters
 
 | Name | In | Type | Required | Description |
 |------|----|----|----------|-------------|
@@ -65,15 +65,15 @@ Authorization: Bearer <your-token>
 {{/parameters.length}}
 
 {{#requestBody}}
-**Request Body:**
+### Request
 
 {{#description}}{{{description}}}
 
 {{/description}}
 {{#hasProperties}}
-**Properties:**
+#### Properties
 
-| Property | Type | Required | Description |
+| Name | Type | Required | Description |
 |----------|------|----------|-------------|
 {{#properties}}
 | {{name}} | {{type}} | {{#required}}Yes{{/required}}{{^required}}No{{/required}} | {{description}} |
@@ -81,18 +81,20 @@ Authorization: Bearer <your-token>
 
 {{/hasProperties}}
 {{#example}}
+#### Body
 ```json
 {{{example}}}
 ```
 {{/example}}
 {{/requestBody}}
 
-**Responses:**
+### Responses
 
 {{#responses}}
 **`{{{code}}}`** - {{{description}}}
 
 {{#example}}
+#### Body
 ```json
 {{{example}}}
 ```
@@ -100,7 +102,7 @@ Authorization: Bearer <your-token>
 {{/example}}
 {{/responses}}
 
-**Code Sample:**
+### Code Sample
 
 ```shell
 curl -X {{{method}}} \

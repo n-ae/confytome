@@ -22,7 +22,7 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
     return {
       name: 'html',
       description: 'Professional, responsive HTML documentation generator',
-      version: '1.4.5',
+      version: '1.5.0',
       packageName: '@confytome/html',
       cliCommand: 'confytome-html',
       inputs: ['api-spec.json'],

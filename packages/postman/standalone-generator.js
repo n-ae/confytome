@@ -22,7 +22,7 @@ export class StandalonePostmanGenerator extends StandaloneBase {
     return {
       name: 'postman',
       description: 'Postman collection and environment generator for API testing',
-      version: '1.4.5',
+      version: '1.5.0',
       packageName: '@confytome/postman',
       cliCommand: 'confytome-postman',
       inputs: ['api-spec.json'],
