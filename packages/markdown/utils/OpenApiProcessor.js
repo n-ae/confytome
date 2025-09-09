@@ -220,10 +220,21 @@ export class OpenApiProcessor {
   processResponses(responses) {
     return Object.entries(responses).map(([code, response]) => {
       const content = response.content?.['application/json'];
+      let example = null;
+
+      if (content?.example) {
+        example = JSON.stringify(content.example, null, 2);
+      } else if (content?.schema) {
+        const schemaExample = this.generateExampleFromSchema(content.schema);
+        if (schemaExample) {
+          example = JSON.stringify(schemaExample, null, 2);
+        }
+      }
+
       return {
         code,
         description: response.description || '',
-        example: content?.example ? JSON.stringify(content.example, null, 2) : null
+        example
       };
     });
   }
@@ -300,14 +311,20 @@ export class OpenApiProcessor {
    * @returns {*} Example value
    */
   generateExampleValue(schema) {
+    // If there's an explicit example, use it regardless of type
+    if (schema.example !== undefined) {
+      return schema.example;
+    }
+
     switch (schema.type) {
     case 'string':
-      return schema.example || 'string';
+      return 'string';
     case 'number':
     case 'integer':
-      return schema.example || 0;
+    case 'decimal':  // Handle non-standard decimal type
+      return 0;
     case 'boolean':
-      return schema.example || true;
+      return true;
     case 'array':
       return [this.generateExampleValue(schema.items || { type: 'string' })];
     case 'object':
