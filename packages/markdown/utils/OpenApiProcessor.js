@@ -141,7 +141,7 @@ export class OpenApiProcessor {
       if (!resources.has(resourceName)) {
         resources.set(resourceName, {
           name: this.toPascalCase(resourceName),
-          description: `${resourceName} related operations`,
+          description: '',
           endpoints: []
         });
       }
