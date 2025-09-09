@@ -285,7 +285,7 @@ class FunctionalityTester {
     // Known issue: certain OpenAPI specs cause stack overflow - this is being investigated
     const isStackOverflow = markdownResult.error && markdownResult.error.includes('Maximum call stack size exceeded');
     const testPassed = markdownResult.success || isStackOverflow;
-    
+
     allPassed &= this.logResult(
       'Generator markdown execution',
       testPassed,
@@ -306,7 +306,7 @@ class FunctionalityTester {
     // Validate markdown output if generation succeeded
     const markdownValidation = this.validateFile('confytome/api-docs.md', 1000);
     const outputTestPassed = markdownValidation.valid || (markdownResult.error && markdownResult.error.includes('Maximum call stack size exceeded'));
-    
+
     allPassed &= this.logResult(
       'Generated markdown output',
       outputTestPassed,
@@ -404,8 +404,8 @@ class FunctionalityTester {
     if (!apiSpecValidation.valid) {
       apiSpecValidation = this.validateFile('confytome/api-spec.json', 100);
     }
-    
-    let allValid = this.logResult(
+
+    const allValid = this.logResult(
       'Demo file api-spec.json',
       apiSpecValidation.valid,
       apiSpecValidation.valid ? `${apiSpecValidation.size} bytes` : 'Missing or invalid'

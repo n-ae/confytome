@@ -13,7 +13,6 @@ import { CliValidator } from './utils/cli-validator.js';
 import { ConfigMerger } from './utils/config-merger.js';
 import {
   generateOpenAPI,
-  generateDemo,
   generateFromConfytomeConfig
 } from './utils/cli-helpers.js';
 import { getOutputDir, DEFAULT_OUTPUT_DIR, DEFAULT_CONFIG_FILES, OUTPUT_FILES } from './constants.js';
