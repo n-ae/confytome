@@ -139,7 +139,7 @@ export class OpenApiProcessor {
 
       if (!resources.has(resourceName)) {
         resources.set(resourceName, {
-          name: resourceName,
+          name: this.toPascalCase(resourceName),
           description: `${resourceName} related operations`,
           endpoints: []
         });
@@ -178,6 +178,21 @@ export class OpenApiProcessor {
   extractResourceName(path) {
     const segments = path.split('/').filter(segment => segment && !segment.startsWith('{'));
     return segments[0] || 'API';
+  }
+
+  /**
+   * Convert string to Pascal Case
+   * @param {string} str - String to convert
+   * @returns {string} Pascal Case string
+   */
+  toPascalCase(str) {
+    if (!str) return str;
+
+    // Handle kebab-case, snake_case, and regular words
+    return str
+      .split(/[-_\s]+/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join('');
   }
 
   /**

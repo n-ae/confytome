@@ -1,6 +1,6 @@
 {
   "name": "@confytome/html",
-  "version": "1.4.13",
+  "version": "1.4.14",
   "description": "Standalone HTML generator - creates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
   "main": "standalone-generator.js",
   "bin": {
