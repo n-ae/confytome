@@ -1,6 +1,6 @@
 {
   "name": "@confytome/swagger",
-  "version": "1.4.11",
+  "version": "1.4.12",
   "description": "Standalone Swagger UI generator - creates interactive, self-contained Swagger UI documentation from OpenAPI specs with responsive design.",
   "main": "standalone-generator.js",
   "bin": {
