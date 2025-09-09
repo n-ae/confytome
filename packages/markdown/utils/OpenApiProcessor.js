@@ -156,7 +156,7 @@ export class OpenApiProcessor {
             parameters: this.processParameters(operation.parameters || []),
             requestBody: this.processRequestBody(operation.requestBody),
             responses: this.processResponses(operation.responses || {}),
-            baseUrl: this.options.baseUrl,
+            baseUrl: this.getOperationServerUrl(operation, spec),
             queryString: this.buildQueryString(operation.parameters || []),
             hasContentType: !!operation.requestBody,
             headers: this.processHeaders(operation.parameters || [], operation, spec),
@@ -571,6 +571,27 @@ export class OpenApiProcessor {
 
     // Return compact JSON string for curl -d parameter (no newlines)
     return JSON.stringify(example);
+  }
+
+  /**
+   * Get the server URL for a specific operation
+   * @param {Object} operation - OpenAPI operation
+   * @param {Object} spec - OpenAPI specification
+   * @returns {string} Server URL
+   */
+  getOperationServerUrl(operation, spec) {
+    // Check if operation has specific servers
+    if (operation.servers && operation.servers.length > 0) {
+      return operation.servers[0].url;
+    }
+
+    // Fall back to global servers
+    if (spec.servers && spec.servers.length > 0) {
+      return spec.servers[0].url;
+    }
+
+    // Final fallback to options baseUrl
+    return this.options.baseUrl;
   }
 
   /**
