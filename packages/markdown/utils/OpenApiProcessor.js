@@ -64,12 +64,41 @@ export class OpenApiProcessor {
   }
 
   /**
-   * Check if API has authentication
+   * Check if API has authentication by examining actual route usage
    * @param {Object} spec - OpenAPI specification
-   * @returns {boolean} True if API has authentication schemes
+   * @returns {boolean} True if any operations actually use authentication
    */
   hasAuthentication(spec) {
-    return !!(spec.components?.securitySchemes || spec.security?.length > 0);
+    // If no security schemes are defined, there's no authentication
+    if (!spec.components?.securitySchemes) {
+      return false;
+    }
+
+    const hasGlobalSecurity = spec.security?.length > 0;
+    const paths = spec.paths || {};
+
+    // Check if any operation uses security
+    for (const [_path, pathItem] of Object.entries(paths)) {
+      for (const [method, operation] of Object.entries(pathItem)) {
+        if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
+          // If operation has explicit security (even empty array), respect that
+          if (operation.security !== undefined) {
+            if (operation.security.length > 0) {
+              return true; // Operation explicitly uses security
+            }
+            // Operation explicitly disables security with empty array
+            continue;
+          }
+
+          // If no explicit security on operation, use global security
+          if (hasGlobalSecurity) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -83,11 +112,12 @@ export class OpenApiProcessor {
     for (const [path, pathItem] of Object.entries(paths)) {
       for (const [method, operation] of Object.entries(pathItem)) {
         if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
+          const summary = operation.summary || `${method.toUpperCase()} ${path}`;
           endpoints.push({
             method: method.toUpperCase(),
             path,
-            summary: operation.summary || `${method.toUpperCase()} ${path}`,
-            anchor: this.createAnchor(method, path)
+            summary,
+            anchor: this.createAnchor(method, path, summary)
           });
         }
       }
@@ -333,20 +363,39 @@ export class OpenApiProcessor {
     if (!requestBody) return null;
 
     const content = requestBody.content?.['application/json'];
-    if (content?.example) {
-      return JSON.stringify(content.example);
+    if (!content) return null;
+
+    let example;
+
+    // Use explicit example if available
+    if (content.example) {
+      example = content.example;
+    } else if (content.schema) {
+      // Generate example object from schema (not JSON string)
+      example = this.generateExampleFromSchema(content.schema);
+    } else {
+      return null;
     }
 
-    return '{}';
+    // Return compact JSON string for curl -d parameter (no newlines)
+    return JSON.stringify(example);
   }
 
   /**
-   * Create anchor for internal links
+   * Create anchor for internal links based on summary
    * @param {string} method - HTTP method
    * @param {string} path - API path
+   * @param {string} summary - Operation summary
    * @returns {string} Anchor string
    */
-  createAnchor(method, path) {
-    return `${method.toLowerCase()}${path.replace(/[^a-zA-Z0-9]/g, '')}`;
+  createAnchor(method, path, summary) {
+    // Use summary if available, otherwise fallback to method + path
+    const text = summary || `${method.toUpperCase()} ${path}`;
+    return text
+      .toLowerCase()
+      .replace(/[^a-zA-Z0-9\s-]/g, '') // Remove special chars except spaces and hyphens
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
   }
 }
