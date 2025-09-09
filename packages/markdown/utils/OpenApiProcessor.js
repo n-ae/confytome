@@ -642,19 +642,34 @@ export class OpenApiProcessor {
    * @param {string} method - HTTP method
    * @param {string} path - API path
    * @param {string} summary - Operation summary
-   * @returns {string} Anchor string
+   * @returns {string} Anchor string (URL-encoded by default, or original format if disabled)
    */
   createAnchor(method, path, summary) {
     // Use summary if available, otherwise fallback to method + path
     const text = summary || `${method.toUpperCase()} ${path}`;
-    // Modern markdown parsers often preserve Unicode characters
-    // Try preserving Turkish characters first, then fallback to ASCII if needed
+
+    if (!this.options.urlEncodeAnchors) {
+      // Original behavior before URL encoding changes - exactly as it was
+      // Modern markdown parsers often preserve Unicode characters
+      // Try preserving Turkish characters first, then fallback to ASCII if needed
+      return text
+        .toLowerCase()
+        // Remove punctuation but keep Unicode letters
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+        .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+    }
+
+    // URL encode the text while preserving the original casing
+    // Replace spaces with hyphens first, then URL encode special characters
     return text
-      .toLowerCase()
-      // Remove punctuation but keep Unicode letters
-      .replace(/[^\p{L}\p{N}\s-]/gu, '')
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+      .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
+      // URL encode special characters but preserve alphanumeric and hyphens
+      .replace(/[^a-zA-Z0-9\u00C0-\u017F\u0100-\u024F-]/g, (char) => {
+        return encodeURIComponent(char);
+      });
   }
 }

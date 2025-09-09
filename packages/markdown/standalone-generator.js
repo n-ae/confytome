@@ -100,7 +100,8 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
       const processorOptions = {
         excludeBrand: this.options.excludeBrand,
         version: this.getInfo().version,
-        baseUrl: this.getBaseUrl(spec.servers)
+        baseUrl: this.getBaseUrl(spec.servers),
+        urlEncodeAnchors: this.options.urlEncodeAnchors !== false // Default to true
       };
 
       // Process OpenAPI spec into template data

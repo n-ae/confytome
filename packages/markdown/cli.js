@@ -110,6 +110,7 @@ program
   .option('-f, --files <files...>', 'JSDoc files to process (will generate OpenAPI spec if no --spec provided)')
   .option('-o, --output <path>', 'Output directory for generated files', './confytome')
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
+  .option('--no-url-encode', 'Disable URL encoding for anchor links (preserve original anchor format)')
   .action(async(options) => {
     try {
       let specPath = options.spec;
@@ -122,7 +123,8 @@ program
 
       const generator = new StandaloneMarkdownGenerator(options.output, {
         specPath: path.resolve(specPath),
-        excludeBrand: !options.brand
+        excludeBrand: !options.brand,
+        urlEncodeAnchors: options.urlEncode !== false // Default to true, disable with --no-url-encode
       });
 
       const result = await generator.generate();

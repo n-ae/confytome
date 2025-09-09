@@ -5,6 +5,52 @@ All notable changes to confytome will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-09-09 - Enhanced Documentation Generation
+
+### 🚀 New Features
+- **Request Body Schema Properties**: Enhanced markdown generation now displays detailed property tables for request body schemas
+  - Property name, type, required status, and descriptions shown in structured tables
+  - Enum values displayed inline with types (e.g., `string ("Value1", "Value2", "Value3")`)
+  - Comprehensive support for complex JSON schemas in request bodies
+- **Automatic Core Integration**: All generators now automatically call `@confytome/core` when OpenAPI spec is missing
+  - Enhanced CLI with `-c, --config <path>` and `-f, --files <files...>` options
+  - Smart config detection supporting both confytome.json and server config formats
+  - Seamless workflow: `npx @confytome/{generator} -c confytome.json` automatically generates spec
+- **Improved Markdown Structure**: Enhanced template organization with better heading hierarchy
+  - `### Parameters`, `### Request`, `### Responses` for consistent structure
+  - `#### Properties` and `#### Body` for clear content separation
+  - `### Code Sample` for improved navigation
+
+### 🔧 Template Engine Enhancements
+- **Enhanced OpenAPI Processor**: Extended `processRequestBody()` method with schema property extraction
+  - New `extractSchemaProperties()` method for comprehensive property analysis
+  - Enhanced `getSchemaType()` method with enum value display
+  - Smart type detection with enum value enumeration
+- **Improved Mustache Templates**: Updated templates with better content organization
+  - Request body properties table with enum support
+  - Consistent heading structure across all sections
+  - Enhanced readability and professional appearance
+
+### 📦 Package Management
+- **Peer Dependencies**: Added optional `@confytome/core` peer dependency to all generators
+  - Enables automatic spec generation when core package is available
+  - Maintains standalone functionality when core is not present
+  - Flexible architecture supporting both workflows
+
+### 🐛 Bug Fixes
+- **Enum Parameter Visibility**: Fixed issue where enum values in request body properties were not visible in documentation
+  - Enum values now clearly displayed in properties tables
+  - Enhanced user experience with complete parameter information
+- **Config Format Detection**: Improved dual config format support
+  - Proper detection of confytome.json vs server config formats
+  - Correct core command selection based on config structure
+
+### 💡 Developer Experience
+- **Enhanced CLI Integration**: Streamlined workflow for automatic spec generation
+  - Single command execution with automatic dependency resolution
+  - Clear error messages and guidance for missing dependencies
+  - Comprehensive file handling and cleanup
+
 ## [1.4.3] - 2025-01-XX - Mustache Migration Release
 
 ### 🚀 Template Engine Migration
