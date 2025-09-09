@@ -2,6 +2,7 @@
   "name": "@confytome/generator",
   "version": "1.4.13",
   "description": "Template generation system for confytome CLI files, manifests, and documentation",
+  "private": true,
   "type": "module",
   "main": "src/index.js",
   "bin": {

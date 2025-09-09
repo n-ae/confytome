@@ -54,7 +54,7 @@ Authorization: Bearer <your-jwt-token>
 {{#description}}{{{description}}}
 
 {{/description}}
-{{#parameters}}
+{{#parameters.length}}
 **Parameters:**
 
 | Name | In | Type | Required | Description |
@@ -62,7 +62,7 @@ Authorization: Bearer <your-jwt-token>
 {{#parameters}}
 | {{{name}}} | {{{in}}} | {{{type}}} | {{#required}}Yes{{/required}}{{^required}}No{{/required}} | {{{description}}} |
 {{/parameters}}
-{{/parameters}}
+{{/parameters.length}}
 
 {{#requestBody}}
 **Request Body:**
@@ -93,7 +93,8 @@ Authorization: Bearer <your-jwt-token>
 **Code Sample:**
 
 ```shell
-curl -X {{{method}}} {{{baseUrl}}}{{{path}}}{{#queryString}}{{{queryString}}}{{/queryString}}{{#hasContentType}} \
+curl -X {{{method}}} \
+  {{{baseUrl}}}{{{path}}}{{#queryString}}{{{queryString}}}{{/queryString}}{{#hasContentType}} \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json'{{/hasContentType}}{{#headers}}{{#headers}} \
   -H '{{{name}}}: {{{example}}}'{{/headers}}{{/headers}}{{#requestBodyExample}} \

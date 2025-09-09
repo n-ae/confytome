@@ -1,6 +1,6 @@
 {
   "name": "confytome-workspace",
-  "version": "1.4.14",
+  "version": "1.4.19",
   "description": "Plugin-based API documentation generator with OpenAPI-first architecture. Generates Swagger UI, HTML, Markdown, and Postman collections from JSDoc comments.",
   "private": true,
   "type": "module",
@@ -29,8 +29,8 @@
     "test:functionality": "node scripts/test-functionality.js",
     "test:standalone-markdown": "node tests/standalone-markdown.test.js",
     "test:all": "node tests/run-all-tests.js",
-    "publish": "npm run validate && npm publish --workspaces",
-    "publish:dry-run": "npm publish --dry-run --workspaces"
+    "publish": "npm run validate && npm publish --workspaces --access public",
+    "publish:dry-run": "npm publish --dry-run --workspaces --access public"
   },
   "repository": {
     "type": "git",

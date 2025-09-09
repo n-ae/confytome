@@ -26,7 +26,7 @@ export class OpenApiProcessor {
       servers: this.processServers(spec.servers || []),
       hasAuth: this.hasAuthentication(spec),
       endpoints: this.processEndpoints(spec.paths || {}),
-      resources: this.groupEndpointsByResource(spec.paths || {}),
+      resources: this.groupEndpointsByResource(spec.paths || {}, spec),
       schemas: this.processSchemas(spec.components?.schemas || {}),
       excludeBrand: this.options.excludeBrand,
       version: this.options.version,
@@ -129,9 +129,10 @@ export class OpenApiProcessor {
   /**
    * Group endpoints by resource (first path segment)
    * @param {Object} paths - OpenAPI paths object
+   * @param {Object} spec - Full OpenAPI specification
    * @returns {Array} Grouped resources
    */
-  groupEndpointsByResource(paths) {
+  groupEndpointsByResource(paths, spec) {
     const resources = new Map();
 
     for (const [path, pathItem] of Object.entries(paths)) {
@@ -158,7 +159,7 @@ export class OpenApiProcessor {
             baseUrl: this.options.baseUrl,
             queryString: this.buildQueryString(operation.parameters || []),
             hasContentType: !!operation.requestBody,
-            headers: this.processHeaders(operation.parameters || []),
+            headers: this.processHeaders(operation.parameters || [], operation, spec),
             requestBodyExample: this.getRequestBodyExample(operation.requestBody)
           };
 
@@ -208,7 +209,7 @@ export class OpenApiProcessor {
         in: param.in || '',
         type: this.getParameterType(param.schema),
         required: param.required || false,
-        description: param.description || ''
+        description: this.getParameterDescription(param)
       }));
   }
 
@@ -221,9 +222,20 @@ export class OpenApiProcessor {
     if (!requestBody) return null;
 
     const content = requestBody.content?.['application/json'];
+    let example = null;
+
+    if (content?.example) {
+      example = JSON.stringify(content.example, null, 2);
+    } else if (content?.schema) {
+      const schemaExample = this.generateExampleFromSchema(content.schema);
+      if (schemaExample) {
+        example = JSON.stringify(schemaExample, null, 2);
+      }
+    }
+
     return {
       description: requestBody.description || '',
-      example: content?.example ? JSON.stringify(content.example, null, 2) : null
+      example
     };
   }
 
@@ -356,7 +368,50 @@ export class OpenApiProcessor {
    */
   getParameterType(schema) {
     if (!schema) return 'string';
-    return schema.type || 'string';
+
+    let type = schema.type || 'string';
+
+    // If schema has enum values, append them to the type
+    if (schema.enum && Array.isArray(schema.enum)) {
+      const enumValues = schema.enum.map(val => `"${val}"`).join(', ');
+      type += ` (${enumValues})`;
+    }
+
+    return type;
+  }
+
+  /**
+   * Get parameter description with enum information
+   * @param {Object} param - OpenAPI parameter object
+   * @returns {string} Enhanced parameter description
+   */
+  getParameterDescription(param) {
+    let description = param.description || '';
+
+    // Add enum information to description if present
+    if (param.schema?.enum && Array.isArray(param.schema.enum)) {
+      const enumValues = param.schema.enum.map(val => `"${val}"`).join(', ');
+      const enumText = `Allowed values: ${enumValues}`;
+
+      if (description) {
+        description += `. ${enumText}`;
+      } else {
+        description = enumText;
+      }
+    }
+
+    // Add default value information if present
+    if (param.schema?.default !== undefined) {
+      const defaultText = `Default: "${param.schema.default}"`;
+
+      if (description) {
+        description += `. ${defaultText}`;
+      } else {
+        description = defaultText;
+      }
+    }
+
+    return description;
   }
 
   /**
@@ -368,8 +423,41 @@ export class OpenApiProcessor {
     const queryParams = parameters.filter(param => param.in === 'query');
     if (queryParams.length === 0) return '';
 
-    const queryString = queryParams.map(param => `${param.name}=value`).join('&');
+    const queryString = queryParams.map(param => {
+      const value = this.getParameterExampleValue(param);
+      return `${param.name}=${value}`;
+    }).join('&');
     return `?${queryString}`;
+  }
+
+  /**
+   * Get example value for parameter in curl samples
+   * @param {Object} param - OpenAPI parameter object
+   * @returns {string} Example value
+   */
+  getParameterExampleValue(param) {
+    // Use explicit example if available
+    if (param.example !== undefined) {
+      return param.example;
+    }
+
+    // Use schema example if available
+    if (param.schema?.example !== undefined) {
+      return param.schema.example;
+    }
+
+    // Use first enum value if parameter has enum
+    if (param.schema?.enum && Array.isArray(param.schema.enum) && param.schema.enum.length > 0) {
+      return param.schema.enum[0];
+    }
+
+    // Use default value if available
+    if (param.schema?.default !== undefined) {
+      return param.schema.default;
+    }
+
+    // Fallback to generic value
+    return 'value';
   }
 
   /**
@@ -377,13 +465,85 @@ export class OpenApiProcessor {
    * @param {Array} parameters - Operation parameters
    * @returns {Array} Header parameters
    */
-  processHeaders(parameters) {
-    return parameters
+  processHeaders(parameters, operation, spec) {
+    const headers = parameters
       .filter(param => param.in === 'header')
       .map(param => ({
         name: param.name,
         example: 'value'
       }));
+
+    // Add authorization headers if operation requires authentication
+    if (this.operationRequiresAuth(operation, spec)) {
+      const authHeader = this.getAuthorizationHeader(spec);
+      if (authHeader) {
+        headers.push(authHeader);
+      }
+    }
+
+    return headers;
+  }
+
+  /**
+   * Check if an operation requires authentication
+   * @param {Object} operation - OpenAPI operation
+   * @param {Object} spec - OpenAPI specification
+   * @returns {boolean} True if operation requires authentication
+   */
+  operationRequiresAuth(operation, spec) {
+    // If operation has explicit security, use that
+    if (operation.security !== undefined) {
+      return operation.security.length > 0;
+    }
+
+    // Check global security (handle both correct and malformed structures)
+    if (spec.security && Array.isArray(spec.security) && spec.security.length > 0) {
+      return true;
+    }
+
+    // Handle malformed security structure (when it ends up in paths)
+    if (spec.paths?.security) {
+      return true;
+    }
+
+    // If we have security schemes defined, assume global auth is required
+    if (spec.components?.securitySchemes) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Get authorization header based on security schemes
+   * @param {Object} spec - OpenAPI specification
+   * @returns {Object|null} Authorization header object
+   */
+  getAuthorizationHeader(spec) {
+    const securitySchemes = spec.components?.securitySchemes;
+    if (!securitySchemes) return null;
+
+    // Find the first security scheme (prioritize Bearer/JWT)
+    for (const [_name, scheme] of Object.entries(securitySchemes)) {
+      if (scheme.type === 'http' && scheme.scheme === 'bearer') {
+        return {
+          name: 'Authorization',
+          example: 'Bearer <your-token>'
+        };
+      }
+      if (scheme.type === 'apiKey' && scheme.in === 'header') {
+        return {
+          name: scheme.name || 'Authorization',
+          example: '<your-api-key>'
+        };
+      }
+    }
+
+    // Fallback for generic HTTP auth
+    return {
+      name: 'Authorization',
+      example: 'Bearer <your-token>'
+    };
   }
 
   /**
@@ -423,11 +583,14 @@ export class OpenApiProcessor {
   createAnchor(method, path, summary) {
     // Use summary if available, otherwise fallback to method + path
     const text = summary || `${method.toUpperCase()} ${path}`;
+    // Modern markdown parsers often preserve Unicode characters
+    // Try preserving Turkish characters first, then fallback to ASCII if needed
     return text
       .toLowerCase()
-      .replace(/[^a-zA-Z0-9\s-]/g, '') // Remove special chars except spaces and hyphens
+      // Remove punctuation but keep Unicode letters
+      .replace(/[^\p{L}\p{N}\s-]/gu, '')
       .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single
-      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
   }
 }
