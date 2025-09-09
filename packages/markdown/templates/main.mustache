@@ -19,7 +19,16 @@
 {{#info.license}}**License:** {{name}}{{#url}} ({{url}}){{/url}}
 
 {{/info.license}}
+
+## Quick Reference
+
+{{#endpoints}}
+- [{{{method}}} {{{path}}}](#{{{anchor}}}) - {{{summary}}}
+{{/endpoints}}
+
 {{#hasAuth}}
+# Authentication
+
 This API uses JWT Bearer token authentication.
 
 **Header Example:**
@@ -28,12 +37,6 @@ Authorization: Bearer <your-jwt-token>
 ```
 
 {{/hasAuth}}
-
-## Quick Reference
-
-{{#endpoints}}
-- [{{{method}}} {{{path}}}](#{{{anchor}}}) - {{{summary}}}
-{{/endpoints}}
 
 {{#resources}}
 # {{{name}}}
