@@ -30,7 +30,8 @@ export class OpenApiProcessor {
       schemas: this.processSchemas(spec.components?.schemas || {}),
       excludeBrand: this.options.excludeBrand,
       version: this.options.version,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      quickReferenceAnchor: this.createAnchor('', '', 'Quick Reference')
     };
 
     return data;
@@ -648,14 +649,11 @@ export class OpenApiProcessor {
     // Use summary if available, otherwise fallback to method + path
     const text = summary || `${method.toUpperCase()} ${path}`;
 
-    if (!this.options.urlEncodeAnchors) {
+    if (this.options.urlEncodeAnchors === false) {
       // Original behavior before URL encoding changes - exactly as it was
-      // Modern markdown parsers often preserve Unicode characters
-      // Try preserving Turkish characters first, then fallback to ASCII if needed
       return text
         .toLowerCase()
-        // Remove punctuation but keep Unicode letters
-        .replace(/[^\p{L}\p{N}\s-]/gu, '')
+        .replace(/[^\w\s-]/g, '') // Remove all non-word characters except spaces and hyphens
         .replace(/\s+/g, '-') // Replace spaces with hyphens
         .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
         .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
