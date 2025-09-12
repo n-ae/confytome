@@ -598,7 +598,7 @@ export class OpenApiProcessor {
    */
   generateExampleFromSchema(schema, depth = 0) {
     if (depth > 10) return '[Max depth exceeded]'; // Prevent stack overflow
-    
+
     if (schema.type === 'object' && schema.properties) {
       const example = {};
       for (const [propName, propSchema] of Object.entries(schema.properties)) {
@@ -617,7 +617,7 @@ export class OpenApiProcessor {
    */
   generateExampleValue(schema, depth = 0) {
     if (depth > 10) return '[Max depth exceeded]'; // Prevent stack overflow
-    
+
     // If there's an explicit example, use it regardless of type
     if (schema.example !== undefined) {
       return schema.example;
