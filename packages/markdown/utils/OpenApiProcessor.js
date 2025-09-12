@@ -16,25 +16,43 @@ export class OpenApiProcessor {
   }
 
   /**
+   * Execute a processing function with enhanced error context
+   * @param {string} context - Description of what's being processed
+   * @param {Function} processFn - Function to execute
+   * @returns {*} Result of processFn
+   */
+  processWithContext(context, processFn) {
+    try {
+      return processFn();
+    } catch (error) {
+      throw new Error(`📍 Context: Processing ${context}\n💥 Error: ${error.message}`);
+    }
+  }
+
+  /**
    * Process OpenAPI specification into template data
    * @param {Object} spec - OpenAPI specification object
    * @returns {Object} Template data structure
    */
   process(spec) {
-    const data = {
-      info: this.processInfo(spec.info || {}),
-      servers: this.processServers(spec.servers || []),
-      hasAuth: this.hasAuthentication(spec),
-      endpoints: this.processEndpoints(spec.paths || {}),
-      resources: this.groupEndpointsByResource(spec.paths || {}, spec),
-      schemas: this.processSchemas(spec.components?.schemas || {}),
-      excludeBrand: this.options.excludeBrand,
-      version: this.options.version,
-      timestamp: new Date().toISOString(),
-      quickReferenceAnchor: this.createAnchor('', '', 'Quick Reference')
-    };
+    try {
+      const data = {
+        info: this.processWithContext('info', () => this.processInfo(spec.info || {})),
+        servers: this.processWithContext('servers', () => this.processServers(spec.servers || [])),
+        hasAuth: this.processWithContext('authentication', () => this.hasAuthentication(spec)),
+        endpoints: this.processWithContext('endpoints', () => this.processEndpoints(spec.paths || {})),
+        resources: this.processWithContext('resources', () => this.groupEndpointsByResource(spec.paths || {}, spec)),
+        schemas: this.processWithContext('schemas', () => this.processSchemas(spec.components?.schemas || {})),
+        excludeBrand: this.options.excludeBrand,
+        version: this.options.version,
+        timestamp: new Date().toISOString(),
+        quickReferenceAnchor: this.createAnchor('', '', 'Quick Reference')
+      };
 
-    return data;
+      return data;
+    } catch (error) {
+      throw new Error(`OpenAPI specification processing failed: ${error.message}`);
+    }
   }
 
   /**
@@ -111,16 +129,27 @@ export class OpenApiProcessor {
     const endpoints = [];
 
     for (const [path, pathItem] of Object.entries(paths)) {
-      for (const [method, operation] of Object.entries(pathItem)) {
-        if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
-          const summary = operation.summary || `${method.toUpperCase()} ${path}`;
-          endpoints.push({
-            method: method.toUpperCase(),
-            path,
-            summary,
-            anchor: this.createAnchor(method, path, summary)
-          });
+      try {
+        for (const [method, operation] of Object.entries(pathItem)) {
+          if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
+            try {
+              const summary = operation.summary || `${method.toUpperCase()} ${path}`;
+              endpoints.push({
+                method: method.toUpperCase(),
+                path,
+                summary,
+                anchor: this.createAnchor(method, path, summary)
+              });
+            } catch (error) {
+              throw new Error(`📍 Endpoint: ${method.toUpperCase()} ${path}\n💥 Error: ${error.message}`);
+            }
+          }
         }
+      } catch (error) {
+        if (error.message.includes('📍 Endpoint:')) {
+          throw error; // Re-throw enhanced error
+        }
+        throw new Error(`📍 Path: ${path}\n💥 Error: ${error.message}`);
       }
     }
 
@@ -149,22 +178,29 @@ export class OpenApiProcessor {
 
       for (const [method, operation] of Object.entries(pathItem)) {
         if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
-          const endpoint = {
-            method: method.toUpperCase(),
-            path,
-            summary: operation.summary || `${method.toUpperCase()} ${path}`,
-            description: operation.description || '',
-            parameters: this.processParameters(operation.parameters || []),
-            requestBody: this.processRequestBody(operation.requestBody),
-            responses: this.processResponses(operation.responses || {}),
-            baseUrl: this.getOperationServerUrl(operation, spec),
-            queryString: this.buildQueryString(operation.parameters || []),
-            hasContentType: !!operation.requestBody,
-            headers: this.processHeaders(operation.parameters || [], operation, spec),
-            requestBodyExample: this.getRequestBodyExample(operation.requestBody)
-          };
+          try {
+            const endpoint = {
+              method: method.toUpperCase(),
+              path,
+              summary: operation.summary || `${method.toUpperCase()} ${path}`,
+              description: operation.description || '',
+              parameters: this.processWithContext(`parameters for ${method.toUpperCase()} ${path}`, 
+                () => this.processParameters(operation.parameters || [])),
+              requestBody: this.processWithContext(`request body for ${method.toUpperCase()} ${path}`, 
+                () => this.processRequestBody(operation.requestBody)),
+              responses: this.processWithContext(`responses for ${method.toUpperCase()} ${path}`, 
+                () => this.processResponses(operation.responses || {})),
+              baseUrl: this.getOperationServerUrl(operation, spec),
+              queryString: this.buildQueryString(operation.parameters || []),
+              hasContentType: !!operation.requestBody,
+              headers: this.processHeaders(operation.parameters || [], operation, spec),
+              requestBodyExample: this.getRequestBodyExample(operation.requestBody)
+            };
 
-          resources.get(resourceName).endpoints.push(endpoint);
+            resources.get(resourceName).endpoints.push(endpoint);
+          } catch (error) {
+            throw new Error(`📍 Endpoint: ${method.toUpperCase()} ${path}\n💥 Error: ${error.message}`);
+          }
         }
       }
     }

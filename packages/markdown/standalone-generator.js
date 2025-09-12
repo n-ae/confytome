@@ -106,7 +106,12 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
 
       // Process OpenAPI spec into template data
       this.processor = new OpenApiProcessor(processorOptions);
-      const data = this.processor.process(spec);
+      let data;
+      try {
+        data = this.processor.process(spec);
+      } catch (processingError) {
+        throw new Error(`OpenAPI specification processing failed.\n📁 Spec source: ${this.options.specPath}\n${processingError.message}`);
+      }
 
       // Add branding to template data
       data.excludeBrand = this.options.excludeBrand;

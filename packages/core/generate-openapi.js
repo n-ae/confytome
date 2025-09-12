@@ -85,8 +85,9 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
       // Load and validate server configuration
       const serverConfig = this.loadServerConfig(serverConfigPath);
 
-      // Process JSDoc files
+      // Process JSDoc files with enhanced error context
       console.log(`📖 Processing ${jsdocFiles.length} JSDoc files...`);
+      console.log(`📁 Files: ${jsdocFiles.join(', ')}`);
       console.log('📖 Processing JSDoc comments...');
 
       const swaggerOptions = {
@@ -94,11 +95,19 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
         apis: jsdocFiles
       };
 
-      // Generate OpenAPI spec
-      const openApiSpec = swaggerJSDoc(swaggerOptions);
+      // Generate OpenAPI spec with enhanced error handling
+      let openApiSpec;
+      try {
+        openApiSpec = swaggerJSDoc(swaggerOptions);
+      } catch (jsdocError) {
+        // Enhance JSDoc parsing error with file context
+        const enhancedError = this.enhanceJSDocError(jsdocError, jsdocFiles);
+        throw enhancedError;
+      }
 
       if (!openApiSpec || Object.keys(openApiSpec).length === 0) {
-        throw new Error('Failed to generate OpenAPI spec. Check JSDoc comments in your files.');
+        const fileList = jsdocFiles.map(f => `  - ${f}`).join('\n');
+        throw new Error(`Failed to generate OpenAPI spec. Check JSDoc comments in your files:\n${fileList}\n\nEnsure files contain valid @swagger JSDoc annotations.`);
       }
 
       // Write the OpenAPI spec
@@ -132,6 +141,104 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
         stats: { error: error.message }
       };
     }
+  }
+
+  /**
+   * Enhance JSDoc parsing errors with file context
+   * @param {Error} error - Original swagger-jsdoc error
+   * @param {Array} jsdocFiles - List of JSDoc files being processed
+   * @returns {Error} Enhanced error with better context
+   */
+  enhanceJSDocError(error, jsdocFiles) {
+    let enhancedMessage = `JSDoc parsing failed: ${error.message}`;
+    let filename = null;
+    let lineNumber = null;
+
+    // Extract filename from various error message patterns
+    const filePatterns = [
+      /in file ['"](.*?)['"]/, // swagger-jsdoc pattern
+      /file:\/\/([^)]+)/, // File URL pattern
+      /([^\/\\]+\.(js|ts|jsx|tsx))/, // Simple filename pattern
+      /at ([^(]+\.(js|ts|jsx|tsx))/, // Stack trace pattern
+      /Error processing file:?\s*([^\s]+\.(js|ts|jsx|tsx))/ // Custom error pattern
+    ];
+
+    for (const pattern of filePatterns) {
+      const match = error.message.match(pattern) || error.stack?.match(pattern);
+      if (match) {
+        filename = match[1] || match[0];
+        // Clean up the filename
+        filename = filename.replace(/^file:\/\//, '').split('?')[0];
+        break;
+      }
+    }
+
+    // Extract line number from various patterns
+    const linePatterns = [
+      /line (\d+)/i, // Explicit line mention
+      /:(\d+):\d+/, // Standard :line:column format
+      /line:?\s*(\d+)/, // Line: number format
+      /at.*:(\d+):\d+\)/, // Stack trace format
+      /\((\d+),\d+\)/ // (line,column) format
+    ];
+
+    for (const pattern of linePatterns) {
+      const match = error.message.match(pattern) || error.stack?.match(pattern);
+      if (match) {
+        lineNumber = match[1];
+        break;
+      }
+    }
+
+    // Try to identify the problematic file by checking error stack
+    if (!filename && error.stack) {
+      const stackLines = error.stack.split('\n');
+      for (const line of stackLines) {
+        for (const file of jsdocFiles) {
+          if (line.includes(file)) {
+            filename = file;
+            // Try to extract line number from this stack line
+            const lineMatch = line.match(/:(\d+):\d+\)/);
+            if (lineMatch) {
+              lineNumber = lineMatch[1];
+            }
+            break;
+          }
+        }
+        if (filename) break;
+      }
+    }
+
+    // Build enhanced error message
+    if (filename) {
+      enhancedMessage = `📁 File: ${filename}`;
+      if (lineNumber) {
+        enhancedMessage += `\n📍 Line: ${lineNumber}`;
+      }
+      enhancedMessage += `\n💥 Error: ${error.message}`;
+    } else {
+      // If no specific file identified, list all processed files
+      const fileList = jsdocFiles.map(f => `  - ${f}`).join('\n');
+      enhancedMessage = `💥 Error: ${error.message}\n📁 Files being processed:\n${fileList}`;
+      if (lineNumber) {
+        enhancedMessage += `\n📍 Line: ${lineNumber}`;
+      }
+    }
+
+    // Add helpful context based on error type
+    if (error.message.includes('Unexpected token') || error.message.includes('SyntaxError')) {
+      enhancedMessage += '\n💡 Tip: Check for malformed JSDoc comments or invalid YAML/JSON in @swagger annotations';
+    } else if (error.message.includes('swagger') || error.message.includes('openapi')) {
+      enhancedMessage += '\n💡 Tip: Verify @swagger JSDoc annotations follow OpenAPI 3.0.3 specification';
+    }
+
+    const enhancedError = new Error(enhancedMessage);
+    enhancedError.originalError = error;
+    enhancedError.jsdocFiles = jsdocFiles;
+    enhancedError.filename = filename;
+    enhancedError.lineNumber = lineNumber;
+
+    return enhancedError;
   }
 
   /**
