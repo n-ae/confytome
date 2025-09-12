@@ -70,6 +70,13 @@ Authorization: Bearer <your-token>
 {{#description}}{{{description}}}
 
 {{/description}}
+{{#contentType}}**Content-Type:** `{{contentType}}`
+
+{{/contentType}}
+{{#availableContentTypes}}
+**Available Content Types:** {{#availableContentTypes}}`{{.}}`{{^@last}}, {{/@last}}{{/availableContentTypes}}
+
+{{/availableContentTypes}}
 {{#hasProperties}}
 #### Properties
 
@@ -80,12 +87,30 @@ Authorization: Bearer <your-token>
 {{/properties}}
 
 {{/hasProperties}}
+{{#hasExamples}}
+#### Request Examples
+
+{{#examples}}
+{{#name}}**{{name}}**{{#summary}} - {{summary}}{{/summary}}
+{{/name}}
+{{#description}}{{{description}}}
+
+{{/description}}
+```{{syntaxLanguage}}
+{{{value}}}
+```
+
+{{/examples}}
+{{/hasExamples}}
+{{^hasExamples}}
 {{#example}}
-#### Body
+#### Request Body
 ```json
 {{{example}}}
 ```
+
 {{/example}}
+{{/hasExamples}}
 {{/requestBody}}
 
 ### Responses
@@ -93,13 +118,43 @@ Authorization: Bearer <your-token>
 {{#responses}}
 **`{{{code}}}`** - {{{description}}}
 
+{{#contentType}}**Content-Type:** `{{contentType}}`
+{{/contentType}}
+{{#availableContentTypes}}**Available Content Types:** {{#availableContentTypes}}`{{.}}`{{^@last}}, {{/@last}}{{/availableContentTypes}}
+{{/availableContentTypes}}
+
+{{#hasHeaders}}
+**Headers:**
+{{#headers}}
+- `{{name}}`: {{description}}{{#example}} (example: `{{example}}`){{/example}}
+{{/headers}}
+
+{{/hasHeaders}}
+{{#hasExamples}}
+**Response Examples:**
+
+{{#examples}}
+{{#name}}*{{name}}*{{#summary}} - {{summary}}{{/summary}}
+{{/name}}
+{{#description}}{{{description}}}
+
+{{/description}}
+```{{syntaxLanguage}}
+{{{value}}}
+```
+
+{{/examples}}
+{{/hasExamples}}
+{{^hasExamples}}
 {{#example}}
-#### Body
+**Response Body:**
 ```json
 {{{example}}}
 ```
 
 {{/example}}
+{{/hasExamples}}
+
 {{/responses}}
 
 ### Code Sample

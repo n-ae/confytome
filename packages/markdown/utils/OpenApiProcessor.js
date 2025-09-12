@@ -184,11 +184,11 @@ export class OpenApiProcessor {
               path,
               summary: operation.summary || `${method.toUpperCase()} ${path}`,
               description: operation.description || '',
-              parameters: this.processWithContext(`parameters for ${method.toUpperCase()} ${path}`, 
+              parameters: this.processWithContext(`parameters for ${method.toUpperCase()} ${path}`,
                 () => this.processParameters(operation.parameters || [])),
-              requestBody: this.processWithContext(`request body for ${method.toUpperCase()} ${path}`, 
+              requestBody: this.processWithContext(`request body for ${method.toUpperCase()} ${path}`,
                 () => this.processRequestBody(operation.requestBody)),
-              responses: this.processWithContext(`responses for ${method.toUpperCase()} ${path}`, 
+              responses: this.processWithContext(`responses for ${method.toUpperCase()} ${path}`,
                 () => this.processResponses(operation.responses || {})),
               baseUrl: this.getOperationServerUrl(operation, spec),
               queryString: this.buildQueryString(operation.parameters || []),
@@ -258,30 +258,190 @@ export class OpenApiProcessor {
   processRequestBody(requestBody) {
     if (!requestBody) return null;
 
-    const content = requestBody.content?.['application/json'];
-    let example = null;
-    let properties = [];
+    // Get all available content types
+    const availableContentTypes = Object.keys(requestBody.content || {});
+    const preferredContentTypes = ['application/json', 'application/xml', 'text/plain', 'multipart/form-data', 'application/x-www-form-urlencoded'];
 
-    if (content?.example) {
-      example = JSON.stringify(content.example, null, 2);
-    } else if (content?.schema) {
-      const schemaExample = this.generateExampleFromSchema(content.schema);
-      if (schemaExample) {
-        example = JSON.stringify(schemaExample, null, 2);
+    // Find the best content type to use (prefer JSON, then others in order)
+    let selectedContentType = null;
+    let content = null;
+
+    for (const preferred of preferredContentTypes) {
+      if (availableContentTypes.includes(preferred)) {
+        selectedContentType = preferred;
+        content = requestBody.content[preferred];
+        break;
       }
     }
 
+    // If no preferred type found, use the first available
+    if (!selectedContentType && availableContentTypes.length > 0) {
+      selectedContentType = availableContentTypes[0];
+      content = requestBody.content[selectedContentType];
+    }
+
+    if (!content) return null;
+
+    let examples = [];
+    let properties = [];
+
+    // Process examples - handle both single example and multiple examples
+    examples = this.extractAllExamples(content, selectedContentType);
+
     // Extract properties information for documentation
-    if (content?.schema?.properties) {
+    if (content.schema?.properties) {
       properties = this.extractSchemaProperties(content.schema);
     }
 
     return {
       description: requestBody.description || '',
-      example,
+      contentType: selectedContentType,
+      examples,
+      hasExamples: examples.length > 0,
+      example: examples.length > 0 ? examples[0].value : null, // Backward compatibility
       properties,
-      hasProperties: properties.length > 0
+      hasProperties: properties.length > 0,
+      availableContentTypes: availableContentTypes.length > 1 ? availableContentTypes : null
     };
+  }
+
+  /**
+   * Extract all examples from content (handles both single example and multiple examples)
+   * @param {Object} content - OpenAPI media type object
+   * @param {string} contentType - Content type string
+   * @returns {Array} Array of example objects
+   */
+  extractAllExamples(content, contentType) {
+    const examples = [];
+
+    // Handle OpenAPI 3.x multiple examples
+    if (content.examples && typeof content.examples === 'object') {
+      for (const [name, exampleObj] of Object.entries(content.examples)) {
+        examples.push({
+          name: name || 'Example',
+          summary: exampleObj.summary || '',
+          description: exampleObj.description || '',
+          value: this.formatExampleValue(exampleObj.value, contentType),
+          syntaxLanguage: this.getSyntaxLanguage(contentType)
+        });
+      }
+    }
+
+    // Handle single example
+    if (content.example !== undefined) {
+      examples.push({
+        name: 'Example',
+        summary: '',
+        description: '',
+        value: this.formatExampleValue(content.example, contentType),
+        syntaxLanguage: this.getSyntaxLanguage(contentType)
+      });
+    }
+
+    // Generate example from schema if no explicit examples
+    if (examples.length === 0 && content.schema) {
+      const generatedExample = this.generateExampleFromSchema(content.schema, 0);
+      if (generatedExample !== null) {
+        examples.push({
+          name: 'Generated Example',
+          summary: 'Auto-generated from schema',
+          description: '',
+          value: this.formatExampleValue(generatedExample, contentType),
+          syntaxLanguage: this.getSyntaxLanguage(contentType)
+        });
+      }
+    }
+
+    return examples;
+  }
+
+  /**
+   * Format example value based on content type
+   * @param {*} value - Raw example value
+   * @param {string} contentType - Content type
+   * @returns {string} Formatted example value
+   */
+  formatExampleValue(value, contentType) {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    switch (contentType) {
+    case 'application/json':
+      return typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+    case 'application/xml':
+      return typeof value === 'string' ? value : this.objectToXml(value);
+    case 'text/plain':
+      return typeof value === 'string' ? value : String(value);
+    case 'multipart/form-data':
+    case 'application/x-www-form-urlencoded':
+      return this.objectToFormData(value);
+    default:
+      return typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+    }
+  }
+
+  /**
+   * Get syntax highlighting language for content type
+   * @param {string} contentType - Content type
+   * @returns {string} Syntax highlighting language
+   */
+  getSyntaxLanguage(contentType) {
+    switch (contentType) {
+    case 'application/json':
+      return 'json';
+    case 'application/xml':
+      return 'xml';
+    case 'text/html':
+      return 'html';
+    case 'text/css':
+      return 'css';
+    case 'text/javascript':
+    case 'application/javascript':
+      return 'javascript';
+    case 'text/yaml':
+    case 'application/yaml':
+      return 'yaml';
+    case 'text/plain':
+      return 'text';
+    default:
+      return 'text';
+    }
+  }
+
+  /**
+   * Convert object to simple XML representation
+   * @param {Object} obj - Object to convert
+   * @returns {string} XML string
+   */
+  objectToXml(obj, depth = 0) {
+    if (depth > 10) return '[Max depth exceeded]'; // Prevent stack overflow
+    if (typeof obj !== 'object' || obj === null) return String(obj);
+
+    let xml = '';
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === 'object' && value !== null) {
+        xml += `<${key}>\n${this.objectToXml(value, depth + 1)}</${key}>\n`;
+      } else {
+        xml += `<${key}>${value}</${key}>\n`;
+      }
+    }
+    return xml;
+  }
+
+  /**
+   * Convert object to form data representation
+   * @param {Object} obj - Object to convert
+   * @returns {string} Form data string
+   */
+  objectToFormData(obj) {
+    if (typeof obj !== 'object') return String(obj);
+
+    const params = [];
+    for (const [key, value] of Object.entries(obj)) {
+      params.push(`${key}=${encodeURIComponent(value)}`);
+    }
+    return params.join('&');
   }
 
   /**
@@ -326,22 +486,56 @@ export class OpenApiProcessor {
    */
   processResponses(responses) {
     return Object.entries(responses).map(([code, response]) => {
-      const content = response.content?.['application/json'];
-      let example = null;
+      // Get all available content types for this response
+      const availableContentTypes = Object.keys(response.content || {});
+      const preferredContentTypes = ['application/json', 'application/xml', 'text/plain', 'text/html'];
 
-      if (content?.example) {
-        example = JSON.stringify(content.example, null, 2);
-      } else if (content?.schema) {
-        const schemaExample = this.generateExampleFromSchema(content.schema);
-        if (schemaExample) {
-          example = JSON.stringify(schemaExample, null, 2);
+      // Find the best content type to use
+      let selectedContentType = null;
+      let content = null;
+
+      for (const preferred of preferredContentTypes) {
+        if (availableContentTypes.includes(preferred)) {
+          selectedContentType = preferred;
+          content = response.content[preferred];
+          break;
         }
+      }
+
+      // If no preferred type found, use the first available
+      if (!selectedContentType && availableContentTypes.length > 0) {
+        selectedContentType = availableContentTypes[0];
+        content = response.content[selectedContentType];
+      }
+
+      let examples = [];
+      let headers = [];
+
+      // Process response examples
+      if (content) {
+        examples = this.extractAllExamples(content, selectedContentType);
+      }
+
+      // Process response headers
+      if (response.headers) {
+        headers = Object.entries(response.headers).map(([name, header]) => ({
+          name,
+          description: header.description || '',
+          schema: header.schema || null,
+          example: header.example || (header.schema?.example) || 'value'
+        }));
       }
 
       return {
         code,
         description: response.description || '',
-        example
+        contentType: selectedContentType,
+        examples,
+        hasExamples: examples.length > 0,
+        example: examples.length > 0 ? examples[0].value : null, // Backward compatibility
+        headers,
+        hasHeaders: headers.length > 0,
+        availableContentTypes: availableContentTypes.length > 1 ? availableContentTypes : null
       };
     });
   }
@@ -392,32 +586,38 @@ export class OpenApiProcessor {
     }
 
     // Generate basic example based on schema
-    const example = this.generateExampleFromSchema(schema);
+    const example = this.generateExampleFromSchema(schema, 0);
     return JSON.stringify(example, null, 2);
   }
 
   /**
    * Generate example object from schema
    * @param {Object} schema - Schema object
+   * @param {number} depth - Current recursion depth to prevent stack overflow
    * @returns {Object} Example object
    */
-  generateExampleFromSchema(schema) {
+  generateExampleFromSchema(schema, depth = 0) {
+    if (depth > 10) return '[Max depth exceeded]'; // Prevent stack overflow
+    
     if (schema.type === 'object' && schema.properties) {
       const example = {};
       for (const [propName, propSchema] of Object.entries(schema.properties)) {
-        example[propName] = this.generateExampleValue(propSchema);
+        example[propName] = this.generateExampleValue(propSchema, depth + 1);
       }
       return example;
     }
-    return this.generateExampleValue(schema);
+    return this.generateExampleValue(schema, depth);
   }
 
   /**
    * Generate example value based on schema type
    * @param {Object} schema - Property schema
+   * @param {number} depth - Current recursion depth to prevent stack overflow
    * @returns {*} Example value
    */
-  generateExampleValue(schema) {
+  generateExampleValue(schema, depth = 0) {
+    if (depth > 10) return '[Max depth exceeded]'; // Prevent stack overflow
+    
     // If there's an explicit example, use it regardless of type
     if (schema.example !== undefined) {
       return schema.example;
@@ -433,9 +633,9 @@ export class OpenApiProcessor {
     case 'boolean':
       return true;
     case 'array':
-      return [this.generateExampleValue(schema.items || { type: 'string' })];
+      return [this.generateExampleValue(schema.items || { type: 'string' }, depth + 1)];
     case 'object':
-      return this.generateExampleFromSchema(schema);
+      return this.generateExampleFromSchema(schema, depth + 1);
     default:
       return null;
     }
@@ -644,7 +844,7 @@ export class OpenApiProcessor {
       example = content.example;
     } else if (content.schema) {
       // Generate example object from schema (not JSON string)
-      example = this.generateExampleFromSchema(content.schema);
+      example = this.generateExampleFromSchema(content.schema, 0);
     } else {
       return null;
     }
