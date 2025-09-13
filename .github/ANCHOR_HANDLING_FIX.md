@@ -141,7 +141,29 @@ Before modifying `createAnchor()`:
 - **Template**: `packages/markdown/templates/main.mustache`
 - **CLI**: `packages/markdown/cli.js` (flag handling)
 - **Documentation**: `CLAUDE.md` (user-facing docs)
-- **Tests**: `tests/standalone-markdown.test.js`
+- **Tests**: `packages/core/test/anchor-utf-preservation.test.js` (UTF preservation tests)
+- **Tests**: `tests/standalone-markdown.test.js` (integration tests)
+
+## 🖥️ Windows Compatibility Fix
+
+**Issue**: Windows CI fails with `'NODE_OPTIONS' is not recognized as an internal or external command`
+
+**Solution**: Updated npm scripts to use `cross-env` for cross-platform compatibility:
+```json
+// Before (Unix only)
+"test": "NODE_OPTIONS='--experimental-vm-modules' jest"
+
+// After (Cross-platform)
+"test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest"
+```
+
+**Files Updated**:
+- `package.json` (root workspace)
+- `packages/core/package.json` 
+- `tests/run-all-tests.js`
+
+**Dependencies Added**: 
+- `cross-env@^10.0.0` (dev dependency)
 
 ## 🔗 Link Generation Process
 

@@ -16,7 +16,7 @@ console.log('');
 const tests = [
   {
     name: 'Unit Tests (Jest)',
-    command: 'NODE_OPTIONS="--experimental-vm-modules" jest',
+    command: 'cross-env NODE_OPTIONS="--experimental-vm-modules" jest',
     description: 'Core unit tests and component testing'
   },
   {

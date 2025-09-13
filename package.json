@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest && npm run test:standalone-markdown",
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest && npm run test:standalone-markdown",
     "test:core": "npm test -- --selectProjects=\"@confytome/core\"",
     "test:generators": "npm test -- --selectProjects=\"@confytome/generators\"",
     "test:watch": "npm test -- --watch",
@@ -57,7 +57,8 @@
   "author": "nae",
   "license": "MIT",
   "devDependencies": {
-    "jest": "^30.1.3",
-    "eslint": "^9.0.0"
+    "cross-env": "^10.0.0",
+    "eslint": "^9.0.0",
+    "jest": "^30.1.3"
   }
 }

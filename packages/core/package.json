@@ -49,7 +49,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:watch": "npm test -- --watch",
     "test:coverage": "npm test -- --coverage",
     "lint": "eslint . --ext .js",
@@ -63,10 +63,11 @@
   },
   "dependencies": {
     "commander": "^14.0.0",
-    "swagger-jsdoc": "^6.2.8",
-    "glob": "^11.0.0"
+    "glob": "^11.0.0",
+    "swagger-jsdoc": "^6.2.8"
   },
   "devDependencies": {
+    "cross-env": "^10.0.0",
     "jest": "^30.1.3"
   }
 }
