@@ -1,9 +1,12 @@
 # @confytome/core
 
+[![Build](https://github.com/n-ae/confytome/workflows/CI/badge.svg)](https://github.com/n-ae/confytome/actions)
+[![Coverage](https://codecov.io/gh/n-ae/confytome/branch/main/graph/badge.svg)](https://codecov.io/gh/n-ae/confytome)
+[![GitHub issues](https://img.shields.io/github/issues/n-ae/confytome)](https://github.com/n-ae/confytome/issues)
 [![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
-[![Code Style: ESM](https://img.shields.io/badge/code%20style-ESM-blue)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+[![Downloads](https://img.shields.io/npm/dw/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
+[![Node](https://img.shields.io/node/v/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
+[![License](https://img.shields.io/npm/l/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
 
 Core plugin system and OpenAPI 3.0.3 generator from JSDoc comments. Plugin registry, service layer, and CLI for extensible API documentation generation.
 

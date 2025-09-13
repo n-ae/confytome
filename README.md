@@ -1,9 +1,14 @@
 # 🔌 confytome
 
+[![Build](https://github.com/n-ae/confytome/workflows/CI/badge.svg)](https://github.com/n-ae/confytome/actions)
+[![Coverage](https://codecov.io/gh/n-ae/confytome/branch/main/graph/badge.svg)](https://codecov.io/gh/n-ae/confytome)
+[![Security](https://snyk.io/test/github/n-ae/confytome/badge.svg)](https://snyk.io/test/github/n-ae/confytome)
+[![GitHub issues](https://img.shields.io/github/issues/n-ae/confytome)](https://github.com/n-ae/confytome/issues)
+[![Dependencies](https://img.shields.io/librariesio/github/n-ae/confytome)](https://libraries.io/github/n-ae/confytome)
+[![Node](https://img.shields.io/node/v/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
 [![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
-[![Code Style: ESM](https://img.shields.io/badge/code%20style-ESM-blue)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+[![Downloads](https://img.shields.io/npm/dw/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
+[![License](https://img.shields.io/npm/l/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
 
 Plugin-based API documentation generator with OpenAPI-first architecture. Generates multiple formats from JSDoc comments through an extensible generator registry system.
 

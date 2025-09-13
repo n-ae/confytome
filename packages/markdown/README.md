@@ -1,5 +1,10 @@
 # @confytome/markdown
 
+[![Build](https://github.com/n-ae/confytome/workflows/CI/badge.svg)](https://github.com/n-ae/confytome/actions)
+[![npm version](https://badge.fury.io/js/%40confytome%2Fmarkdown.svg)](https://badge.fury.io/js/@confytome/markdown)
+[![Downloads](https://img.shields.io/npm/dw/@confytome/markdown.svg)](https://www.npmjs.com/package/@confytome/markdown)
+[![License](https://img.shields.io/npm/l/@confytome/markdown.svg)](https://www.npmjs.com/package/@confytome/markdown)
+
 Standalone Markdown documentation generator for confytome. Generates Confluence-friendly documentation from OpenAPI specifications using custom Mustache templates with Turkish Unicode support.
 
 ## ✨ Features

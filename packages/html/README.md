@@ -1,5 +1,10 @@
 # @confytome/html
 
+[![Build](https://github.com/n-ae/confytome/workflows/CI/badge.svg)](https://github.com/n-ae/confytome/actions)
+[![npm version](https://badge.fury.io/js/%40confytome%2Fhtml.svg)](https://badge.fury.io/js/@confytome/html)
+[![Downloads](https://img.shields.io/npm/dw/@confytome/html.svg)](https://www.npmjs.com/package/@confytome/html)
+[![License](https://img.shields.io/npm/l/@confytome/html.svg)](https://www.npmjs.com/package/@confytome/html)
+
 Professional styled HTML documentation generator for confytome. Generates clean, responsive HTML documentation from OpenAPI specifications with modern styling and navigation.
 
 ## ✨ Features

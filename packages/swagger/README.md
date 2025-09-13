@@ -1,5 +1,10 @@
 # @confytome/swagger
 
+[![Build](https://github.com/n-ae/confytome/workflows/CI/badge.svg)](https://github.com/n-ae/confytome/actions)
+[![npm version](https://badge.fury.io/js/%40confytome%2Fswagger.svg)](https://badge.fury.io/js/@confytome/swagger)
+[![Downloads](https://img.shields.io/npm/dw/@confytome/swagger.svg)](https://www.npmjs.com/package/@confytome/swagger)
+[![License](https://img.shields.io/npm/l/@confytome/swagger.svg)](https://www.npmjs.com/package/@confytome/swagger)
+
 Interactive Swagger UI generator for confytome. Generates self-contained Swagger UI documentation from OpenAPI specifications with responsive design and embedded assets.
 
 ## ✨ Features
