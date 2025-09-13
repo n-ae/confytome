@@ -56,6 +56,9 @@
   ],
   "author": "nae",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "cross-env": "^10.0.0",
     "eslint": "^9.0.0",
