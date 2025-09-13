@@ -173,9 +173,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [detect-changes, test]
     if: needs.detect-changes.outputs.should_release == 'true'
-    outputs:
-      release_id: ${{ steps.create_release.outputs.id }}
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -187,12 +184,12 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ needs.detect-changes.outputs.root_version }}
-          release_name: Release v${{ needs.detect-changes.outputs.root_version }}
+          name: Release v${{ needs.detect-changes.outputs.root_version }}
           body_path: release_notes.md
           draft: false
           prerelease: ${{ contains(needs.detect-changes.outputs.root_version, '-') }}

@@ -165,6 +165,13 @@ Before modifying `createAnchor()`:
 **Dependencies Added**: 
 - `cross-env@^10.0.0` (dev dependency)
 
+## 🔄 GitHub Actions Updates
+
+**Deprecation Warning Fixed**: Updated deprecated `actions/create-release@v1` to `softprops/action-gh-release@v2`
+- Removes deprecation warning about `set-output` command
+- Uses modern GitHub Actions patterns
+- Maintained backward compatibility
+
 ## 🔗 Link Generation Process
 
 1. **Quick Reference**: Uses `createAnchor()` to generate `#anchor-links`
