@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '18'
+          node-version: '24'
           cache: 'npm'
 
       - name: Check version changes
@@ -47,12 +47,12 @@ jobs:
         run: |
           set -e
           echo "Checking for version changes..."
-          
+
           # Get current root version
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current version: $CURRENT_VERSION"
           echo "root_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          
+
           # Check if this is a forced release
           if [ "${{ inputs.force_release }}" == "true" ]; then
             echo "Force release requested"
@@ -61,11 +61,11 @@ jobs:
             echo "release_notes=Manual release triggered" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           # Check for version changes in git history
           SHOULD_RELEASE="false"
           CHANGED_PACKAGES=""
-          
+
           # Check root package.json
           if git diff HEAD~1 HEAD --name-only | grep -q "^package.json$"; then
             if git diff HEAD~1 HEAD package.json | grep -q '"version":'; then
@@ -74,7 +74,7 @@ jobs:
               CHANGED_PACKAGES="root"
             fi
           fi
-          
+
           # Check workspace packages
           for pkg_json in packages/*/package.json; do
             if git diff HEAD~1 HEAD --name-only | grep -q "$pkg_json"; then
@@ -90,15 +90,15 @@ jobs:
               fi
             fi
           done
-          
+
           echo "should_release=$SHOULD_RELEASE" >> $GITHUB_OUTPUT
           echo "changed_packages=$CHANGED_PACKAGES" >> $GITHUB_OUTPUT
-          
+
           # Generate release notes
           if [ "$SHOULD_RELEASE" == "true" ]; then
             echo "Generating release notes..."
             RELEASE_NOTES="## Release v$CURRENT_VERSION"$'\n\n'
-            
+
             # Get commits since last release
             if git tag -l | grep -q "v"; then
               LAST_TAG=$(git tag -l "v*" | sort -V | tail -n1)
@@ -108,11 +108,11 @@ jobs:
               echo "No previous tags found, using recent commits"
               COMMITS=$(git log --oneline -10 --pretty=format:"- %s (%h)")
             fi
-            
+
             if [ -n "$COMMITS" ]; then
               RELEASE_NOTES="$RELEASE_NOTES"$'\n### Changes\n'"$COMMITS"
             fi
-            
+
             RELEASE_NOTES="$RELEASE_NOTES"$'\n\n### Packages\n'
             if [ "$CHANGED_PACKAGES" == "root" ] || [ "$CHANGED_PACKAGES" == "all" ]; then
               RELEASE_NOTES="$RELEASE_NOTES"$'- All workspace packages updated\n'
@@ -121,7 +121,7 @@ jobs:
                 RELEASE_NOTES="$RELEASE_NOTES"$"- @confytome/$pkg\n"
               done
             fi
-            
+
             # Save to file and output
             echo "$RELEASE_NOTES" > release_notes.md
             echo "release_notes<<EOF" >> $GITHUB_OUTPUT
@@ -151,7 +151,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '18'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
@@ -212,7 +212,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '18'
+          node-version: '24'
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
@@ -231,7 +231,7 @@ jobs:
           # Check if package is already published at this version
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          
+
           if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null; then
             echo "Package $PACKAGE_NAME@$PACKAGE_VERSION already published, skipping..."
           else

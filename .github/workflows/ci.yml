@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [20, 22, 24]
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -76,7 +76,7 @@ jobs:
       - name: Validate package ${{ matrix.package }}
         run: |
           cd packages/${{ matrix.package }}
-          
+
           # Check package.json structure
           echo "Validating package.json..."
           node -e "
@@ -86,19 +86,19 @@ jobs:
             }
             console.log('✅ Package:', pkg.name, 'v' + pkg.version);
           "
-          
+
           # Check for required files
           echo "Checking required files..."
           test -f package.json || { echo "❌ Missing package.json"; exit 1; }
           test -f README.md || { echo "❌ Missing README.md"; exit 1; }
-          
+
           # Validate package can be built/prepared
           npm run build --if-present
           npm run prepare --if-present
-          
+
           # Test package installation simulation
           npm pack --dry-run
-          
+
           echo "✅ Package ${{ matrix.package }} validation complete"
 
   security-audit:
@@ -121,7 +121,7 @@ jobs:
         run: |
           echo "Running npm audit..."
           npm audit --audit-level high
-          
+
       - name: Check for known vulnerabilities
         run: |
           echo "Checking workspace packages..."
@@ -200,20 +200,20 @@ jobs:
                   }
                 }
               };
-              
+
               console.log('🧪 Testing processing performance...');
               const start = performance.now();
               const result = processor.process(testSpec);
               const end = performance.now();
-              
+
               console.log('✅ Processed in', (end - start).toFixed(2) + 'ms');
               console.log('✅ Cache active:', processor._schemaExampleCache.size > 0);
               console.log('✅ Resources:', result.resources.length);
-              
+
               if (end - start > 100) {
                 throw new Error('Performance regression detected: processing took ' + (end - start).toFixed(2) + 'ms');
               }
-              
+
               console.log('🚀 Performance test passed!');
             }).catch(err => {
               console.error('❌ Performance test failed:', err.message);
@@ -236,15 +236,15 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number
             });
-            
-            const botComment = comments.find(comment => 
+
+            const botComment = comments.find(comment =>
               comment.user.type === 'Bot' && comment.body.includes('## CI Results')
             );
-            
+
             const testResult = '${{ needs.test.result }}';
             const packageResult = '${{ needs.package-validation.result }}';
             const securityResult = '${{ needs.security-audit.result }}';
-            
+
             const statusEmoji = (result) => {
               switch(result) {
                 case 'success': return '✅';
@@ -254,23 +254,23 @@ jobs:
                 default: return '⏳';
               }
             };
-            
+
             const commentBody = `## CI Results
-            
+
             | Check | Status | Result |
             |-------|--------|--------|
             | Tests & Lint | ${statusEmoji(testResult)} | ${testResult} |
             | Package Validation | ${statusEmoji(packageResult)} | ${packageResult} |
             | Security Audit | ${statusEmoji(securityResult)} | ${securityResult} |
-            
-            ${testResult === 'success' && packageResult === 'success' && securityResult === 'success' 
-              ? '🎉 All checks passed! Ready for review.' 
+
+            ${testResult === 'success' && packageResult === 'success' && securityResult === 'success'
+              ? '🎉 All checks passed! Ready for review.'
               : '⚠️ Some checks failed. Please review the workflow runs.'
             }
-            
+
             ---
             *Automated comment by GitHub Actions*`;
-            
+
             if (botComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
