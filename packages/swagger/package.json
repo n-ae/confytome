@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "swagger-ui-dist": "^5.0.0",
-    "commander": "^12.0.0"
+    "commander": "^14.0.1"
   },
   "peerDependencies": {
     "@confytome/core": "^1.4.0"
