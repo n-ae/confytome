@@ -1,0 +1,264 @@
+name: Release and Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+      - 'packages/*/package.json'
+  workflow_dispatch:
+    inputs:
+      force_release:
+        description: 'Force release even if version unchanged'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  detect-changes:
+    name: Detect Version Changes
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.version_check.outputs.should_release }}
+      root_version: ${{ steps.version_check.outputs.root_version }}
+      changed_packages: ${{ steps.version_check.outputs.changed_packages }}
+      release_notes: ${{ steps.version_check.outputs.release_notes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Check version changes
+        id: version_check
+        run: |
+          set -e
+          echo "Checking for version changes..."
+          
+          # Get current root version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          echo "root_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          
+          # Check if this is a forced release
+          if [ "${{ inputs.force_release }}" == "true" ]; then
+            echo "Force release requested"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "changed_packages=all" >> $GITHUB_OUTPUT
+            echo "release_notes=Manual release triggered" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Check for version changes in git history
+          SHOULD_RELEASE="false"
+          CHANGED_PACKAGES=""
+          
+          # Check root package.json
+          if git diff HEAD~1 HEAD --name-only | grep -q "^package.json$"; then
+            if git diff HEAD~1 HEAD package.json | grep -q '"version":'; then
+              echo "Root version changed"
+              SHOULD_RELEASE="true"
+              CHANGED_PACKAGES="root"
+            fi
+          fi
+          
+          # Check workspace packages
+          for pkg_json in packages/*/package.json; do
+            if git diff HEAD~1 HEAD --name-only | grep -q "$pkg_json"; then
+              if git diff HEAD~1 HEAD "$pkg_json" | grep -q '"version":'; then
+                pkg_name=$(dirname "$pkg_json" | sed 's|packages/||')
+                echo "Package $pkg_name version changed"
+                SHOULD_RELEASE="true"
+                if [ "$CHANGED_PACKAGES" == "" ]; then
+                  CHANGED_PACKAGES="$pkg_name"
+                else
+                  CHANGED_PACKAGES="$CHANGED_PACKAGES,$pkg_name"
+                fi
+              fi
+            fi
+          done
+          
+          echo "should_release=$SHOULD_RELEASE" >> $GITHUB_OUTPUT
+          echo "changed_packages=$CHANGED_PACKAGES" >> $GITHUB_OUTPUT
+          
+          # Generate release notes
+          if [ "$SHOULD_RELEASE" == "true" ]; then
+            echo "Generating release notes..."
+            RELEASE_NOTES="## Release v$CURRENT_VERSION"$'\n\n'
+            
+            # Get commits since last release
+            if git tag -l | grep -q "v"; then
+              LAST_TAG=$(git tag -l "v*" | sort -V | tail -n1)
+              echo "Last tag: $LAST_TAG"
+              COMMITS=$(git log --oneline "$LAST_TAG"..HEAD --pretty=format:"- %s (%h)" | head -10)
+            else
+              echo "No previous tags found, using recent commits"
+              COMMITS=$(git log --oneline -10 --pretty=format:"- %s (%h)")
+            fi
+            
+            if [ -n "$COMMITS" ]; then
+              RELEASE_NOTES="$RELEASE_NOTES"$'\n### Changes\n'"$COMMITS"
+            fi
+            
+            RELEASE_NOTES="$RELEASE_NOTES"$'\n\n### Packages\n'
+            if [ "$CHANGED_PACKAGES" == "root" ] || [ "$CHANGED_PACKAGES" == "all" ]; then
+              RELEASE_NOTES="$RELEASE_NOTES"$'- All workspace packages updated\n'
+            else
+              for pkg in $(echo "$CHANGED_PACKAGES" | tr ',' '\n'); do
+                RELEASE_NOTES="$RELEASE_NOTES"$"- @confytome/$pkg\n"
+              done
+            fi
+            
+            # Save to file and output
+            echo "$RELEASE_NOTES" > release_notes.md
+            echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+            echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "No version changes detected"
+            echo "release_notes=No release needed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload release notes
+        if: steps.version_check.outputs.should_release == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release_notes.md
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.should_release == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm run clean
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Validate packages
+        run: npm run validate
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [detect-changes, test]
+    if: needs.detect-changes.outputs.should_release == 'true'
+    outputs:
+      release_id: ${{ steps.create_release.outputs.id }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download release notes
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.detect-changes.outputs.root_version }}
+          release_name: Release v${{ needs.detect-changes.outputs.root_version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ contains(needs.detect-changes.outputs.root_version, '-') }}
+
+  publish-npm:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    needs: [detect-changes, test, create-release]
+    if: needs.detect-changes.outputs.should_release == 'true'
+    strategy:
+      matrix:
+        package: [core, markdown, html, swagger, postman, generator]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: |
+          cd packages/${{ matrix.package }}
+          npm run build --if-present
+          npm run prepare --if-present
+
+      - name: Publish to NPM
+        run: |
+          cd packages/${{ matrix.package }}
+          # Check if package is already published at this version
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null; then
+            echo "Package $PACKAGE_NAME@$PACKAGE_VERSION already published, skipping..."
+          else
+            echo "Publishing $PACKAGE_NAME@$PACKAGE_VERSION..."
+            npm publish --access public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: [detect-changes, create-release, publish-npm]
+    if: always() && needs.detect-changes.outputs.should_release == 'true'
+    steps:
+      - name: Success notification
+        if: needs.create-release.result == 'success' && needs.publish-npm.result == 'success'
+        run: |
+          echo "🎉 Release v${{ needs.detect-changes.outputs.root_version }} completed successfully!"
+          echo "✅ GitHub release created"
+          echo "✅ All packages published to NPM"
+          echo "📦 Packages: ${{ needs.detect-changes.outputs.changed_packages }}"
+
+      - name: Failure notification
+        if: needs.create-release.result == 'failure' || needs.publish-npm.result == 'failure'
+        run: |
+          echo "❌ Release v${{ needs.detect-changes.outputs.root_version }} failed!"
+          echo "Create release: ${{ needs.create-release.result }}"
+          echo "Publish NPM: ${{ needs.publish-npm.result }}"
+          exit 1

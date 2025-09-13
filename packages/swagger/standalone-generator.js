@@ -16,6 +16,9 @@ const require = createRequire(import.meta.url);
 export class StandaloneSwaggerGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {
     super(outputDir, options);
+
+    // Asset cache for memory optimization
+    this._assetCache = new Map();
   }
 
   /**
@@ -122,13 +125,10 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
    * @returns {string} Complete HTML document
    */
   generateSwaggerUI(openApiSpec) {
-    // Read Swagger UI assets
-    const swaggerUIAssetPath = require.resolve('swagger-ui-dist/package.json');
-    const swaggerUIDistPath = path.dirname(swaggerUIAssetPath);
+    // Load assets with caching for memory optimization
+    const assets = this._loadSwaggerAssets();
 
-    const swaggerUICSS = fs.readFileSync(path.join(swaggerUIDistPath, 'swagger-ui.css'), 'utf8');
-    const swaggerUIJS = fs.readFileSync(path.join(swaggerUIDistPath, 'swagger-ui-bundle.js'), 'utf8');
-    const swaggerUIStandaloneJS = fs.readFileSync(path.join(swaggerUIDistPath, 'swagger-ui-standalone-preset.js'), 'utf8');
+    const { css, bundleJs, standaloneJs } = assets;
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -138,7 +138,7 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
   <title>${openApiSpec.info.title} v${openApiSpec.info.version} - Swagger UI</title>
 
   <style>
-    ${swaggerUICSS}
+    ${css}
 
     /* Custom branding styles */
     .custom-header {
@@ -190,11 +190,11 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
   </div>
 
   <script>
-    ${swaggerUIJS}
+    ${bundleJs}
   </script>
 
   <script>
-    ${swaggerUIStandaloneJS}
+    ${standaloneJs}
   </script>
 
   <script>
@@ -227,5 +227,36 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
 </html>`;
 
     return html;
+  }
+
+  /**
+   * Load Swagger UI assets with caching to reduce memory usage
+   * @returns {Object} Asset object with CSS and JS content
+   */
+  _loadSwaggerAssets() {
+    const cacheKey = 'swagger-ui-assets';
+
+    if (this._assetCache.has(cacheKey)) {
+      return this._assetCache.get(cacheKey);
+    }
+
+    // Get Swagger UI distribution path
+    const swaggerUIAssetPath = require.resolve('swagger-ui-dist/package.json');
+    const swaggerUIDistPath = path.dirname(swaggerUIAssetPath);
+
+    // Load assets - these are large files (~500KB+ each)
+    this.log('Loading Swagger UI assets...');
+
+    const assets = {
+      css: fs.readFileSync(path.join(swaggerUIDistPath, 'swagger-ui.css'), 'utf8'),
+      bundleJs: fs.readFileSync(path.join(swaggerUIDistPath, 'swagger-ui-bundle.js'), 'utf8'),
+      standaloneJs: fs.readFileSync(path.join(swaggerUIDistPath, 'swagger-ui-standalone-preset.js'), 'utf8')
+    };
+
+    // Cache the assets to avoid re-reading for subsequent generations
+    this._assetCache.set(cacheKey, assets);
+
+    this.log('Swagger UI assets cached');
+    return assets;
   }
 }

@@ -19,6 +19,7 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {
     super(outputDir, options);
     this.processor = null;
+    this._templateCache = new Map();
   }
 
   /**
@@ -118,10 +119,8 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
       data.version = this.getInfo().version;
       data.timestamp = this.getTimestamp();
 
-      // Load Mustache template
-      const templatePath = path.join(__dirname, 'templates', 'main.mustache');
-      this.validateFileExists(templatePath, 'Mustache template');
-      const template = fs.readFileSync(templatePath, 'utf8');
+      // Load and cache Mustache template
+      const template = this._loadTemplate('main.mustache');
 
       // Render template with data
       const markdown = Mustache.render(template, data);
@@ -149,6 +148,25 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
         stats: { error: error.message }
       };
     }
+  }
+
+  /**
+   * Load template with caching for performance
+   * @param {string} templateName - Template filename
+   * @returns {string} Template content
+   */
+  _loadTemplate(templateName) {
+    if (this._templateCache.has(templateName)) {
+      return this._templateCache.get(templateName);
+    }
+
+    const templatePath = path.join(__dirname, 'templates', templateName);
+    this.validateFileExists(templatePath, 'Mustache template');
+
+    const template = fs.readFileSync(templatePath, 'utf8');
+    this._templateCache.set(templateName, template);
+
+    return template;
   }
 
   // Base class provides getBaseUrl() and cleanup() methods

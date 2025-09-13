@@ -70,7 +70,7 @@ Authorization: Bearer <your-token>
 {{#description}}{{{description}}}
 
 {{/description}}
-{{#contentType}}**Content-Type:** `{{contentType}}`
+{{#contentType}}**Content-Type:** `{{{contentType}}}`
 
 {{/contentType}}
 {{#availableContentTypes}}
@@ -118,7 +118,7 @@ Authorization: Bearer <your-token>
 {{#responses}}
 **`{{{code}}}`** - {{{description}}}
 
-{{#contentType}}**Content-Type:** `{{contentType}}`
+{{#contentType}}**Content-Type:** `{{{contentType}}}`
 {{/contentType}}
 {{#availableContentTypes}}**Available Content Types:** {{#availableContentTypes}}`{{.}}`{{^@last}}, {{/@last}}{{/availableContentTypes}}
 {{/availableContentTypes}}

@@ -1,0 +1,131 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "n-ae"
+    assignees:
+      - "n-ae"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+    groups:
+      development-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "*"
+      production-dependencies:
+        dependency-type: "production"
+        patterns:
+          - "*"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/core"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "n-ae"
+    assignees:
+      - "n-ae"
+    commit-message:
+      prefix: "chore(core)"
+      include: "scope"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/markdown"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "n-ae"
+    assignees:
+      - "n-ae"
+    commit-message:
+      prefix: "chore(markdown)"
+      include: "scope"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/html"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "n-ae"
+    assignees:
+      - "n-ae"
+    commit-message:
+      prefix: "chore(html)"
+      include: "scope"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/swagger"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "n-ae"
+    assignees:
+      - "n-ae"
+    commit-message:
+      prefix: "chore(swagger)"
+      include: "scope"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/postman"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "n-ae"
+    assignees:
+      - "n-ae"
+    commit-message:
+      prefix: "chore(postman)"
+      include: "scope"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/generator"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "n-ae"
+    assignees:
+      - "n-ae"
+    commit-message:
+      prefix: "chore(generator)"
+      include: "scope"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "n-ae"
+    assignees:
+      - "n-ae"
+    commit-message:
+      prefix: "chore"
+      include: "scope"

@@ -13,6 +13,11 @@ export class OpenApiProcessor {
       baseUrl: '',
       ...options
     };
+
+    // Memoization caches for performance
+    this._schemaExampleCache = new Map();
+    this._schemaTypeCache = new Map();
+    this._anchorCache = new Map();
   }
 
   /**
@@ -469,6 +474,11 @@ export class OpenApiProcessor {
   getSchemaType(schema) {
     if (!schema) return 'string';
 
+    const cacheKey = JSON.stringify({ type: schema.type, enum: schema.enum });
+    if (this._schemaTypeCache.has(cacheKey)) {
+      return this._schemaTypeCache.get(cacheKey);
+    }
+
     let type = schema.type || 'string';
 
     if (schema.enum && Array.isArray(schema.enum)) {
@@ -476,7 +486,26 @@ export class OpenApiProcessor {
       type += ` (${enumValues})`;
     }
 
+    this._schemaTypeCache.set(cacheKey, type);
     return type;
+  }
+
+  /**
+   * Create cache key for schema objects
+   * @param {Object} schema - Schema object
+   * @param {number} depth - Recursion depth
+   * @returns {string} Cache key
+   */
+  _createSchemaCacheKey(schema, depth) {
+    // Create a lightweight key from schema structure
+    return JSON.stringify({
+      type: schema.type,
+      properties: schema.properties ? Object.keys(schema.properties).sort() : undefined,
+      items: schema.items?.type,
+      example: schema.example,
+      enum: schema.enum,
+      depth
+    });
   }
 
   /**
@@ -599,14 +628,25 @@ export class OpenApiProcessor {
   generateExampleFromSchema(schema, depth = 0) {
     if (depth > 10) return '[Max depth exceeded]'; // Prevent stack overflow
 
+    // Create cache key from schema structure
+    const cacheKey = this._createSchemaCacheKey(schema, depth);
+    if (this._schemaExampleCache.has(cacheKey)) {
+      return this._schemaExampleCache.get(cacheKey);
+    }
+
+    let example;
     if (schema.type === 'object' && schema.properties) {
-      const example = {};
+      example = {};
       for (const [propName, propSchema] of Object.entries(schema.properties)) {
         example[propName] = this.generateExampleValue(propSchema, depth + 1);
       }
-      return example;
+    } else {
+      example = this.generateExampleValue(schema, depth);
     }
-    return this.generateExampleValue(schema, depth);
+
+    // Cache the result
+    this._schemaExampleCache.set(cacheKey, example);
+    return example;
   }
 
   /**
@@ -876,34 +916,47 @@ export class OpenApiProcessor {
 
   /**
    * Create anchor for internal links based on summary
+   *
+   * ⚠️ CRITICAL: UTF CHARACTER PRESERVATION
+   * This method has been fixed multiple times due to UTF character handling issues.
+   * See .github/ANCHOR_HANDLING_FIX.md for detailed documentation.
+   *
+   * GOLDEN RULE: Always preserve UTF characters in both modes.
+   * The ONLY difference should be case handling.
+   *
+   * DO NOT USE: [^\w\s-] regex - it removes Turkish, Spanish, Chinese chars!
+   *
    * @param {string} method - HTTP method
    * @param {string} path - API path
    * @param {string} summary - Operation summary
-   * @returns {string} Anchor string (URL-encoded by default, or original format if disabled)
+   * @returns {string} Anchor string with UTF characters preserved
    */
   createAnchor(method, path, summary) {
     // Use summary if available, otherwise fallback to method + path
     const text = summary || `${method.toUpperCase()} ${path}`;
+    const cacheKey = `${text}_${this.options.urlEncodeAnchors}`;
 
+    if (this._anchorCache.has(cacheKey)) {
+      return this._anchorCache.get(cacheKey);
+    }
+
+    let anchor;
     if (this.options.urlEncodeAnchors === false) {
-      // Original behavior before URL encoding changes - exactly as it was
-      return text
+      // --no-url-encode flag: lowercase, preserve UTF characters
+      anchor = text
         .toLowerCase()
-        .replace(/[^\w\s-]/g, '') // Remove all non-word characters except spaces and hyphens
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+        .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+    } else {
+      // Default behavior: preserve case AND UTF characters for maximum compatibility
+      anchor = text
         .replace(/\s+/g, '-') // Replace spaces with hyphens
         .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
         .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     }
 
-    // URL encode the text while preserving the original casing
-    // Replace spaces with hyphens first, then URL encode special characters
-    return text
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-      .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
-      // URL encode special characters but preserve alphanumeric and hyphens
-      .replace(/[^a-zA-Z0-9\u00C0-\u017F\u0100-\u024F-]/g, (char) => {
-        return encodeURIComponent(char);
-      });
+    this._anchorCache.set(cacheKey, anchor);
+    return anchor;
   }
 }

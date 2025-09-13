@@ -1,0 +1,288 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - develop
+      - 'feature/*'
+      - 'fix/*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm run clean
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        if: matrix.node-version == 18
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  package-validation:
+    name: Validate Packages
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [core, markdown, html, swagger, postman, generator]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate package ${{ matrix.package }}
+        run: |
+          cd packages/${{ matrix.package }}
+          
+          # Check package.json structure
+          echo "Validating package.json..."
+          node -e "
+            const pkg = require('./package.json');
+            if (!pkg.name || !pkg.version || !pkg.description) {
+              throw new Error('Missing required package.json fields');
+            }
+            console.log('✅ Package:', pkg.name, 'v' + pkg.version);
+          "
+          
+          # Check for required files
+          echo "Checking required files..."
+          test -f package.json || { echo "❌ Missing package.json"; exit 1; }
+          test -f README.md || { echo "❌ Missing README.md"; exit 1; }
+          
+          # Validate package can be built/prepared
+          npm run build --if-present
+          npm run prepare --if-present
+          
+          # Test package installation simulation
+          npm pack --dry-run
+          
+          echo "✅ Package ${{ matrix.package }} validation complete"
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: |
+          echo "Running npm audit..."
+          npm audit --audit-level high
+          
+      - name: Check for known vulnerabilities
+        run: |
+          echo "Checking workspace packages..."
+          npm audit --workspaces --audit-level high
+
+  compatibility-test:
+    name: Node.js Compatibility
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18, 20]
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run core tests
+        run: npm run test:core
+
+      - name: Test standalone generators
+        run: npm run test:standalone-markdown
+
+  performance-test:
+    name: Performance Regression
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run performance tests
+        run: |
+          echo "Testing performance optimizations..."
+          node -e "
+            import('./packages/markdown/utils/OpenApiProcessor.js').then(({ OpenApiProcessor }) => {
+              const processor = new OpenApiProcessor();
+              const testSpec = {
+                paths: {
+                  '/test': {
+                    get: {
+                      summary: 'Test',
+                      responses: {
+                        '200': {
+                          description: 'OK',
+                          content: {
+                            'application/json': {
+                              schema: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'integer', example: 1 }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              };
+              
+              console.log('🧪 Testing processing performance...');
+              const start = performance.now();
+              const result = processor.process(testSpec);
+              const end = performance.now();
+              
+              console.log('✅ Processed in', (end - start).toFixed(2) + 'ms');
+              console.log('✅ Cache active:', processor._schemaExampleCache.size > 0);
+              console.log('✅ Resources:', result.resources.length);
+              
+              if (end - start > 100) {
+                throw new Error('Performance regression detected: processing took ' + (end - start).toFixed(2) + 'ms');
+              }
+              
+              console.log('🚀 Performance test passed!');
+            }).catch(err => {
+              console.error('❌ Performance test failed:', err.message);
+              process.exit(1);
+            });
+          "
+
+  pr-comment:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [test, package-validation, security-audit]
+    if: github.event_name == 'pull_request' && always()
+    steps:
+      - name: Create PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('## CI Results')
+            );
+            
+            const testResult = '${{ needs.test.result }}';
+            const packageResult = '${{ needs.package-validation.result }}';
+            const securityResult = '${{ needs.security-audit.result }}';
+            
+            const statusEmoji = (result) => {
+              switch(result) {
+                case 'success': return '✅';
+                case 'failure': return '❌';
+                case 'cancelled': return '⏹️';
+                case 'skipped': return '⏭️';
+                default: return '⏳';
+              }
+            };
+            
+            const commentBody = `## CI Results
+            
+            | Check | Status | Result |
+            |-------|--------|--------|
+            | Tests & Lint | ${statusEmoji(testResult)} | ${testResult} |
+            | Package Validation | ${statusEmoji(packageResult)} | ${packageResult} |
+            | Security Audit | ${statusEmoji(securityResult)} | ${securityResult} |
+            
+            ${testResult === 'success' && packageResult === 'success' && securityResult === 'success' 
+              ? '🎉 All checks passed! Ready for review.' 
+              : '⚠️ Some checks failed. Please review the workflow runs.'
+            }
+            
+            ---
+            *Automated comment by GitHub Actions*`;
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
