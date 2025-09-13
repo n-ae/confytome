@@ -40,7 +40,7 @@ export default [
         'argsIgnorePattern': '^_',
         'varsIgnorePattern': '^_'
       }],
-      'no-console': ['warn'],
+      'no-console': ['off'],
       'no-debugger': ['error'],
       'prefer-const': ['error'],
       'no-var': ['error'],
