@@ -1,6 +1,6 @@
 {
   "name": "@confytome/markdown",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "Standalone Markdown generator - creates Confluence-friendly Markdown documentation from OpenAPI specs using Mustache templates with Turkish Unicode support.",
   "main": "standalone-generator.js",
   "bin": {
