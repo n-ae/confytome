@@ -219,10 +219,8 @@ async function generateOpenApiSpec(configPath, files, outputDir) {
     }
 
     // Build command arguments - use 'generate' command like markdown generator
+    // Note: core generate command reads route files from config, no need to specify --files
     const args = ['generate', '--config', configPath, '--output', absoluteOutputDir];
-    if (routeFiles && routeFiles.length > 0) {
-      args.push('--files', ...routeFiles);
-    }
 
     console.log(`📖 Running: npx @confytome/core ${args.join(' ')}`);
 
