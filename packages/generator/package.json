@@ -1,6 +1,6 @@
 {
   "name": "@confytome/generator",
-  "version": "1.7.13",
+  "version": "1.7.14",
   "description": "Template generation system for confytome CLI files, manifests, and documentation",
   "private": true,
   "type": "module",
