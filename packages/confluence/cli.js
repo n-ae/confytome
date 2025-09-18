@@ -203,10 +203,25 @@ async function generateOpenApiSpec(configPath, files, outputDir) {
       fs.mkdirSync(absoluteOutputDir, { recursive: true });
     }
 
+    // If no files provided, try to read from config
+    let routeFiles = files;
+    if (!routeFiles || routeFiles.length === 0) {
+      try {
+        const configContent = fs.readFileSync(configPath, 'utf8');
+        const config = JSON.parse(configContent);
+        if (config.routeFiles && Array.isArray(config.routeFiles)) {
+          routeFiles = config.routeFiles;
+          console.log(`📁 Using route files from config: ${routeFiles.join(', ')}`);
+        }
+      } catch (error) {
+        console.warn(`⚠️ Could not read route files from config: ${error.message}`);
+      }
+    }
+
     // Build command arguments
     const args = ['openapi', '-c', configPath, '-o', absoluteOutputDir];
-    if (files && files.length > 0) {
-      args.push('-f', ...files);
+    if (routeFiles && routeFiles.length > 0) {
+      args.push('-f', ...routeFiles);
     }
 
     console.log(`📖 Running: npx @confytome/core ${args.join(' ')}`);
