@@ -1,30 +1,31 @@
 {
-  "name": "@confytome/postman",
+  "name": "@confytome/confluence",
   "version": "1.7.7",
-  "description": "Standalone Postman generator - creates Postman collections and environment variables from OpenAPI specs for API testing and development.",
+  "description": "Cross-platform Markdown to Confluence converter - converts .md files to Confluence-compatible HTML format and copies to clipboard for direct pasting.",
   "main": "standalone-generator.js",
   "bin": {
-    "confytome-postman": "./cli.js"
+    "confytome-confluence": "./cli.js"
   },
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/n-ae/confytome.git",
-    "directory": "packages/postman"
+    "directory": "packages/confluence"
   },
   "bugs": {
     "url": "https://github.com/n-ae/confytome/issues"
   },
-  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/postman#readme",
+  "homepage": "https://github.com/n-ae/confytome/tree/main/packages/confluence#readme",
   "keywords": [
     "confytome-plugin",
-    "postman",
-    "api-testing",
-    "collection",
-    "environment-variables",
-    "development",
+    "confluence",
+    "wiki-markup",
+    "confluence-cloud",
+    "confluence-server",
+    "atlassian",
+    "mustache",
     "openapi",
-    "api-docs",
+    "api-documentation",
     "generator",
     "confytome"
   ],
@@ -37,6 +38,7 @@
     "standalone-generator.js",
     "cli.js",
     "utils/",
+    "templates/",
     "README.md"
   ],
   "scripts": {
@@ -49,7 +51,10 @@
     "prepublishOnly": "npm run validate"
   },
   "dependencies": {
-    "commander": "^14.0.1"
+    "commander": "^14.0.1",
+    "clipboardy": "^4.0.0",
+    "marked": "^12.0.0",
+    "@confytome/markdown": "^1.7.6"
   },
   "peerDependencies": {
     "@confytome/core": "^1.4.0"

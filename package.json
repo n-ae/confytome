@@ -1,6 +1,6 @@
 {
   "name": "confytome-workspace",
-  "version": "1.7.6",
+  "version": "1.7.7",
   "description": "Plugin-based API documentation generator with OpenAPI-first architecture. Generates Swagger UI, HTML, Markdown, and Postman collections from JSDoc comments.",
   "private": true,
   "type": "module",
