@@ -34,17 +34,19 @@ export class FileManager {
    */
   static loadServerConfig(configPath, generator) {
     try {
-      console.log(`📁 Server config loaded from: ${configPath}`);
+      // Normalize path for cross-platform compatibility
+      const normalizedPath = path.normalize(configPath);
+      console.log(`📁 Server config loaded from: ${normalizedPath}`);
 
-      if (!fs.existsSync(configPath)) {
+      if (!fs.existsSync(normalizedPath)) {
         throw new Error(`Config file not found: ${configPath}`);
       }
 
-      const configContent = fs.readFileSync(configPath, 'utf8');
+      const configContent = fs.readFileSync(normalizedPath, 'utf8');
       const config = JSON.parse(configContent);
 
       // Basic validation
-      this.validateServerConfig(config, configPath, generator);
+      this.validateServerConfig(config, normalizedPath, generator);
 
       return config;
     } catch (error) {
@@ -95,13 +97,15 @@ export class FileManager {
       throw new Error('OpenAPI spec path is required');
     }
     try {
+      // Normalize path for cross-platform compatibility
+      const normalizedPath = path.normalize(specPath);
       console.log('📖 Reading OpenAPI spec...');
 
-      if (!fs.existsSync(specPath)) {
+      if (!fs.existsSync(normalizedPath)) {
         throw new Error('OpenAPI spec not found. Run OpenAPI generator first.');
       }
 
-      const specContent = fs.readFileSync(specPath, 'utf8');
+      const specContent = fs.readFileSync(normalizedPath, 'utf8');
       const spec = JSON.parse(specContent);
 
       // Basic validation - OpenAPI 3.x only
@@ -131,10 +135,12 @@ export class FileManager {
   static validateJSDocFiles(filePaths, generator) {
     const { validFiles, missingFiles } = filePaths.reduce((acc, filePath) => {
       try {
-        if (fs.existsSync(filePath)) {
-          fs.accessSync(filePath, fs.constants.R_OK);
-          acc.validFiles.push(filePath);
-          console.log(`📄 JSDoc file found: ${filePath}`);
+        // Normalize path for cross-platform compatibility
+        const normalizedPath = path.normalize(filePath);
+        if (fs.existsSync(normalizedPath)) {
+          fs.accessSync(normalizedPath, fs.constants.R_OK);
+          acc.validFiles.push(normalizedPath);
+          console.log(`📄 JSDoc file found: ${normalizedPath}`);
         } else {
           acc.missingFiles.push(filePath);
         }

@@ -5,6 +5,8 @@
  * This ensures consistency and makes it easy to change default values.
  */
 
+import path from 'node:path';
+
 /**
  * Default output directory - single source of truth
  */
@@ -16,7 +18,9 @@ export const DEFAULT_OUTPUT_DIR = './confytome';
  * @returns {string} The output directory to use
  */
 export function getOutputDir(outputDir) {
-  return outputDir || DEFAULT_OUTPUT_DIR;
+  const dir = outputDir || DEFAULT_OUTPUT_DIR;
+  // Normalize path for cross-platform compatibility
+  return dir.includes('\\') || dir.includes('/') ? path.normalize(dir) : dir;
 }
 
 

@@ -169,6 +169,8 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
         filename = match[1] || match[0];
         // Clean up the filename
         filename = filename.replace(/^file:\/\//, '').split('?')[0];
+        // Normalize path separators for cross-platform compatibility
+        filename = path.normalize(filename);
         break;
       }
     }
@@ -195,7 +197,10 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
       const stackLines = error.stack.split('\n');
       for (const line of stackLines) {
         for (const file of jsdocFiles) {
-          if (line.includes(file)) {
+          // Normalize both paths for comparison on Windows
+          const normalizedLine = line.replace(/\\/g, '/');
+          const normalizedFile = file.replace(/\\/g, '/');
+          if (normalizedLine.includes(normalizedFile) || normalizedLine.includes(path.normalize(file))) {
             filename = file;
             // Try to extract line number from this stack line
             const lineMatch = line.match(/:(\d+):\d+\)/);
