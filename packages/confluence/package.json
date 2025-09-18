@@ -1,6 +1,6 @@
 {
   "name": "@confytome/confluence",
-  "version": "1.7.15",
+  "version": "1.7.16",
   "description": "Cross-platform Markdown to Confluence converter - converts .md files to Confluence-compatible HTML format and copies to clipboard for direct pasting.",
   "main": "standalone-generator.js",
   "bin": {

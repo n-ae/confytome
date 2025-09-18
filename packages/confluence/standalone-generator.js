@@ -89,6 +89,67 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
   }
 
   /**
+   * Copy clean markdown to clipboard (Pandoc-style for Confluence)
+   * @param {string} markdownPath - Path to markdown file
+   * @param {Object} options - Copy options
+   * @returns {Promise<GenerationResult>} Generation result
+   */
+  async copyMarkdownToClipboard(markdownPath, options = {}) {
+    this.log(`📋 Copying clean markdown to clipboard: ${markdownPath}`);
+
+    try {
+      // Normalize and validate path
+      const normalizedPath = path.normalize(markdownPath);
+      this.validateFileExists(normalizedPath, 'Markdown file');
+
+      // Read markdown content with UTF-8 encoding
+      const markdownContent = fs.readFileSync(normalizedPath, 'utf8');
+      this.log(`📖 Read markdown file: ${normalizedPath} (${markdownContent.length} characters)`);
+
+      // Copy clean markdown to clipboard (Pandoc-style)
+      let clipboardSuccess = false;
+      if (options.copyToClipboard !== false) {
+        try {
+          await clipboardy.write(markdownContent);
+          clipboardSuccess = true;
+          this.log('📋 Clean markdown copied to clipboard (Pandoc-style)');
+        } catch (error) {
+          this.log(`⚠️ Failed to copy to clipboard: ${error.message}`);
+        }
+      }
+
+      // Show usage instructions
+      this.showPandocUsageInstructions();
+
+      // Generate summary
+      const stats = {
+        originalSize: markdownContent.length,
+        processingTime: 0
+      };
+
+      this.log('\n📊 Copy Summary:');
+      this.log(`   Markdown: ${stats.originalSize} bytes`);
+      this.log('   Style: Pandoc-compatible');
+
+      return {
+        success: true,
+        outputPath: normalizedPath,
+        clipboardSuccess,
+        stats: {
+          ...stats,
+          clipboardCopied: clipboardSuccess
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        stats: { error: error.message }
+      };
+    }
+  }
+
+  /**
    * Convert markdown file to Confluence format and copy to clipboard
    * @param {string} markdownPath - Path to markdown file
    * @param {Object} options - Generation options
@@ -204,6 +265,20 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
   }
 
   /**
+   * Show usage instructions for Pandoc-style Confluence
+   */
+  showPandocUsageInstructions() {
+    this.log('');
+    this.log('📋 Clean markdown copied to clipboard (Pandoc-style)!');
+    this.log('💡 Usage Instructions:');
+    this.log('   1. Open Confluence page editor');
+    this.log('   2. Paste markdown content (Ctrl+V / Cmd+V)');
+    this.log('   3. Confluence will automatically format headers, tables, and code blocks');
+    this.log('   4. For best results: Use "Insert > Markup" if available');
+    this.log('   5. Tables and code blocks should render automatically');
+  }
+
+  /**
    * Show usage instructions for Confluence
    */
   showUsageInstructions() {
@@ -263,8 +338,8 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
 
         this.log(`✅ Markdown generated: ${markdownResult.outputPath}`);
 
-        // Convert the generated markdown
-        return this.convertMarkdownFile(markdownResult.outputPath, options);
+        // For Confluence, copy the clean markdown directly (Pandoc-style)
+        return this.copyMarkdownToClipboard(markdownResult.outputPath, options);
       } catch (error) {
         throw new Error(`Failed to generate from OpenAPI spec: ${error.message}`);
       }
