@@ -28,7 +28,7 @@ program
   .option('-o, --output <dir>', 'Output directory for generated files', './confytome')
   .option('--no-clipboard', 'Skip copying to clipboard')
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
-  .action(async (markdownPath, options) => {
+  .action(async(markdownPath, options) => {
     try {
       // Validate markdown file
       if (!markdownPath.toLowerCase().endsWith('.md')) {
@@ -67,7 +67,7 @@ program
       });
 
       if (result.success) {
-        console.log(`\n✅ Conversion completed successfully!`);
+        console.log('\n✅ Conversion completed successfully!');
         console.log(`📄 Output: ${result.outputPath}`);
         if (result.clipboardSuccess) {
           console.log('📋 Content copied to clipboard - ready to paste into Confluence');
@@ -93,7 +93,7 @@ program
   .option('-o, --output <path>', 'Output directory for generated files', './confytome')
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
   .option('--no-clipboard', 'Skip copying to clipboard')
-  .action(async (options) => {
+  .action(async(options) => {
     try {
       let specPath = options.spec;
 
@@ -129,7 +129,7 @@ program
       });
 
       if (result.success) {
-        console.log(`\n✅ Generation completed successfully!`);
+        console.log('\n✅ Generation completed successfully!');
         console.log(`📄 Output: ${result.outputPath}`);
         if (result.clipboardSuccess) {
           console.log('📋 Content copied to clipboard - ready to paste into Confluence');
@@ -149,7 +149,7 @@ program
   .command('validate')
   .description('Validate a Markdown file for Confluence conversion')
   .argument('<path>', 'Path to the Markdown file to validate')
-  .action(async (markdownPath) => {
+  .action(async(markdownPath) => {
     try {
       const normalizedPath = path.resolve(markdownPath);
       if (!fs.existsSync(normalizedPath)) {

@@ -49,7 +49,7 @@ export class MarkdownToConfluenceHTML {
 
     // Set marked options
     marked.setOptions({
-      renderer: renderer,
+      renderer,
       gfm: true, // GitHub Flavored Markdown
       breaks: false,
       pedantic: false,
@@ -143,7 +143,7 @@ EndFragment:0000000000
     const endFragment = startHtml + Buffer.from(fullHtml.substring(0, fragmentEnd), encoding).length;
 
     // Build final header with correct offsets
-    const header = `Version:1.0\r\n` +
+    const header = 'Version:1.0\r\n' +
                   `StartHTML:${startHtml.toString().padStart(10, '0')}\r\n` +
                   `EndHTML:${endHtml.toString().padStart(10, '0')}\r\n` +
                   `StartFragment:${startFragment.toString().padStart(10, '0')}\r\n` +
@@ -178,10 +178,10 @@ EndFragment:0000000000
 
       return {
         success: true,
-        html: html,
-        clipboardHTML: clipboardHTML,
+        html,
+        clipboardHTML,
         plainText: markdown, // Fallback plain text
-        stats: stats
+        stats
       };
     } catch (error) {
       return {
@@ -225,8 +225,8 @@ EndFragment:0000000000
 
     return {
       valid: errors.length === 0,
-      errors: errors,
-      warnings: warnings
+      errors,
+      warnings
     };
   }
 }

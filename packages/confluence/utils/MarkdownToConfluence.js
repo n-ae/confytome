@@ -91,10 +91,10 @@ export class MarkdownToConfluence {
         const cells = line.split('|').slice(1, -1).map(cell => cell.trim());
         if (index === 0) {
           // Header row
-          confluenceTable += '||' + cells.join('||') + '||\n';
+          confluenceTable += `||${cells.join('||')}||\n`;
         } else {
           // Data row
-          confluenceTable += '|' + cells.join('|') + '|\n';
+          confluenceTable += `|${cells.join('|')}|\n`;
         }
       });
 
@@ -117,12 +117,12 @@ export class MarkdownToConfluence {
     // Handle nested lists (simple approach)
     content = content.replace(/^(\s+)[\*\-]\s+(.+)$/gm, (match, indent, text) => {
       const level = Math.floor(indent.length / 2) + 1;
-      return '*'.repeat(level) + ' ' + text;
+      return `${'*'.repeat(level)} ${text}`;
     });
 
     content = content.replace(/^(\s+)\d+\.\s+(.+)$/gm, (match, indent, text) => {
       const level = Math.floor(indent.length / 2) + 1;
-      return '#'.repeat(level) + ' ' + text;
+      return `${'#'.repeat(level)} ${text}`;
     });
 
     return content;
@@ -209,7 +209,7 @@ export class MarkdownToConfluence {
    * @param {Object} options - Conversion options
    * @returns {Object} Conversion result with metadata
    */
-  convertDocument(markdown, options = {}) {
+  convertDocument(markdown, _options = {}) {
     const startTime = Date.now();
 
     // Extract title from first h1 if present

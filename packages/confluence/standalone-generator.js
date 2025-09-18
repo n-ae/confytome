@@ -47,9 +47,9 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
 
     // Check clipboard functionality
     try {
-      const testContent = await clipboardy.read();
+      const _testContent = await clipboardy.read();
       this.log('✅ Clipboard functionality available');
-    } catch (error) {
+    } catch {
       baseValidation.warnings.push('Clipboard functionality may not work in this environment');
     }
 
@@ -125,7 +125,7 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
 
       // Extract title for output file naming
       const title = this.converter.extractTitle(markdownContent);
-      const outputFileName = this.sanitizeFileName(title) + '.html';
+      const outputFileName = `${this.sanitizeFileName(title)}.html`;
       const outputPath = path.join(this.outputDir, outputFileName);
 
       // Write HTML file
@@ -142,7 +142,7 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
               await this.setWindowsClipboard(conversionResult.clipboardHTML, markdownContent);
               clipboardSuccess = true;
               this.log('📋 Content copied to clipboard (Windows HTML format)');
-            } catch (windowsError) {
+            } catch {
               // Fallback to simple text clipboard
               await clipboardy.write(conversionResult.html);
               clipboardSuccess = true;
@@ -164,7 +164,7 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
 
       // Generate summary
       const { stats } = conversionResult;
-      this.log(`\n📊 Conversion Summary:`);
+      this.log('\n📊 Conversion Summary:');
       this.log(`   Original: ${stats.originalSize} bytes`);
       this.log(`   HTML: ${stats.htmlSize} bytes`);
       this.log(`   Clipboard: ${stats.clipboardSize} bytes`);
@@ -172,9 +172,9 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
 
       return {
         success: true,
-        outputPath: outputPath,
-        clipboardSuccess: clipboardSuccess,
-        title: title,
+        outputPath,
+        clipboardSuccess,
+        title,
         stats: {
           ...stats,
           clipboardCopied: clipboardSuccess
@@ -194,7 +194,7 @@ export class StandaloneConfluenceGenerator extends StandaloneBase {
    * @param {string} htmlContent - HTML content with clipboard headers
    * @param {string} plainText - Plain text fallback
    */
-  async setWindowsClipboard(htmlContent, plainText) {
+  async setWindowsClipboard(htmlContent, _plainText) {
     // This is a placeholder for Windows-specific clipboard functionality
     // In a real implementation, you might use a native module like 'node-clipboard'
     // or shell commands specific to Windows
