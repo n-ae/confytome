@@ -19,8 +19,19 @@ export const DEFAULT_OUTPUT_DIR = './confytome';
  */
 export function getOutputDir(outputDir) {
   const dir = outputDir || DEFAULT_OUTPUT_DIR;
-  // Normalize path for cross-platform compatibility
-  return dir.includes('\\') || dir.includes('/') ? path.normalize(dir) : dir;
+
+  // For Windows backslash paths, normalize them
+  if (dir.includes('\\')) {
+    return path.normalize(dir);
+  }
+
+  // For simple relative paths like "./confytome", preserve the original format
+  // Only normalize complex paths that might have issues
+  if (dir.includes('/') && (dir.includes('../') || dir.includes('.//'))) {
+    return path.normalize(dir);
+  }
+
+  return dir;
 }
 
 
