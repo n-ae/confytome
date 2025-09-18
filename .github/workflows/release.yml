@@ -201,7 +201,7 @@ jobs:
     if: needs.detect-changes.outputs.should_release == 'true'
     strategy:
       matrix:
-        package: [core, markdown, html, swagger, postman, generator]
+        package: [core, markdown, html, swagger, postman, generator, confluence]
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
