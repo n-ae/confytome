@@ -20,6 +20,7 @@ program
   .option('-c, --config <path>', 'Config file for generating spec from JSDoc')
   .option('-o, --output <dir>', 'Output directory', './confytome')
   .option('--no-clipboard', 'Skip copying to clipboard')
+  .option('--no-brand', 'Exclude branding from generated documentation')
   .action(async(options) => {
     try {
       let specPath = options.spec;
@@ -37,7 +38,8 @@ program
 
       // Generate and copy to clipboard
       const generator = new StandaloneConfluenceGenerator(options.output, {
-        specPath: path.resolve(specPath)
+        specPath: path.resolve(specPath),
+        excludeBrand: !options.brand
       });
 
       const result = await generator.generate({

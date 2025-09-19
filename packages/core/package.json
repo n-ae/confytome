@@ -1,6 +1,6 @@
 {
   "name": "@confytome/core",
-  "version": "1.7.18",
+  "version": "1.7.19",
   "description": "Core plugin system and OpenAPI 3.0.3 generator from JSDoc comments. Plugin registry, service layer, and CLI for extensible API documentation generation.",
   "main": "generate-openapi.js",
   "exports": {
@@ -65,6 +65,7 @@
     "prepublishOnly": "npm run validate"
   },
   "dependencies": {
+    "commander": "^14.0.1",
     "glob": "^11.0.0",
     "swagger-jsdoc": "^6.2.8"
   }
