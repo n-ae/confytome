@@ -36,25 +36,15 @@
   "files": [
     "standalone-generator.js",
     "cli.js",
-    "utils/",
     "templates/",
     "README.md"
   ],
   "scripts": {
-    "test": "echo \"Tests in main confytome package\" && exit 0",
     "standalone": "node cli.js",
-    "lint": "eslint . --ext .js",
-    "format": "eslint . --ext .js --fix",
-    "clean": "rm -rf docs/* .cache",
-    "validate": "npm ls",
-    "prepublishOnly": "npm run validate"
-  },
-  "dependencies": {
-    "mustache": "^4.2.0",
-    "commander": "^14.0.1"
+    "prepublishOnly": "npm ls"
   },
   "peerDependencies": {
-    "@confytome/core": "^1.4.0"
+    "@confytome/core": "^1.7.0"
   },
   "peerDependenciesMeta": {
     "@confytome/core": {

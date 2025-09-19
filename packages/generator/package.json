@@ -13,10 +13,7 @@
     "regenerate:cli": "node scripts/regenerate-cli-files.js",
     "regenerate:readmes": "node scripts/regenerate-readmes.js",
     "regenerate:readmes:quality": "node scripts/validate-readme-quality.js",
-    "test": "echo \"Tests not implemented yet\" && exit 0"
-  },
-  "dependencies": {
-    "mustache": "^4.2.0"
+    "test": "echo \"No tests for generator package\" && exit 0"
   },
   "keywords": [
     "confytome",

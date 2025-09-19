@@ -8,7 +8,7 @@
  * See: .github/ANCHOR_HANDLING_FIX.md for background
  */
 
-import { OpenApiProcessor } from '../../markdown/utils/OpenApiProcessor.js';
+import { OpenApiProcessor } from '../utils/OpenApiProcessor.js';
 
 describe('UTF Character Preservation in Anchors', () => {
   const testCases = [

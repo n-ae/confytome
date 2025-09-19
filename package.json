@@ -24,7 +24,6 @@
     "regenerate:cli:validate": "npm run regenerate:cli -- --validate",
     "regenerate:readmes": "node packages/generator/scripts/regenerate-readmes.js",
     "regenerate:readmes:validate": "npm run regenerate:readmes -- --validate",
-    "regenerate:readmes:preview": "npm run regenerate:readmes -- --preview",
     "regenerate:readmes:quality": "node packages/generator/scripts/validate-readme-quality.js",
     "test:functionality": "node scripts/test-functionality.js",
     "test:standalone-markdown": "node tests/standalone-markdown.test.js",
@@ -58,6 +57,10 @@
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^14.0.1",
+    "mustache": "^4.2.0"
   },
   "devDependencies": {
     "cross-env": "^10.0.0",

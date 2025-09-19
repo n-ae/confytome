@@ -7,7 +7,7 @@
  */
 
 import path from 'node:path';
-import { StandaloneBase } from './utils/StandaloneBase.js';
+import { StandaloneBase } from '@confytome/core/utils/StandaloneBase.js';
 
 export class StandalonePostmanGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {

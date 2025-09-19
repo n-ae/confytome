@@ -5,8 +5,8 @@
  * Can run via "npx @confytome/html" without any core package dependencies.
  */
 
-import { StandaloneBase } from './utils/StandaloneBase.js';
-import { OpenApiProcessor } from './utils/OpenApiProcessor.js';
+import { StandaloneBase } from '@confytome/core/utils/StandaloneBase.js';
+import { OpenApiProcessor } from '@confytome/core/utils/OpenApiProcessor.js';
 
 export class StandaloneHtmlGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {

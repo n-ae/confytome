@@ -1,7 +1,7 @@
 {
   "name": "@confytome/confluence",
   "version": "1.7.16",
-  "description": "Cross-platform Markdown to Confluence converter - converts .md files to Confluence-compatible HTML format and copies to clipboard for direct pasting.",
+  "description": "Cross-platform Pandoc-style Markdown generator for Confluence - generates clean markdown from OpenAPI specs and copies to clipboard for direct pasting.",
   "main": "standalone-generator.js",
   "bin": {
     "confytome-confluence": "./cli.js"
@@ -37,27 +37,19 @@
   "files": [
     "standalone-generator.js",
     "cli.js",
-    "utils/",
-    "templates/",
     "README.md"
   ],
   "scripts": {
-    "test": "echo \"Tests in main confytome package\" && exit 0",
     "standalone": "node cli.js",
-    "lint": "eslint . --ext .js",
-    "format": "eslint . --ext .js --fix",
-    "clean": "rm -rf docs/* .cache",
-    "validate": "npm ls",
-    "prepublishOnly": "npm run validate"
+    "prepublishOnly": "npm ls"
   },
   "dependencies": {
-    "commander": "^14.0.1",
     "clipboardy": "^4.0.0",
     "marked": "^12.0.0",
     "@confytome/markdown": "^1.7.6"
   },
   "peerDependencies": {
-    "@confytome/core": "^1.4.0"
+    "@confytome/core": "^1.7.0"
   },
   "peerDependenciesMeta": {
     "@confytome/core": {

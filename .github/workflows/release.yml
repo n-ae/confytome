@@ -199,9 +199,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [detect-changes, test, create-release]
     if: needs.detect-changes.outputs.should_release == 'true'
-    strategy:
-      matrix:
-        package: [core, markdown, html, swagger, postman, generator, confluence]
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -216,25 +213,41 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build package
+      - name: Publish packages to NPM
         run: |
-          cd packages/${{ matrix.package }}
-          npm run build --if-present
-          npm run prepare --if-present
+          for package_dir in packages/*/; do
+            package_name=$(basename "$package_dir")
+            echo "Processing package: $package_name"
 
-      - name: Publish to NPM
-        run: |
-          cd packages/${{ matrix.package }}
-          # Check if package is already published at this version
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
-          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+            cd "$package_dir"
 
-          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null; then
-            echo "Package $PACKAGE_NAME@$PACKAGE_VERSION already published, skipping..."
-          else
-            echo "Publishing $PACKAGE_NAME@$PACKAGE_VERSION..."
-            npm publish --access public
-          fi
+            # Check if package.json exists and is not private
+            if [ -f "package.json" ]; then
+              IS_PRIVATE=$(node -p "require('./package.json').private || false")
+              if [ "$IS_PRIVATE" == "true" ]; then
+                echo "Package $package_name is private, skipping..."
+                cd - > /dev/null
+                continue
+              fi
+
+              # Build package if scripts exist
+              npm run build --if-present
+              npm run prepare --if-present
+
+              # Check if package is already published at this version
+              PACKAGE_NAME=$(node -p "require('./package.json').name")
+              PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+              if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null; then
+                echo "Package $PACKAGE_NAME@$PACKAGE_VERSION already published, skipping..."
+              else
+                echo "Publishing $PACKAGE_NAME@$PACKAGE_VERSION..."
+                npm publish --access public
+              fi
+            fi
+
+            cd - > /dev/null
+          done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

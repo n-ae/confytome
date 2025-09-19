@@ -10,8 +10,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { default as Mustache } from 'mustache';
-import { StandaloneBase } from './utils/StandaloneBase.js';
-import { OpenApiProcessor } from './utils/OpenApiProcessor.js';
+import { StandaloneBase } from '@confytome/core/utils/StandaloneBase.js';
+import { OpenApiProcessor } from '@confytome/core/utils/OpenApiProcessor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
