@@ -1,0 +1,34 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Test API",
+    "version": "1.0.0",
+    "description": "A simple test API for testing confluence generator"
+  },
+  "paths": {
+    "/test": {
+      "get": {
+        "summary": "Test endpoint",
+        "description": "Returns a test message",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Hello World"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

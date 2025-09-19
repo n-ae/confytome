@@ -45,8 +45,9 @@
   },
   "dependencies": {
     "clipboardy": "^4.0.0",
-    "marked": "^12.0.0",
-    "@confytome/markdown": "^1.7.6"
+    "marked": "^16.3.0",
+    "commander": "^14.0.1",
+    "@confytome/markdown": "^1.7.17"
   },
   "peerDependencies": {
     "@confytome/core": "^1.7.0"

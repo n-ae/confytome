@@ -1,0 +1,6 @@
+{
+  "serverConfig": "serverConfig.json",
+  "routeFiles": [
+    "test-routes.js"
+  ]
+}

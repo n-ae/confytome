@@ -42,7 +42,8 @@
     "prepublishOnly": "npm ls"
   },
   "dependencies": {
-    "swagger-ui-dist": "^5.29.0"
+    "swagger-ui-dist": "^5.29.0",
+    "commander": "^14.0.1"
   },
   "peerDependencies": {
     "@confytome/core": "^1.7.0"
