@@ -301,13 +301,95 @@ export class OpenApiProcessor {
   processParameters(parameters) {
     return parameters
       .filter(param => param.in !== 'header') // Filter out header params for main params table
-      .map(param => ({
-        name: param.name || '',
-        in: param.in || '',
-        type: this.getParameterType(param.schema),
-        required: param.required || false,
-        description: this.getParameterDescription(param)
-      }));
+      .map(param => {
+        const processedParam = {
+          name: param.name || '',
+          in: param.in || '',
+          type: this.getParameterType(param.schema),
+          required: param.required || false,
+          description: this.getParameterDescription(param)
+        };
+
+        // Extract examples if available
+        if (param.examples || param.example || param.schema?.example) {
+          processedParam.examples = this.extractParameterExamples(param);
+          processedParam.hasExamples = processedParam.examples.length > 0;
+        }
+
+        return processedParam;
+      });
+  }
+
+  /**
+   * Extract examples from parameter object
+   * @param {Object} param - OpenAPI parameter object
+   * @returns {Array} Array of example objects
+   */
+  extractParameterExamples(param) {
+    const examples = [];
+
+    // Handle multiple examples (OpenAPI 3.0 format)
+    if (param.examples && typeof param.examples === 'object') {
+      Object.entries(param.examples).forEach(([key, example]) => {
+        let exampleValue;
+
+        // Handle different example formats
+        if (example && typeof example === 'object') {
+          if (example.value !== undefined) {
+            exampleValue = example.value;
+          } else if (example.$ref) {
+            // Skip $ref examples for now - they need component resolution
+            return;
+          } else {
+            exampleValue = example;
+          }
+        } else {
+          exampleValue = example;
+        }
+
+        // Convert objects to JSON string for display
+        if (typeof exampleValue === 'object') {
+          exampleValue = JSON.stringify(exampleValue, null, 2);
+        }
+
+        examples.push({
+          name: key,
+          summary: example.summary || key,
+          description: example.description || '',
+          value: exampleValue
+        });
+      });
+    }
+
+    // Handle single example (OpenAPI 2.0 format or simple example)
+    if (param.example !== undefined) {
+      let exampleValue = param.example;
+      if (typeof exampleValue === 'object') {
+        exampleValue = JSON.stringify(exampleValue, null, 2);
+      }
+      examples.push({
+        name: 'example',
+        summary: 'Example',
+        description: 'Parameter example',
+        value: exampleValue
+      });
+    }
+
+    // Handle schema example
+    if (param.schema?.example !== undefined) {
+      let exampleValue = param.schema.example;
+      if (typeof exampleValue === 'object') {
+        exampleValue = JSON.stringify(exampleValue, null, 2);
+      }
+      examples.push({
+        name: 'schema_example',
+        summary: 'Schema Example',
+        description: 'Example from parameter schema',
+        value: exampleValue
+      });
+    }
+
+    return examples;
   }
 
   /**

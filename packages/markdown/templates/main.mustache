@@ -61,6 +61,20 @@ Authorization: Bearer <your-token>
 {{#parameters}}
 | {{{name}}} | {{{in}}} | {{{type}}} | {{#required}}Yes{{/required}}{{^required}}No{{/required}} | {{{description}}} |
 {{/parameters}}
+
+{{#parameters}}
+{{#hasExamples}}
+#### Parameter Examples for `{{{name}}}`
+
+{{#examples}}
+**{{{summary}}}**{{#description}} - {{{description}}}{{/description}}
+```
+{{{value}}}
+```
+
+{{/examples}}
+{{/hasExamples}}
+{{/parameters}}
 {{/parameters.length}}
 
 {{#requestBody}}
