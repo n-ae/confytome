@@ -162,7 +162,7 @@ export class OpenApiProcessor {
   }
 
   /**
-   * Group endpoints by resource (first path segment)
+   * Group endpoints by tag (first tag) or fallback to resource (first path segment)
    * @param {Object} paths - OpenAPI paths object
    * @param {Object} spec - Full OpenAPI specification
    * @returns {Array} Grouped resources
@@ -171,24 +171,34 @@ export class OpenApiProcessor {
     const resources = new Map();
 
     for (const [path, pathItem] of Object.entries(paths)) {
-      const resourceName = this.extractResourceName(path);
-
-      if (!resources.has(resourceName)) {
-        resources.set(resourceName, {
-          name: this.toPascalCase(resourceName),
-          description: '',
-          endpoints: []
-        });
-      }
-
       for (const [method, operation] of Object.entries(pathItem)) {
         if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
           try {
+            // Use first tag if available, otherwise fallback to path-based resource name
+            const resourceName = this.getResourceName(path, operation);
+
+            if (!resources.has(resourceName)) {
+              const authKeywords = ['authentication', 'authorization', 'auth'];
+              const isAuthResource = authKeywords.some(keyword =>
+                resourceName.toLowerCase().includes(keyword)
+              );
+
+              const pascalName = this.toPascalCase(resourceName);
+              resources.set(resourceName, {
+                name: pascalName,
+                description: this.getTagDescription(resourceName, spec),
+                isAuthenticationResource: isAuthResource,
+                anchor: this.createAnchor('', '', pascalName),
+                endpoints: []
+              });
+            }
+            const endpointSummary = operation.summary || `${method.toUpperCase()} ${path}`;
             const endpoint = {
               method: method.toUpperCase(),
               path,
-              summary: operation.summary || `${method.toUpperCase()} ${path}`,
+              summary: endpointSummary,
               description: operation.description || '',
+              anchor: this.createAnchor(method, path, endpointSummary),
               parameters: this.processWithContext(`parameters for ${method.toUpperCase()} ${path}`,
                 () => this.processParameters(operation.parameters || [])),
               requestBody: this.processWithContext(`request body for ${method.toUpperCase()} ${path}`,
@@ -210,7 +220,23 @@ export class OpenApiProcessor {
       }
     }
 
-    return Array.from(resources.values());
+    const sortedResources = Array.from(resources.values()).sort((a, b) => {
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+
+      // Authentication/Authorization always comes first
+      const authKeywords = ['authentication', 'authorization', 'auth'];
+      const aIsAuth = authKeywords.some(keyword => aName.includes(keyword));
+      const bIsAuth = authKeywords.some(keyword => bName.includes(keyword));
+
+      if (aIsAuth && !bIsAuth) return -1;
+      if (!aIsAuth && bIsAuth) return 1;
+
+      // Otherwise, sort alphabetically
+      return aName.localeCompare(bName);
+    });
+
+    return sortedResources;
   }
 
   /**
@@ -221,6 +247,35 @@ export class OpenApiProcessor {
   extractResourceName(path) {
     const segments = path.split('/').filter(segment => segment && !segment.startsWith('{'));
     return segments[0] || 'API';
+  }
+
+  /**
+   * Get resource name based on first tag or fallback to path-based extraction
+   * @param {string} path - API path
+   * @param {Object} operation - OpenAPI operation object
+   * @returns {string} Resource name
+   */
+  getResourceName(path, operation) {
+    // Use first tag if available
+    if (operation.tags && operation.tags.length > 0) {
+      return operation.tags[0];
+    }
+
+    // Fallback to path-based resource name
+    return this.extractResourceName(path);
+  }
+
+  /**
+   * Get tag description from OpenAPI spec
+   * @param {string} tagName - Tag name
+   * @param {Object} spec - Full OpenAPI specification
+   * @returns {string} Tag description
+   */
+  getTagDescription(tagName, spec) {
+    if (!spec.tags) return '';
+
+    const tag = spec.tags.find(t => t.name === tagName);
+    return tag ? tag.description || '' : '';
   }
 
   /**

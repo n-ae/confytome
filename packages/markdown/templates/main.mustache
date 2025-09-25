@@ -22,21 +22,11 @@
 
 ## Quick Reference
 
-{{#endpoints}}
-- [{{{method}}} {{{path}}}](#{{{anchor}}}) - {{{summary}}}
+{{#resources}}
+- **[{{{name}}}](#{{{anchor}}})**
+{{#endpoints}}  - [{{{summary}}}](#{{{anchor}}})
 {{/endpoints}}
-
-{{#hasAuth}}
-# Authentication
-
-This API uses JWT Bearer token authentication.
-
-## Header Example
-```
-Authorization: Bearer <your-token>
-```
-
-{{/hasAuth}}
+{{/resources}}
 
 {{#resources}}
 # {{{name}}}
@@ -44,6 +34,15 @@ Authorization: Bearer <your-token>
 {{#description}}{{{description}}}
 
 {{/description}}
+{{#isAuthenticationResource}}{{#hasAuth}}
+This API uses JWT Bearer token authentication.
+
+## Header Example
+```
+Authorization: Bearer <your-token>
+```
+
+{{/hasAuth}}{{/isAuthenticationResource}}
 {{#endpoints}}
 ## {{{summary}}}
 
