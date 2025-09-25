@@ -12,6 +12,7 @@ import {
   isValidOpenAPISpec
 } from './test-helpers.js';
 import { OUTPUT_FILES, DEFAULT_OUTPUT_DIR } from '../constants.js';
+import { OpenApiProcessor } from '../utils/OpenApiProcessor.js';
 
 describe('confytome openapi', () => {
   let testEnv;
@@ -152,5 +153,131 @@ describe('confytome openapi', () => {
     const spec = JSON.parse(testEnv.readFile(`${DEFAULT_OUTPUT_DIR}/${OUTPUT_FILES.OPENAPI_SPEC}`));
     expect(spec.paths['/api/users']).toBeDefined();
     expect(spec.paths['/api/posts']).toBeDefined();
+  });
+});
+
+describe('OpenApiProcessor parameter examples', () => {
+  let processor;
+
+  beforeEach(() => {
+    processor = new OpenApiProcessor();
+  });
+
+  test('should extract parameter examples with summary and description', () => {
+    const param = {
+      name: 'userId',
+      examples: {
+        valid_user: {
+          summary: 'Valid user ID',
+          description: 'A typical user ID that exists in the system',
+          value: 12345
+        },
+        admin_user: {
+          summary: 'Admin user ID',
+          description: 'An admin user with special permissions',
+          value: 1
+        }
+      }
+    };
+
+    const examples = processor.extractParameterExamples(param);
+
+    expect(examples).toHaveLength(2);
+    expect(examples[0]).toEqual({
+      name: 'valid_user',
+      summary: 'Valid user ID',
+      description: 'A typical user ID that exists in the system',
+      value: 12345
+    });
+    expect(examples[1]).toEqual({
+      name: 'admin_user',
+      summary: 'Admin user ID',
+      description: 'An admin user with special permissions',
+      value: 1
+    });
+  });
+
+  test('should handle examples without summary or description', () => {
+    const param = {
+      name: 'status',
+      examples: {
+        active: {
+          value: 'active'
+        }
+      }
+    };
+
+    const examples = processor.extractParameterExamples(param);
+
+    expect(examples).toHaveLength(1);
+    expect(examples[0]).toEqual({
+      name: 'active',
+      summary: 'active',
+      description: '',
+      value: 'active'
+    });
+  });
+
+  test('should handle object examples by serializing to JSON', () => {
+    const param = {
+      name: 'filter',
+      examples: {
+        user_search: {
+          summary: 'Search for users',
+          value: {
+            status: 'active',
+            role: ['admin', 'moderator']
+          }
+        }
+      }
+    };
+
+    const examples = processor.extractParameterExamples(param);
+
+    expect(examples).toHaveLength(1);
+    expect(examples[0].name).toBe('user_search');
+    expect(examples[0].summary).toBe('Search for users');
+    expect(examples[0].value).toBe('{\n  "status": "active",\n  "role": [\n    "admin",\n    "moderator"\n  ]\n}');
+  });
+
+  test('should skip $ref examples', () => {
+    const param = {
+      name: 'userId',
+      examples: {
+        valid_user: {
+          $ref: '#/components/examples/ValidUser'
+        },
+        direct_value: {
+          value: 123
+        }
+      }
+    };
+
+    const examples = processor.extractParameterExamples(param);
+
+    expect(examples).toHaveLength(1);
+    expect(examples[0].name).toBe('direct_value');
+    expect(examples[0].value).toBe(123);
+  });
+
+  test('should return empty array when no examples exist', () => {
+    const param = {
+      name: 'userId'
+    };
+
+    const examples = processor.extractParameterExamples(param);
+
+    expect(examples).toHaveLength(0);
+  });
+
+  test('should return empty array when examples is not an object', () => {
+    const param = {
+      name: 'userId',
+      examples: 'not-an-object'
+    };
+
+    const examples = processor.extractParameterExamples(param);
+
+    expect(examples).toHaveLength(0);
   });
 });
