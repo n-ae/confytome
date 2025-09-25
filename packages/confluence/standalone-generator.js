@@ -48,7 +48,8 @@ export class StandaloneConfluenceGenerator {
         const { StandaloneMarkdownGenerator } = await import('@confytome/markdown');
         const markdownGenerator = new StandaloneMarkdownGenerator(this.outputDir, {
           specPath: this.options.specPath,
-          excludeBrand: this.options.excludeBrand
+          excludeBrand: this.options.excludeBrand,
+          urlEncodeAnchors: this.options.urlEncodeAnchors
         });
 
         const result = await markdownGenerator.generate();
