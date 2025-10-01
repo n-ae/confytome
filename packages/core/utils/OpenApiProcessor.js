@@ -193,6 +193,7 @@ export class OpenApiProcessor {
               });
             }
             const endpointSummary = operation.summary || `${method.toUpperCase()} ${path}`;
+            const mergedParams = this.mergeParameters(pathItem.parameters, operation.parameters, spec);
             const endpoint = {
               method: method.toUpperCase(),
               path,
@@ -200,15 +201,15 @@ export class OpenApiProcessor {
               description: operation.description || '',
               anchor: this.createAnchor(method, path, endpointSummary),
               parameters: this.processWithContext(`parameters for ${method.toUpperCase()} ${path}`,
-                () => this.processParameters(operation.parameters || [])),
+                () => this.processParameters(mergedParams)),
               requestBody: this.processWithContext(`request body for ${method.toUpperCase()} ${path}`,
                 () => this.processRequestBody(operation.requestBody)),
               responses: this.processWithContext(`responses for ${method.toUpperCase()} ${path}`,
                 () => this.processResponses(operation.responses || {})),
               baseUrl: this.getOperationServerUrl(operation, spec),
-              queryString: this.buildQueryString(operation.parameters || []),
+              queryString: this.buildQueryString(mergedParams),
               hasContentType: !!operation.requestBody,
-              headers: this.processHeaders(operation.parameters || [], operation, spec),
+              headers: this.processHeaders(mergedParams, operation, spec),
               requestBodyExample: this.getRequestBodyExample(operation.requestBody)
             };
 
@@ -300,7 +301,6 @@ export class OpenApiProcessor {
    */
   processParameters(parameters) {
     return parameters
-      .filter(param => param.in !== 'header') // Filter out header params for main params table
       .map(param => {
         const processedParam = {
           name: param.name || '',
@@ -1102,5 +1102,61 @@ export class OpenApiProcessor {
 
     this._anchorCache.set(cacheKey, anchor);
     return anchor;
+  }
+
+  resolveRef(ref, spec) {
+    if (!ref || !ref.startsWith('#/')) {
+      return null;
+    }
+
+    const parts = ref.substring(2).split('/');
+    let current = spec;
+
+    for (const part of parts) {
+      if (!current || typeof current !== 'object') {
+        return null;
+      }
+      current = current[part];
+    }
+
+    return current;
+  }
+
+  resolveParameters(params = [], spec) {
+    if (!params) return [];
+
+    return params.map(param => {
+      if (param.$ref) {
+        const resolved = this.resolveRef(param.$ref, spec);
+        return resolved || param;
+      }
+      return param;
+    });
+  }
+
+  mergeParameters(pathLevelParams = [], operationLevelParams = [], spec) {
+    const resolvedPathParams = this.resolveParameters(pathLevelParams, spec);
+    const resolvedOpParams = this.resolveParameters(operationLevelParams, spec);
+
+    const merged = [...resolvedPathParams];
+    const pathParamKeys = new Set(
+      resolvedPathParams.map(p => `${p.name}:${p.in}`.toLowerCase())
+    );
+
+    for (const param of resolvedOpParams) {
+      const key = `${param.name}:${param.in}`.toLowerCase();
+      if (pathParamKeys.has(key)) {
+        const index = merged.findIndex(
+          p => `${p.name}:${p.in}`.toLowerCase() === key
+        );
+        if (index !== -1) {
+          merged[index] = param;
+        }
+      } else {
+        merged.push(param);
+      }
+    }
+
+    return merged;
   }
 }
