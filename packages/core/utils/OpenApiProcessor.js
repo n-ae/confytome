@@ -11,6 +11,7 @@ export class OpenApiProcessor {
       excludeBrand: false,
       version: 'unknown',
       baseUrl: '',
+      tagOrder: [],
       ...options
     };
 
@@ -162,7 +163,7 @@ export class OpenApiProcessor {
   }
 
   /**
-   * Group endpoints by tag (first tag) or fallback to resource (first path segment)
+   * Group endpoints by tag (first tag)
    * @param {Object} paths - OpenAPI paths object
    * @param {Object} spec - Full OpenAPI specification
    * @returns {Array} Grouped resources
@@ -174,20 +175,14 @@ export class OpenApiProcessor {
       for (const [method, operation] of Object.entries(pathItem)) {
         if (['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(method)) {
           try {
-            // Use first tag if available, otherwise fallback to path-based resource name
+            // Use first tag (tags are required)
             const resourceName = this.getResourceName(path, operation);
 
             if (!resources.has(resourceName)) {
-              const authKeywords = ['authentication', 'authorization', 'auth'];
-              const isAuthResource = authKeywords.some(keyword =>
-                resourceName.toLowerCase().includes(keyword)
-              );
-
               const pascalName = this.toPascalCase(resourceName);
               resources.set(resourceName, {
                 name: pascalName,
                 description: this.getTagDescription(resourceName, spec),
-                isAuthenticationResource: isAuthResource,
                 anchor: this.createAnchor('', '', pascalName),
                 endpoints: []
               });
@@ -225,13 +220,22 @@ export class OpenApiProcessor {
       const aName = a.name.toLowerCase();
       const bName = b.name.toLowerCase();
 
-      // Authentication/Authorization always comes first
-      const authKeywords = ['authentication', 'authorization', 'auth'];
-      const aIsAuth = authKeywords.some(keyword => aName.includes(keyword));
-      const bIsAuth = authKeywords.some(keyword => bName.includes(keyword));
+      // Use configured tag order if provided
+      const tagOrder = (this.options.tagOrder || []).map(tag => tag.toLowerCase());
 
-      if (aIsAuth && !bIsAuth) return -1;
-      if (!aIsAuth && bIsAuth) return 1;
+      const aIndex = tagOrder.indexOf(aName);
+      const bIndex = tagOrder.indexOf(bName);
+
+      // If both are in tagOrder, sort by their position
+      if (aIndex !== -1 && bIndex !== -1) {
+        return aIndex - bIndex;
+      }
+
+      // If only a is in tagOrder, it comes first
+      if (aIndex !== -1) return -1;
+
+      // If only b is in tagOrder, it comes first
+      if (bIndex !== -1) return 1;
 
       // Otherwise, sort alphabetically
       return aName.localeCompare(bName);
@@ -241,29 +245,19 @@ export class OpenApiProcessor {
   }
 
   /**
-   * Extract resource name from path
-   * @param {string} path - API path
-   * @returns {string} Resource name
-   */
-  extractResourceName(path) {
-    const segments = path.split('/').filter(segment => segment && !segment.startsWith('{'));
-    return segments[0] || 'API';
-  }
-
-  /**
-   * Get resource name based on first tag or fallback to path-based extraction
+   * Get resource name from first tag
    * @param {string} path - API path
    * @param {Object} operation - OpenAPI operation object
    * @returns {string} Resource name
    */
   getResourceName(path, operation) {
-    // Use first tag if available
+    // Use first tag (tags are now required)
     if (operation.tags && operation.tags.length > 0) {
       return operation.tags[0];
     }
 
-    // Fallback to path-based resource name
-    return this.extractResourceName(path);
+    // No fallback - tags are required
+    throw new Error(`Operation ${operation.summary || path} must have at least one tag defined`);
   }
 
   /**
@@ -440,7 +434,6 @@ export class OpenApiProcessor {
       contentType: selectedContentType,
       examples,
       hasExamples: examples.length > 0,
-      example: examples.length > 0 ? examples[0].value : null, // Backward compatibility
       properties,
       hasProperties: properties.length > 0,
       availableContentTypes: availableContentTypes.length > 1 ? availableContentTypes : null
@@ -698,7 +691,6 @@ export class OpenApiProcessor {
         contentType: selectedContentType,
         examples,
         hasExamples: examples.length > 0,
-        example: examples.length > 0 ? examples[0].value : null, // Backward compatibility
         headers,
         hasHeaders: headers.length > 0,
         availableContentTypes: availableContentTypes.length > 1 ? availableContentTypes : null

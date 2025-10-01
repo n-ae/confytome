@@ -659,7 +659,6 @@ class StandaloneMarkdownTest {
         'Has response codes': ['200', '201', '400', '401', '404'].some(code => content.includes(code)),
         'Has curl examples': content.includes('curl -X'),
         'Has schema documentation': content.includes('## User'),
-        'Has authentication info': content.includes('Bearer token'),
         'Proper line endings': !content.includes('\r\n'), // Unix line endings
         'No template artifacts': !content.includes('{{') && !content.includes('}}'),
         'Has contact information': content.includes('test@example.com')

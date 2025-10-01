@@ -102,7 +102,8 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
         excludeBrand: this.options.excludeBrand,
         version: this.getInfo().version,
         baseUrl: this.getBaseUrl(spec.servers),
-        urlEncodeAnchors: this.options.urlEncodeAnchors !== false // Default to true
+        urlEncodeAnchors: this.options.urlEncodeAnchors !== false, // Default to true
+        tagOrder: this.options.tagOrder || spec.tags?.map(tag => tag.name) || []
       };
 
       // Process OpenAPI spec into template data

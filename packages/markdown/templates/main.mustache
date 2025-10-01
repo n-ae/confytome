@@ -34,15 +34,6 @@
 {{#description}}{{{description}}}
 
 {{/description}}
-{{#isAuthenticationResource}}{{#hasAuth}}
-This API uses JWT Bearer token authentication.
-
-## Header Example
-```
-Authorization: Bearer <your-token>
-```
-
-{{/hasAuth}}{{/isAuthenticationResource}}
 {{#endpoints}}
 ## {{{summary}}}
 
@@ -115,15 +106,6 @@ Authorization: Bearer <your-token>
 
 {{/examples}}
 {{/hasExamples}}
-{{^hasExamples}}
-{{#example}}
-#### Request Body
-```json
-{{{example}}}
-```
-
-{{/example}}
-{{/hasExamples}}
 {{/requestBody}}
 
 ### Responses
@@ -157,15 +139,6 @@ Authorization: Bearer <your-token>
 ```
 
 {{/examples}}
-{{/hasExamples}}
-{{^hasExamples}}
-{{#example}}
-**Response Body:**
-```json
-{{{example}}}
-```
-
-{{/example}}
 {{/hasExamples}}
 
 {{/responses}}

@@ -75,7 +75,8 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
       const processorOptions = {
         excludeBrand: this.options.excludeBrand,
         version: this.getInfo().version,
-        baseUrl: this.getBaseUrl(spec.servers)
+        baseUrl: this.getBaseUrl(spec.servers),
+        tagOrder: this.options.tagOrder || spec.tags?.map(tag => tag.name) || []
       };
 
       // Process OpenAPI spec into template data

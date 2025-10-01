@@ -49,7 +49,8 @@ export class StandaloneConfluenceGenerator {
         const markdownGenerator = new StandaloneMarkdownGenerator(this.outputDir, {
           specPath: this.options.specPath,
           excludeBrand: this.options.excludeBrand,
-          urlEncodeAnchors: this.options.urlEncodeAnchors
+          urlEncodeAnchors: this.options.urlEncodeAnchors,
+          tagOrder: this.options.tagOrder
         });
 
         const result = await markdownGenerator.generate();
