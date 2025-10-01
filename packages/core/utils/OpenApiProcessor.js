@@ -1117,13 +1117,25 @@ export class OpenApiProcessor {
   resolveParameters(params = [], spec) {
     if (!params) return [];
 
-    return params.map(param => {
+    const result = [];
+
+    for (const param of params) {
       if (param.$ref) {
         const resolved = this.resolveRef(param.$ref, spec);
-        return resolved || param;
+
+        // If resolved is an array (parameterGroup), recursively resolve its items
+        if (Array.isArray(resolved)) {
+          const nestedResolved = this.resolveParameters(resolved, spec);
+          result.push(...nestedResolved);
+        } else {
+          result.push(resolved || param);
+        }
+      } else {
+        result.push(param);
       }
-      return param;
-    });
+    }
+
+    return result;
   }
 
   mergeParameters(pathLevelParams = [], operationLevelParams = [], spec) {
