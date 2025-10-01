@@ -176,8 +176,8 @@ Authorization: Bearer <your-token>
 curl -X {{{method}}} \
   {{{baseUrl}}}{{{path}}}{{#queryString}}{{{queryString}}}{{/queryString}}{{#hasContentType}} \
   -H 'Content-Type: application/json' \
-  -H 'Accept: application/json'{{/hasContentType}}{{#headers}}{{#headers}} \
-  -H '{{{name}}}: {{{example}}}'{{/headers}}{{/headers}}{{#requestBodyExample}} \
+  -H 'Accept: application/json'{{/hasContentType}}{{#headers}} \
+  -H '{{{name}}}: {{{example}}}'{{/headers}}{{#requestBodyExample}} \
   -d '{{{requestBodyExample}}}'{{/requestBodyExample}}
 ```
 

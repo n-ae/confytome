@@ -931,10 +931,17 @@ export class OpenApiProcessor {
       }));
 
     // Add authorization headers if operation requires authentication
+    // and Authorization header is not already explicitly defined in parameters
     if (this.operationRequiresAuth(operation, spec)) {
       const authHeader = this.getAuthorizationHeader(spec);
       if (authHeader) {
-        headers.push(authHeader);
+        // Only add if not already present in headers
+        const hasAuthHeader = headers.some(h =>
+          h.name.toLowerCase() === authHeader.name.toLowerCase()
+        );
+        if (!hasAuthHeader) {
+          headers.push(authHeader);
+        }
       }
     }
 
