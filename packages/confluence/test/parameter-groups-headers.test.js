@@ -165,9 +165,6 @@ describe('Confluence Generator - Parameter Groups with Headers', () => {
     // Extract curl command section
     const curlSection = markdownContent.split('```shell')[1].split('```')[0];
 
-    // Count ALL -H occurrences (including Content-Type, Accept, etc.)
-    const allHeaderLines = (curlSection.match(/-H /g) || []).length;
-
     // Count specific headers
     const apiKeyCount = (curlSection.match(/X-API-Key/g) || []).length;
     const clientIdCount = (curlSection.match(/X-Client-Id/g) || []).length;
