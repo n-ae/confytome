@@ -40,14 +40,14 @@ describe('confytome integration pipeline', () => {
 
     const spec = JSON.parse(specContent);
     expect(spec.info.title).toContain('Test');
-    expect(spec.openapi).toBe('3.0.3');
+    expect(spec.openapi).toBe('3.1.0');
   });
 
   test('pipeline handles missing dependencies gracefully', async() => {
     // Setup minimal config without required fields
     testEnv.createFile('serverConfig.json', JSON.stringify({
       info: { title: 'Test', version: '1.0.0' },
-      openapi: '3.0.3'
+      openapi: '3.1.0'
       // Missing servers field
     }));
     testEnv.createFile('test-router.js', SAMPLE_ROUTER_JS);

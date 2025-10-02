@@ -24,7 +24,7 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
   static getMetadata() {
     return MetadataFactory.createOpenAPIGeneratorMetadata(
       'core',
-      'OpenAPI 3.0.3 specification generator from JSDoc comments',
+      'OpenAPI 3.1.0 specification generator from JSDoc comments',
       'OpenAPIGenerator',
       ['api-spec.json']
     );
@@ -234,7 +234,7 @@ class OpenAPIGenerator extends OpenAPIGeneratorBase {
     if (error.message.includes('Unexpected token') || error.message.includes('SyntaxError')) {
       enhancedMessage += '\n💡 Tip: Check for malformed JSDoc comments or invalid YAML/JSON in @swagger annotations';
     } else if (error.message.includes('swagger') || error.message.includes('openapi')) {
-      enhancedMessage += '\n💡 Tip: Verify @swagger JSDoc annotations follow OpenAPI 3.0.3 specification';
+      enhancedMessage += '\n💡 Tip: Verify @swagger JSDoc annotations follow OpenAPI 3.1.0 specification';
     }
 
     const enhancedError = new Error(enhancedMessage);

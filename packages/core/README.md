@@ -8,12 +8,12 @@
 [![Node](https://img.shields.io/node/v/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
 [![License](https://img.shields.io/npm/l/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
 
-Core plugin system and OpenAPI 3.0.3 generator from JSDoc comments. Plugin registry, service layer, and CLI for extensible API documentation generation.
+Core plugin system and OpenAPI 3.1.0 generator from JSDoc comments. Plugin registry, service layer, and CLI for extensible API documentation generation.
 
 ## ✨ Core Features
 
 - 🔌 **Plugin Registry System** - Automatic generator discovery and management
-- 📊 **OpenAPI 3.0.3 Generation** - JSDoc to OpenAPI specification conversion
+- 📊 **OpenAPI 3.1.0 Generation** - JSDoc to OpenAPI specification conversion
 - 🎯 **Service Layer** - Centralized branding, versioning, and templating
 - 🔧 **CLI Interface** - Comprehensive command-line tools
 - 📝 **Project Initialization** - Quick project setup with templates
@@ -120,7 +120,7 @@ The core package implements a **plugin-based approach with automatic discovery a
 
 | File | Description | Size |
 |------|-------------|------|
-| `api-spec.json` | OpenAPI 3.0.3 specification | ~25KB |
+| `api-spec.json` | OpenAPI 3.1.0 specification | ~25KB |
 | `confytome.json` | Project configuration | ~1KB |
 | `serverConfig.json` | API server configuration | ~2KB |
 

@@ -52,7 +52,7 @@ describe('confytome openapi', () => {
     expect(isValidOpenAPISpec(spec)).toBe(true);
 
     // Check basic OpenAPI properties
-    expect(spec.openapi).toBe('3.0.3');
+    expect(spec.openapi).toBe('3.1.0');
     expect(spec.info).toBeDefined();
     expect(spec.info.title).toBe('Test API');
     expect(spec.info.version).toBe('1.0.0');

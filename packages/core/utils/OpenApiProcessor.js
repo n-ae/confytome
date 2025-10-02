@@ -1,7 +1,7 @@
 /**
  * OpenAPI Specification Processor for Markdown Generation
  *
- * Processes OpenAPI 3.0.x specifications into a structure suitable for
+ * Processes OpenAPI 3.1.x specifications into a structure suitable for
  * Mustache template rendering with Confluence-friendly output.
  */
 
@@ -325,7 +325,7 @@ export class OpenApiProcessor {
   extractParameterExamples(param) {
     const examples = [];
 
-    // Handle multiple examples (OpenAPI 3.0 format)
+    // Handle multiple examples (OpenAPI 3.x format)
     if (param.examples && typeof param.examples === 'object') {
       Object.entries(param.examples).forEach(([key, example]) => {
         let exampleValue;

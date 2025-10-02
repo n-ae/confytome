@@ -145,7 +145,7 @@ export class TestEnvironment {
  * Sample server config for testing
  */
 export const SAMPLE_SERVER_CONFIG = {
-  'openapi': '3.0.3',
+  'openapi': '3.1.0',
   'info': {
     'title': 'Test API',
     'version': '1.0.0',

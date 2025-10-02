@@ -45,7 +45,7 @@ describe('confytome init', () => {
     expect(isValidJSON(configContent)).toBe(true);
 
     const config = JSON.parse(configContent);
-    expect(config.openapi).toBe('3.0.3');
+    expect(config.openapi).toBe('3.1.0');
     expect(config.info).toBeDefined();
     expect(config.info.title).toBeDefined();
     expect(config.info.version).toBeDefined();

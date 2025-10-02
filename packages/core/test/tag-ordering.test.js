@@ -16,7 +16,7 @@ describe('Tag Ordering', () => {
 
   test('should order resources by OpenAPI spec tags array', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       tags: [
         { name: 'Users', description: 'User management' },
@@ -62,7 +62,7 @@ describe('Tag Ordering', () => {
 
   test('should order resources by config tagOrder option', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       paths: {
         '/analytics': {
@@ -103,7 +103,7 @@ describe('Tag Ordering', () => {
 
   test('should place unordered tags alphabetically after ordered tags', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       paths: {
         '/auth': {
@@ -152,7 +152,7 @@ describe('Tag Ordering', () => {
 
   test('should not give special priority to auth tags', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       paths: {
         '/authentication': {
@@ -191,7 +191,7 @@ describe('Tag Ordering', () => {
 
   test('should handle case-insensitive tag matching', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       paths: {
         '/users': {
@@ -224,7 +224,7 @@ describe('Tag Ordering', () => {
 
   test('should handle empty tagOrder with alphabetical fallback', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       paths: {
         '/zebras': {
@@ -265,7 +265,7 @@ describe('Tag Ordering', () => {
 
   test('should handle partial tagOrder specification', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       paths: {
         '/dashboard': {
@@ -314,7 +314,7 @@ describe('Tag Ordering', () => {
 
   test('should use tag order from OpenAPI spec tags array (JSDoc/serverConfig pattern)', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       tags: [
         { name: 'Authentication', description: 'Auth operations' },
@@ -360,7 +360,7 @@ describe('Tag Ordering', () => {
 
   test('should handle Turkish characters in tag ordering', () => {
     const spec = {
-      openapi: '3.0.3',
+      openapi: '3.1.0',
       info: { title: 'Test API', version: '1.0.0' },
       paths: {
         '/kullanıcılar': {
