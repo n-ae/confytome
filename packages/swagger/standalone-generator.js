@@ -29,7 +29,7 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
     return {
       name: 'swagger',
       description: 'Interactive, self-contained Swagger UI documentation generator',
-      version: '1.5.0',
+      version: '1.9.7',
       packageName: '@confytome/swagger',
       cliCommand: 'confytome-swagger',
       inputs: ['api-spec.json'],
