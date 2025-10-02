@@ -1,6 +1,6 @@
 {
   "name": "@confytome/confluence",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Cross-platform Pandoc-style Markdown generator for Confluence - generates clean markdown from OpenAPI specs and copies to clipboard for direct pasting.",
   "main": "standalone-generator.js",
   "bin": {
@@ -46,7 +46,7 @@
   "dependencies": {
     "@confytome/core": "^2.0.0",
     "@confytome/markdown": "^2.0.0",
-    "clipboardy": "^4.0.0",
+    "clipboardy": "^5.0.0",
     "marked": "^16.3.0",
     "commander": "^14.0.1"
   }

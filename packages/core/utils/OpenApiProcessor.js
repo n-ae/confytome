@@ -329,19 +329,26 @@ export class OpenApiProcessor {
     if (param.examples && typeof param.examples === 'object') {
       Object.entries(param.examples).forEach(([key, example]) => {
         let exampleValue;
+        let resolvedExample = example;
+
+        // Resolve $ref if present
+        if (example && typeof example === 'object' && example.$ref) {
+          resolvedExample = this.resolveRef(example.$ref, this.openApiSpec);
+          if (!resolvedExample) {
+            // Skip if $ref cannot be resolved
+            return;
+          }
+        }
 
         // Handle different example formats
-        if (example && typeof example === 'object') {
-          if (example.value !== undefined) {
-            exampleValue = example.value;
-          } else if (example.$ref) {
-            // Skip $ref examples for now - they need component resolution
-            return;
+        if (resolvedExample && typeof resolvedExample === 'object') {
+          if (resolvedExample.value !== undefined) {
+            exampleValue = resolvedExample.value;
           } else {
-            exampleValue = example;
+            exampleValue = resolvedExample;
           }
         } else {
-          exampleValue = example;
+          exampleValue = resolvedExample;
         }
 
         // Convert objects to JSON string for display
@@ -351,8 +358,8 @@ export class OpenApiProcessor {
 
         examples.push({
           name: key,
-          summary: example.summary || key,
-          description: example.description || '',
+          summary: resolvedExample.summary || key,
+          description: resolvedExample.description || '',
           value: exampleValue
         });
       });
