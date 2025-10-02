@@ -427,4 +427,96 @@ describe('Parameter Examples', () => {
     expect(examples[0].value).toBe('İstanbul');
     expect(examples[1].value).toBe('Ankara');
   });
+
+  test('should override parameter examples at operation level (OpenAPI 3.1.0)', () => {
+    const spec = {
+      openapi: '3.1.0',
+      info: { title: 'Test API', version: '1.0.0' },
+      paths: {
+        '/search': {
+          parameters: [
+            {
+              name: 'query',
+              in: 'query',
+              schema: { type: 'string' },
+              examples: {
+                default: {
+                  summary: 'Default search',
+                  description: 'Standard search query',
+                  value: 'general search'
+                },
+                advanced: {
+                  summary: 'Advanced search',
+                  value: 'field:value AND field2:value2'
+                }
+              }
+            }
+          ],
+          get: {
+            tags: ['Search'],
+            summary: 'Basic search',
+            responses: {
+              '200': { description: 'Success' }
+            }
+          },
+          post: {
+            tags: ['Search'],
+            summary: 'Advanced search with override',
+            parameters: [
+              {
+                name: 'query',
+                in: 'query',
+                schema: { type: 'string' },
+                examples: {
+                  complex: {
+                    summary: 'Complex query override',
+                    description: 'Overrides path-level examples for POST',
+                    value: '(field1:value1 OR field2:value2) AND field3:value3'
+                  },
+                  simple: {
+                    summary: 'Simple override',
+                    value: 'overridden simple query'
+                  }
+                }
+              }
+            ],
+            responses: {
+              '200': { description: 'Success' }
+            }
+          }
+        }
+      }
+    };
+
+    processor.openApiSpec = spec;
+    const data = processor.process(spec);
+
+    expect(data.resources).toHaveLength(1);
+    const searchResource = data.resources[0];
+    expect(searchResource.name).toBe('Search');
+    expect(searchResource.endpoints).toHaveLength(2);
+
+    // GET endpoint should use path-level parameter examples
+    const getEndpoint = searchResource.endpoints.find(e => e.method === 'GET');
+    expect(getEndpoint.parameters).toHaveLength(1);
+    expect(getEndpoint.parameters[0].name).toBe('query');
+    expect(getEndpoint.parameters[0].examples).toHaveLength(2);
+    expect(getEndpoint.parameters[0].examples[0].name).toBe('default');
+    expect(getEndpoint.parameters[0].examples[0].summary).toBe('Default search');
+    expect(getEndpoint.parameters[0].examples[0].value).toBe('general search');
+    expect(getEndpoint.parameters[0].examples[1].name).toBe('advanced');
+    expect(getEndpoint.parameters[0].examples[1].value).toBe('field:value AND field2:value2');
+
+    // POST endpoint should use operation-level parameter examples (override)
+    const postEndpoint = searchResource.endpoints.find(e => e.method === 'POST');
+    expect(postEndpoint.parameters).toHaveLength(1);
+    expect(postEndpoint.parameters[0].name).toBe('query');
+    expect(postEndpoint.parameters[0].examples).toHaveLength(2);
+    expect(postEndpoint.parameters[0].examples[0].name).toBe('complex');
+    expect(postEndpoint.parameters[0].examples[0].summary).toBe('Complex query override');
+    expect(postEndpoint.parameters[0].examples[0].description).toBe('Overrides path-level examples for POST');
+    expect(postEndpoint.parameters[0].examples[0].value).toBe('(field1:value1 OR field2:value2) AND field3:value3');
+    expect(postEndpoint.parameters[0].examples[1].name).toBe('simple');
+    expect(postEndpoint.parameters[0].examples[1].value).toBe('overridden simple query');
+  });
 });
