@@ -87,7 +87,7 @@
 | Name | Type | Required | Description |
 |----------|------|----------|-------------|
 {{#properties}}
-| {{name}} | {{type}} | {{#required}}Yes{{/required}}{{^required}}No{{/required}} | {{description}} |
+| {{{name}}} | {{{type}}} | {{#required}}Yes{{/required}}{{^required}}No{{/required}} | {{{description}}} |
 {{/properties}}
 
 {{/hasProperties}}
@@ -125,6 +125,24 @@
 {{/headers}}
 
 {{/hasHeaders}}
+{{#hasSchema}}
+**Response Body:**
+
+```json
+{{{schema}}}
+```
+
+{{/hasSchema}}
+{{#hasProperties}}
+**Properties:**
+
+| Name | Type | Description |
+|------|------|-------------|
+{{#properties}}
+| {{{name}}} | {{{type}}} | {{{description}}} |
+{{/properties}}
+
+{{/hasProperties}}
 {{#hasExamples}}
 **Response Examples:**
 
@@ -178,7 +196,7 @@ curl -X {{{method}}} \
 | Property | Type | Description |
 |----------|------|-------------|
 {{#properties}}
-| {{name}} | {{type}} | {{description}} |
+| {{{name}}} | {{{type}}} | {{{description}}} |
 {{/properties}}
 
 {{/properties}}

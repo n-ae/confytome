@@ -42,6 +42,9 @@ export class OpenApiProcessor {
    */
   process(spec) {
     try {
+      // Store spec for reference resolution
+      this.openApiSpec = spec;
+
       const data = {
         info: this.processWithContext('info', () => this.processInfo(spec.info || {})),
         servers: this.processWithContext('servers', () => this.processServers(spec.servers || [])),
@@ -612,7 +615,7 @@ export class OpenApiProcessor {
     let type = schema.type || 'string';
 
     if (schema.enum && Array.isArray(schema.enum)) {
-      const enumValues = schema.enum.map(val => `"${val}"`).join(', ');
+      const enumValues = schema.enum.map(val => `\`"${val}"\``).join(', ');
       type += ` (${enumValues})`;
     }
 
@@ -645,6 +648,11 @@ export class OpenApiProcessor {
    */
   processResponses(responses) {
     return Object.entries(responses).map(([code, response]) => {
+      // Resolve response $ref if present
+      if (response.$ref) {
+        response = this.resolveRef(response.$ref, this.openApiSpec) || response;
+      }
+
       // Get all available content types for this response
       const availableContentTypes = Object.keys(response.content || {});
       const preferredContentTypes = ['application/json', 'application/xml', 'text/plain', 'text/html'];
@@ -669,10 +677,21 @@ export class OpenApiProcessor {
 
       let examples = [];
       let headers = [];
+      let schema = null;
+      let properties = null;
 
-      // Process response examples
-      if (content) {
+      // Process response examples and schema
+      if (content && content.schema) {
         examples = this.extractAllExamples(content, selectedContentType);
+
+        // Generate schema example and extract properties
+        const resolvedSchema = this.resolveSchemaRef(content.schema);
+        if (resolvedSchema) {
+          schema = this.generateSchemaExample(resolvedSchema);
+          if (resolvedSchema.properties) {
+            properties = this.processSchemaProperties(resolvedSchema.properties);
+          }
+        }
       }
 
       // Process response headers
@@ -691,6 +710,10 @@ export class OpenApiProcessor {
         contentType: selectedContentType,
         examples,
         hasExamples: examples.length > 0,
+        schema,
+        hasSchema: schema !== null,
+        properties,
+        hasProperties: properties && properties.length > 0,
         headers,
         hasHeaders: headers.length > 0,
         availableContentTypes: availableContentTypes.length > 1 ? availableContentTypes : null
@@ -822,7 +845,7 @@ export class OpenApiProcessor {
 
     // If schema has enum values, append them to the type
     if (schema.enum && Array.isArray(schema.enum)) {
-      const enumValues = schema.enum.map(val => `"${val}"`).join(', ');
+      const enumValues = schema.enum.map(val => `\`"${val}"\``).join(', ');
       type += ` (${enumValues})`;
     }
 
@@ -839,7 +862,7 @@ export class OpenApiProcessor {
 
     // Add enum information to description if present
     if (param.schema?.enum && Array.isArray(param.schema.enum)) {
-      const enumValues = param.schema.enum.map(val => `"${val}"`).join(', ');
+      const enumValues = param.schema.enum.map(val => `\`"${val}"\``).join(', ');
       const enumText = `Allowed values: ${enumValues}`;
 
       if (description) {
@@ -851,7 +874,7 @@ export class OpenApiProcessor {
 
     // Add default value information if present
     if (param.schema?.default !== undefined) {
-      const defaultText = `Default: "${param.schema.default}"`;
+      const defaultText = `Default: \`"${param.schema.default}"\``;
 
       if (description) {
         description += `. ${defaultText}`;
@@ -1112,6 +1135,46 @@ export class OpenApiProcessor {
     }
 
     return current;
+  }
+
+  resolveSchemaRef(schema) {
+    if (!schema) return null;
+
+    // If schema has a $ref, resolve it
+    if (schema.$ref) {
+      const resolved = this.resolveRef(schema.$ref, this.openApiSpec);
+      if (!resolved) return null;
+      return this.resolveSchemaRef(resolved);
+    }
+
+    // Handle allOf composition by merging schemas
+    if (schema.allOf) {
+      const merged = { type: 'object', properties: {} };
+      for (const subSchema of schema.allOf) {
+        const resolved = this.resolveSchemaRef(subSchema);
+        if (resolved) {
+          if (resolved.properties) {
+            merged.properties = { ...merged.properties, ...resolved.properties };
+          }
+          if (resolved.type && !merged.type) {
+            merged.type = resolved.type;
+          }
+        }
+      }
+      return merged;
+    }
+
+    // For anyOf and oneOf, use the first schema
+    if (schema.anyOf && schema.anyOf.length > 0) {
+      return this.resolveSchemaRef(schema.anyOf[0]);
+    }
+
+    if (schema.oneOf && schema.oneOf.length > 0) {
+      return this.resolveSchemaRef(schema.oneOf[0]);
+    }
+
+    // Return the schema as-is
+    return schema;
   }
 
   resolveParameters(params = [], spec) {
