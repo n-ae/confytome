@@ -133,16 +133,6 @@
 ```
 
 {{/hasSchema}}
-{{#hasProperties}}
-**Properties:**
-
-| Name | Type | Description |
-|------|------|-------------|
-{{#properties}}
-| {{{name}}} | {{{type}}} | {{{description}}} |
-{{/properties}}
-
-{{/hasProperties}}
 {{#hasExamples}}
 **Response Examples:**
 
@@ -192,14 +182,12 @@ curl -X {{{method}}} \
 {{{example}}}
 ```
 
-{{#properties}}
 | Property | Type | Description |
 |----------|------|-------------|
 {{#properties}}
 | {{{name}}} | {{{type}}} | {{{description}}} |
 {{/properties}}
 
-{{/properties}}
 {{/models}}
 
 {{/schemas}}

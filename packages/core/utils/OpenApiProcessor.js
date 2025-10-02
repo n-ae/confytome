@@ -682,7 +682,10 @@ export class OpenApiProcessor {
 
       // Process response examples and schema
       if (content && content.schema) {
-        examples = this.extractAllExamples(content, selectedContentType);
+        // Only extract explicit examples (not auto-generated ones)
+        // since we're showing the schema in Response Body section
+        const allExamples = this.extractAllExamples(content, selectedContentType);
+        examples = allExamples.filter(ex => ex.name !== 'Generated Example');
 
         // Generate schema example and extract properties
         const resolvedSchema = this.resolveSchemaRef(content.schema);
