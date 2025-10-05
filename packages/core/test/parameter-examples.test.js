@@ -960,6 +960,142 @@ describe('Parameter Examples', () => {
     expect(endpoint.parameters[0].examples[1].value).toBe(999999999999999);
   });
 
+  test('should override example when using $ref with additional fields (OpenAPI 3.1.0)', () => {
+    const spec = {
+      openapi: '3.1.0',
+      info: { title: 'Test API', version: '1.0.0' },
+      paths: {
+        '/branches/{branchId}': {
+          get: {
+            tags: ['Branches'],
+            summary: 'Get branch details',
+            parameters: [
+              {
+                $ref: '#/components/parameters/BranchIdParam',
+                example: 1234
+              }
+            ],
+            responses: {
+              '200': { description: 'Success' }
+            }
+          }
+        },
+        '/branches/{branchId}/status': {
+          get: {
+            tags: ['Branches'],
+            summary: 'Get branch status',
+            parameters: [
+              {
+                $ref: '#/components/parameters/BranchIdParam',
+                examples: {
+                  active: {
+                    summary: 'Active branch override',
+                    description: 'Branch that is currently active',
+                    value: 555555555555555
+                  },
+                  suspended: {
+                    summary: 'Suspended branch override',
+                    value: 666666666666666
+                  }
+                }
+              }
+            ],
+            responses: {
+              '200': { description: 'Success' }
+            }
+          }
+        },
+        '/branches/{branchId}/info': {
+          get: {
+            tags: ['Branches'],
+            summary: 'Get branch info',
+            parameters: [
+              {
+                $ref: '#/components/parameters/BranchIdParam',
+                description: 'Branch ID for info retrieval (overridden description)'
+              }
+            ],
+            responses: {
+              '200': { description: 'Success' }
+            }
+          }
+        }
+      },
+      components: {
+        parameters: {
+          BranchIdParam: {
+            name: 'branchId',
+            in: 'path',
+            required: true,
+            description: 'Şube kimlik numarası (uzun tam sayı formatında)',
+            schema: {
+              type: 'integer',
+              format: 'int64',
+              minimum: 1,
+              maximum: 9223372036854776000
+            },
+            examples: {
+              default: {
+                summary: 'Default branch ID',
+                description: 'Standard branch identifier',
+                value: 123456789012345
+              },
+              test: {
+                summary: 'Test branch ID',
+                value: 987654321098765
+              }
+            }
+          }
+        }
+      }
+    };
+
+    processor.openApiSpec = spec;
+    const data = processor.process(spec);
+
+    expect(data.resources).toHaveLength(1);
+    const branchesResource = data.resources[0];
+    expect(branchesResource.endpoints).toHaveLength(3);
+
+    // First endpoint: $ref + example override (single example)
+    const detailsEndpoint = branchesResource.endpoints.find(e => e.summary === 'Get branch details');
+    expect(detailsEndpoint.parameters).toHaveLength(1);
+    expect(detailsEndpoint.parameters[0].name).toBe('branchId');
+    expect(detailsEndpoint.parameters[0].description).toBe('Şube kimlik numarası (uzun tam sayı formatında)');
+    expect(detailsEndpoint.parameters[0].hasExamples).toBe(true);
+    expect(detailsEndpoint.parameters[0].examples).toHaveLength(1);
+    expect(detailsEndpoint.parameters[0].examples[0].name).toBe('example');
+    expect(detailsEndpoint.parameters[0].examples[0].summary).toBe('Example');
+    expect(detailsEndpoint.parameters[0].examples[0].value).toBe(1234);
+
+    // Second endpoint: $ref + examples override (multiple examples)
+    const statusEndpoint = branchesResource.endpoints.find(e => e.summary === 'Get branch status');
+    expect(statusEndpoint.parameters).toHaveLength(1);
+    expect(statusEndpoint.parameters[0].name).toBe('branchId');
+    expect(statusEndpoint.parameters[0].description).toBe('Şube kimlik numarası (uzun tam sayı formatında)');
+    expect(statusEndpoint.parameters[0].hasExamples).toBe(true);
+    expect(statusEndpoint.parameters[0].examples).toHaveLength(2);
+    expect(statusEndpoint.parameters[0].examples[0].name).toBe('active');
+    expect(statusEndpoint.parameters[0].examples[0].summary).toBe('Active branch override');
+    expect(statusEndpoint.parameters[0].examples[0].description).toBe('Branch that is currently active');
+    expect(statusEndpoint.parameters[0].examples[0].value).toBe(555555555555555);
+    expect(statusEndpoint.parameters[0].examples[1].name).toBe('suspended');
+    expect(statusEndpoint.parameters[0].examples[1].summary).toBe('Suspended branch override');
+    expect(statusEndpoint.parameters[0].examples[1].value).toBe(666666666666666);
+
+    // Third endpoint: $ref + description override (uses component examples)
+    const infoEndpoint = branchesResource.endpoints.find(e => e.summary === 'Get branch info');
+    expect(infoEndpoint.parameters).toHaveLength(1);
+    expect(infoEndpoint.parameters[0].name).toBe('branchId');
+    expect(infoEndpoint.parameters[0].description).toBe('Branch ID for info retrieval (overridden description)');
+    expect(infoEndpoint.parameters[0].hasExamples).toBe(true);
+    expect(infoEndpoint.parameters[0].examples).toHaveLength(2);
+    expect(infoEndpoint.parameters[0].examples[0].name).toBe('default');
+    expect(infoEndpoint.parameters[0].examples[0].value).toBe(123456789012345);
+    expect(infoEndpoint.parameters[0].examples[1].name).toBe('test');
+    expect(infoEndpoint.parameters[0].examples[1].value).toBe(987654321098765);
+  });
+
   test('should override parameter examples at operation level (OpenAPI 3.1.0)', () => {
     const spec = {
       openapi: '3.1.0',

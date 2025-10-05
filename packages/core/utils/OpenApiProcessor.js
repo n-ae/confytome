@@ -366,7 +366,8 @@ export class OpenApiProcessor {
     }
 
     // Handle single example (OpenAPI 2.0 format or simple example)
-    if (param.example !== undefined) {
+    // Only process if no examples array was provided (examples take precedence)
+    if (param.example !== undefined && examples.length === 0) {
       let exampleValue = param.example;
       if (typeof exampleValue === 'object') {
         exampleValue = JSON.stringify(exampleValue, null, 2);
@@ -380,7 +381,8 @@ export class OpenApiProcessor {
     }
 
     // Handle schema example
-    if (param.schema?.example !== undefined) {
+    // Only process if no parameter-level examples were provided
+    if (param.schema?.example !== undefined && examples.length === 0) {
       let exampleValue = param.schema.example;
       if (typeof exampleValue === 'object') {
         exampleValue = JSON.stringify(exampleValue, null, 2);
@@ -1200,8 +1202,25 @@ export class OpenApiProcessor {
         if (Array.isArray(resolved)) {
           const nestedResolved = this.resolveParameters(resolved, spec);
           result.push(...nestedResolved);
+        } else if (resolved) {
+          // Merge override fields from the original param (OpenAPI 3.1 allows this)
+          // The $ref is resolved, but other fields like example, examples, description can override
+          const { $ref, ...overrides } = param;
+
+          // If overrides include example or examples, remove the component's examples
+          // to prevent both from being shown (override should replace, not merge)
+          let merged = { ...resolved };
+          if (overrides.example !== undefined || overrides.examples !== undefined) {
+            // Remove component's examples when override provides new ones
+            delete merged.examples;
+            delete merged.example;
+          }
+
+          // Apply overrides
+          merged = { ...merged, ...overrides };
+          result.push(merged);
         } else {
-          result.push(resolved || param);
+          result.push(param);
         }
       } else {
         result.push(param);
