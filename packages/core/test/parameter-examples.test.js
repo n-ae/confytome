@@ -1051,6 +1051,24 @@ describe('Parameter Examples', () => {
     };
 
     processor.openApiSpec = spec;
+
+    // First verify that resolveParameters correctly merges schema from component
+    const resolvedParams1 = processor.resolveParameters(spec.paths['/branches/{branchId}'].get.parameters, spec);
+    expect(resolvedParams1).toHaveLength(1);
+    expect(resolvedParams1[0].name).toBe('branchId');
+    expect(resolvedParams1[0].in).toBe('path');
+    expect(resolvedParams1[0].required).toBe(true);
+    expect(resolvedParams1[0].description).toBe('Şube kimlik numarası (uzun tam sayı formatında)');
+    // Verify schema properties are preserved from component
+    expect(resolvedParams1[0].schema).toBeDefined();
+    expect(resolvedParams1[0].schema.type).toBe('integer');
+    expect(resolvedParams1[0].schema.format).toBe('int64');
+    expect(resolvedParams1[0].schema.minimum).toBe(1);
+    expect(resolvedParams1[0].schema.maximum).toBe(9223372036854776000);
+    // Verify example override replaced component examples
+    expect(resolvedParams1[0].example).toBe(1234);
+    expect(resolvedParams1[0].examples).toBeUndefined();
+
     const data = processor.process(spec);
 
     expect(data.resources).toHaveLength(1);
@@ -1062,6 +1080,8 @@ describe('Parameter Examples', () => {
     expect(detailsEndpoint.parameters).toHaveLength(1);
     expect(detailsEndpoint.parameters[0].name).toBe('branchId');
     expect(detailsEndpoint.parameters[0].description).toBe('Şube kimlik numarası (uzun tam sayı formatında)');
+    expect(detailsEndpoint.parameters[0].type).toBe('integer');
+    // Verify examples are overridden
     expect(detailsEndpoint.parameters[0].hasExamples).toBe(true);
     expect(detailsEndpoint.parameters[0].examples).toHaveLength(1);
     expect(detailsEndpoint.parameters[0].examples[0].name).toBe('example');
@@ -1069,10 +1089,26 @@ describe('Parameter Examples', () => {
     expect(detailsEndpoint.parameters[0].examples[0].value).toBe(1234);
 
     // Second endpoint: $ref + examples override (multiple examples)
+    // Verify schema merge at spec level
+    const resolvedParams2 = processor.resolveParameters(spec.paths['/branches/{branchId}/status'].get.parameters, spec);
+    expect(resolvedParams2).toHaveLength(1);
+    expect(resolvedParams2[0].schema).toBeDefined();
+    expect(resolvedParams2[0].schema.type).toBe('integer');
+    expect(resolvedParams2[0].schema.format).toBe('int64');
+    expect(resolvedParams2[0].schema.minimum).toBe(1);
+    expect(resolvedParams2[0].schema.maximum).toBe(9223372036854776000);
+    // Verify examples override replaced component examples
+    expect(resolvedParams2[0].examples).toBeDefined();
+    expect(resolvedParams2[0].examples.active).toBeDefined();
+    expect(resolvedParams2[0].examples.suspended).toBeDefined();
+    expect(resolvedParams2[0].example).toBeUndefined();
+
     const statusEndpoint = branchesResource.endpoints.find(e => e.summary === 'Get branch status');
     expect(statusEndpoint.parameters).toHaveLength(1);
     expect(statusEndpoint.parameters[0].name).toBe('branchId');
     expect(statusEndpoint.parameters[0].description).toBe('Şube kimlik numarası (uzun tam sayı formatında)');
+    expect(statusEndpoint.parameters[0].type).toBe('integer');
+    // Verify examples are overridden
     expect(statusEndpoint.parameters[0].hasExamples).toBe(true);
     expect(statusEndpoint.parameters[0].examples).toHaveLength(2);
     expect(statusEndpoint.parameters[0].examples[0].name).toBe('active');
@@ -1084,10 +1120,26 @@ describe('Parameter Examples', () => {
     expect(statusEndpoint.parameters[0].examples[1].value).toBe(666666666666666);
 
     // Third endpoint: $ref + description override (uses component examples)
+    // Verify schema merge at spec level
+    const resolvedParams3 = processor.resolveParameters(spec.paths['/branches/{branchId}/info'].get.parameters, spec);
+    expect(resolvedParams3).toHaveLength(1);
+    expect(resolvedParams3[0].schema).toBeDefined();
+    expect(resolvedParams3[0].schema.type).toBe('integer');
+    expect(resolvedParams3[0].schema.format).toBe('int64');
+    expect(resolvedParams3[0].schema.minimum).toBe(1);
+    expect(resolvedParams3[0].schema.maximum).toBe(9223372036854776000);
+    // Verify component examples are preserved (only description overridden)
+    expect(resolvedParams3[0].description).toBe('Branch ID for info retrieval (overridden description)');
+    expect(resolvedParams3[0].examples).toBeDefined();
+    expect(resolvedParams3[0].examples.default).toBeDefined();
+    expect(resolvedParams3[0].examples.test).toBeDefined();
+
     const infoEndpoint = branchesResource.endpoints.find(e => e.summary === 'Get branch info');
     expect(infoEndpoint.parameters).toHaveLength(1);
     expect(infoEndpoint.parameters[0].name).toBe('branchId');
     expect(infoEndpoint.parameters[0].description).toBe('Branch ID for info retrieval (overridden description)');
+    expect(infoEndpoint.parameters[0].type).toBe('integer');
+    // Verify component examples are used (no override)
     expect(infoEndpoint.parameters[0].hasExamples).toBe(true);
     expect(infoEndpoint.parameters[0].examples).toHaveLength(2);
     expect(infoEndpoint.parameters[0].examples[0].name).toBe('default');
