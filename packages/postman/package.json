@@ -1,6 +1,6 @@
 {
   "name": "@confytome/postman",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Standalone Postman generator - creates Postman collections and environment variables from OpenAPI specs for API testing and development.",
   "main": "standalone-generator.js",
   "bin": {

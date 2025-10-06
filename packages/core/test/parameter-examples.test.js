@@ -1239,4 +1239,155 @@ describe('Parameter Examples', () => {
     expect(postEndpoint.parameters[0].examples[1].name).toBe('simple');
     expect(postEndpoint.parameters[0].examples[1].value).toBe('overridden simple query');
   });
+
+  test('should support simple value override with $ref (OpenAPI 3.1.0 - JSON Schema 2020-12)', () => {
+    const spec = {
+      openapi: '3.1.0',
+      info: { title: 'Test API', version: '1.0.0' },
+      paths: {
+        '/users/{userId}': {
+          get: {
+            tags: ['Users'],
+            summary: 'Get user by ID',
+            parameters: [
+              {
+                $ref: '#/components/parameters/UserIdParam',
+                example: 42
+              }
+            ],
+            responses: {
+              '200': { description: 'Success' }
+            }
+          }
+        },
+        '/users/{userId}/posts': {
+          get: {
+            tags: ['Users'],
+            summary: 'Get user posts',
+            parameters: [
+              {
+                $ref: '#/components/parameters/UserIdParam',
+                example: 'admin-123'
+              }
+            ],
+            responses: {
+              '200': { description: 'Success' }
+            }
+          }
+        },
+        '/users/{userId}/profile': {
+          get: {
+            tags: ['Users'],
+            summary: 'Get user profile',
+            parameters: [
+              {
+                $ref: '#/components/parameters/UserIdParam'
+              }
+            ],
+            responses: {
+              '200': { description: 'Success' }
+            }
+          }
+        }
+      },
+      components: {
+        parameters: {
+          UserIdParam: {
+            name: 'userId',
+            in: 'path',
+            required: true,
+            description: 'User identifier',
+            schema: {
+              type: 'string',
+              pattern: '^[a-zA-Z0-9-]+$',
+              minLength: 1,
+              maxLength: 50
+            },
+            examples: {
+              numeric: {
+                summary: 'Numeric user ID',
+                description: 'Standard numeric identifier',
+                value: 12345
+              },
+              alphanumeric: {
+                summary: 'Alphanumeric user ID',
+                value: 'user-abc-123'
+              }
+            }
+          }
+        }
+      }
+    };
+
+    processor.openApiSpec = spec;
+
+    // Verify first endpoint: simple value override (number)
+    const resolvedParams1 = processor.resolveParameters(spec.paths['/users/{userId}'].get.parameters, spec);
+    expect(resolvedParams1).toHaveLength(1);
+    expect(resolvedParams1[0].name).toBe('userId');
+    expect(resolvedParams1[0].description).toBe('User identifier');
+    // Schema properties preserved from component
+    expect(resolvedParams1[0].schema).toBeDefined();
+    expect(resolvedParams1[0].schema.type).toBe('string');
+    expect(resolvedParams1[0].schema.pattern).toBe('^[a-zA-Z0-9-]+$');
+    expect(resolvedParams1[0].schema.minLength).toBe(1);
+    expect(resolvedParams1[0].schema.maxLength).toBe(50);
+    // Simple value override replaces component examples
+    expect(resolvedParams1[0].example).toBe(42);
+    expect(resolvedParams1[0].examples).toBeUndefined();
+
+    // Verify second endpoint: simple value override (string)
+    const resolvedParams2 = processor.resolveParameters(spec.paths['/users/{userId}/posts'].get.parameters, spec);
+    expect(resolvedParams2).toHaveLength(1);
+    // Schema properties preserved
+    expect(resolvedParams2[0].schema.type).toBe('string');
+    expect(resolvedParams2[0].schema.pattern).toBe('^[a-zA-Z0-9-]+$');
+    // Simple value override
+    expect(resolvedParams2[0].example).toBe('admin-123');
+    expect(resolvedParams2[0].examples).toBeUndefined();
+
+    // Verify third endpoint: no override (uses component examples)
+    const resolvedParams3 = processor.resolveParameters(spec.paths['/users/{userId}/profile'].get.parameters, spec);
+    expect(resolvedParams3).toHaveLength(1);
+    // Schema properties preserved
+    expect(resolvedParams3[0].schema.type).toBe('string');
+    expect(resolvedParams3[0].schema.pattern).toBe('^[a-zA-Z0-9-]+$');
+    // Component examples preserved
+    expect(resolvedParams3[0].examples).toBeDefined();
+    expect(resolvedParams3[0].examples.numeric).toBeDefined();
+    expect(resolvedParams3[0].examples.alphanumeric).toBeDefined();
+    expect(resolvedParams3[0].example).toBeUndefined();
+
+    // Verify rendered output
+    const data = processor.process(spec);
+    expect(data.resources).toHaveLength(1);
+    const usersResource = data.resources[0];
+    expect(usersResource.endpoints).toHaveLength(3);
+
+    // First endpoint: simple value override displayed
+    const getUserEndpoint = usersResource.endpoints.find(e => e.summary === 'Get user by ID');
+    expect(getUserEndpoint.parameters).toHaveLength(1);
+    expect(getUserEndpoint.parameters[0].name).toBe('userId');
+    expect(getUserEndpoint.parameters[0].type).toBe('string');
+    expect(getUserEndpoint.parameters[0].hasExamples).toBe(true);
+    expect(getUserEndpoint.parameters[0].examples).toHaveLength(1);
+    expect(getUserEndpoint.parameters[0].examples[0].value).toBe(42);
+
+    // Second endpoint: different simple value override
+    const getPostsEndpoint = usersResource.endpoints.find(e => e.summary === 'Get user posts');
+    expect(getPostsEndpoint.parameters).toHaveLength(1);
+    expect(getPostsEndpoint.parameters[0].hasExamples).toBe(true);
+    expect(getPostsEndpoint.parameters[0].examples).toHaveLength(1);
+    expect(getPostsEndpoint.parameters[0].examples[0].value).toBe('admin-123');
+
+    // Third endpoint: component examples
+    const getProfileEndpoint = usersResource.endpoints.find(e => e.summary === 'Get user profile');
+    expect(getProfileEndpoint.parameters).toHaveLength(1);
+    expect(getProfileEndpoint.parameters[0].hasExamples).toBe(true);
+    expect(getProfileEndpoint.parameters[0].examples).toHaveLength(2);
+    expect(getProfileEndpoint.parameters[0].examples[0].name).toBe('numeric');
+    expect(getProfileEndpoint.parameters[0].examples[0].value).toBe(12345);
+    expect(getProfileEndpoint.parameters[0].examples[1].name).toBe('alphanumeric');
+    expect(getProfileEndpoint.parameters[0].examples[1].value).toBe('user-abc-123');
+  });
 });
