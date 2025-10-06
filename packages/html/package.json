@@ -1,6 +1,6 @@
 {
   "name": "@confytome/html",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Standalone HTML generator - creates professional, responsive HTML documentation from OpenAPI specs with modern styling and navigation.",
   "main": "standalone-generator.js",
   "bin": {
@@ -43,7 +43,7 @@
     "prepublishOnly": "npm ls"
   },
   "dependencies": {
-    "@confytome/core": "^2.0.0",
+    "@confytome/core": "^2.0.7",
     "commander": "^14.0.1"
   }
 }
