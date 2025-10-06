@@ -1205,7 +1205,7 @@ export class OpenApiProcessor {
         } else if (resolved) {
           // Merge override fields from the original param (OpenAPI 3.1 allows this)
           // The $ref is resolved, but other fields like example, examples, description can override
-          const { $ref, ...overrides } = param;
+          const { $ref: _ref, ...overrides } = param;
 
           // If overrides include example or examples, remove the component's examples
           // to prevent both from being shown (override should replace, not merge)
