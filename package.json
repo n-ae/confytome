@@ -59,8 +59,8 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@confytome/core": "^2.0.1",
-    "@confytome/markdown": "^2.0.1",
+    "@confytome/core": "^2.0.9",
+    "@confytome/markdown": "^2.0.9",
     "clipboardy": "^5.0.0",
     "commander": "^14.0.1",
     "mustache": "^4.2.0",
