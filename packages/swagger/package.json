@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@confytome/core": "^2.0.7",
-    "swagger-ui-dist": "^5.29.2",
+    "swagger-ui-dist": "^5.31.0",
     "commander": "^14.0.1"
   }
 }
