@@ -37,10 +37,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
 
       - run: npm ci
 
       - name: Publish all packages
         run: npm publish --workspaces --access public --provenance
-        env:
-          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
