@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { jest } from '@jest/globals';
 import { StandaloneBase } from '../utils/StandaloneBase.js';
 
 class ConcreteGenerator extends StandaloneBase {
