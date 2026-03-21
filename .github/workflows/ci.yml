@@ -16,6 +16,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  id-token: write
 
 jobs:
   test:
@@ -49,7 +50,7 @@ jobs:
         if: matrix.node-version == 20
         uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
           files: ./coverage/lcov.info
           flags: unittests
           name: codecov-umbrella
