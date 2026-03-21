@@ -41,26 +41,26 @@ describe('StandaloneBase', () => {
   });
 
   describe('generate()', () => {
-    test('throws when called on base class directly', async () => {
+    test('throws when called on base class directly', async() => {
       const base = new StandaloneBase();
       await expect(base.generate()).rejects.toThrow('generate() must be implemented by subclass');
     });
   });
 
   describe('validate()', () => {
-    test('succeeds when output dir does not yet exist', async () => {
+    test('succeeds when output dir does not yet exist', async() => {
       const result = await generator.validate();
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    test('succeeds when output dir already exists', async () => {
+    test('succeeds when output dir already exists', async() => {
       fs.mkdirSync(testDir, { recursive: true });
       const result = await generator.validate();
       expect(result.valid).toBe(true);
     });
 
-    test('returns error when output dir is not writable', async () => {
+    test('returns error when output dir is not writable', async() => {
       if (process.platform === 'win32') return;
       fs.mkdirSync(testDir, { recursive: true });
       fs.chmodSync(testDir, 0o555);
@@ -71,13 +71,13 @@ describe('StandaloneBase', () => {
   });
 
   describe('initialize()', () => {
-    test('creates output dir when it does not exist', async () => {
+    test('creates output dir when it does not exist', async() => {
       expect(fs.existsSync(testDir)).toBe(false);
       await generator.initialize();
       expect(fs.existsSync(testDir)).toBe(true);
     });
 
-    test('merges options', async () => {
+    test('merges options', async() => {
       await generator.initialize({ excludeBrand: true });
       expect(generator.options.excludeBrand).toBe(true);
     });
@@ -235,7 +235,7 @@ describe('StandaloneBase', () => {
   });
 
   describe('cleanup()', () => {
-    test('resolves without error', async () => {
+    test('resolves without error', async() => {
       await expect(generator.cleanup()).resolves.toBeUndefined();
     });
   });

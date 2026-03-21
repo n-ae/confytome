@@ -52,7 +52,7 @@ describe('StandaloneConfluenceGenerator', () => {
   });
 
   describe('generate()', () => {
-    test('succeeds from specPath with copyToClipboard disabled', async () => {
+    test('succeeds from specPath with copyToClipboard disabled', async() => {
       const specPath = path.join(testDir, 'spec.json');
       fs.writeFileSync(specPath, JSON.stringify(minimalSpec));
       generator.options.specPath = specPath;
@@ -61,7 +61,7 @@ describe('StandaloneConfluenceGenerator', () => {
       expect(result.clipboardSuccess).toBe(false);
     });
 
-    test('succeeds from markdownPath with copyToClipboard disabled', async () => {
+    test('succeeds from markdownPath with copyToClipboard disabled', async() => {
       const mdPath = path.join(testDir, 'api-docs.md');
       fs.writeFileSync(mdPath, '# Test Docs\n\nSome content.');
       generator.options.markdownPath = mdPath;
@@ -70,20 +70,20 @@ describe('StandaloneConfluenceGenerator', () => {
       expect(result.outputPath).toBe(mdPath);
     });
 
-    test('returns failure when markdownPath file does not exist', async () => {
+    test('returns failure when markdownPath file does not exist', async() => {
       generator.options.markdownPath = '/no/such/file.md';
       const result = await generator.generate({ copyToClipboard: false });
       expect(result.success).toBe(false);
       expect(result.error).toContain('Markdown file not found');
     });
 
-    test('returns failure when no input source is given', async () => {
+    test('returns failure when no input source is given', async() => {
       const result = await generator.generate({ copyToClipboard: false });
       expect(result.success).toBe(false);
       expect(result.error).toContain('No input source specified');
     });
 
-    test('attempts clipboard copy by default', async () => {
+    test('attempts clipboard copy by default', async() => {
       const mdPath = path.join(testDir, 'api-docs.md');
       fs.writeFileSync(mdPath, '# Docs');
       generator.options.markdownPath = mdPath;
@@ -93,7 +93,7 @@ describe('StandaloneConfluenceGenerator', () => {
       expect(typeof result.clipboardSuccess).toBe('boolean');
     });
 
-    test('returns failure when specPath causes markdown generation to fail', async () => {
+    test('returns failure when specPath causes markdown generation to fail', async() => {
       const specPath = path.join(testDir, 'bad.json');
       const badSpec = {
         openapi: '3.0.3',

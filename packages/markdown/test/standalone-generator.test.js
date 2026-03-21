@@ -47,12 +47,12 @@ describe('StandaloneMarkdownGenerator', () => {
   });
 
   describe('validate()', () => {
-    test('succeeds with no specPath set', async () => {
+    test('succeeds with no specPath set', async() => {
       const result = await generator.validate();
       expect(result.success).toBe(true);
     });
 
-    test('succeeds with a valid specPath', async () => {
+    test('succeeds with a valid specPath', async() => {
       const specPath = path.join(testDir, 'spec.json');
       fs.writeFileSync(specPath, JSON.stringify(minimalSpec));
       generator.options.specPath = specPath;
@@ -60,7 +60,7 @@ describe('StandaloneMarkdownGenerator', () => {
       expect(result.success).toBe(true);
     });
 
-    test('reports error for an invalid specPath', async () => {
+    test('reports error for an invalid specPath', async() => {
       generator.options.specPath = '/no/such/spec.json';
       const result = await generator.validate();
       expect(result.success).toBe(false);
@@ -69,14 +69,14 @@ describe('StandaloneMarkdownGenerator', () => {
   });
 
   describe('initialize()', () => {
-    test('initializes and returns valid result', async () => {
+    test('initializes and returns valid result', async() => {
       const result = await generator.initialize();
       expect(result.valid).toBe(true);
     });
   });
 
   describe('generate()', () => {
-    test('generates markdown from a valid spec', async () => {
+    test('generates markdown from a valid spec', async() => {
       const specPath = path.join(testDir, 'spec.json');
       fs.writeFileSync(specPath, JSON.stringify(minimalSpec));
       generator.options.specPath = specPath;
@@ -85,7 +85,7 @@ describe('StandaloneMarkdownGenerator', () => {
       expect(result.size).toBeGreaterThan(0);
     });
 
-    test('uses tagOrder from spec.tags', async () => {
+    test('uses tagOrder from spec.tags', async() => {
       const specPath = path.join(testDir, 'spec.json');
       fs.writeFileSync(specPath, JSON.stringify(specWithTags));
       generator.options.specPath = specPath;
@@ -93,13 +93,13 @@ describe('StandaloneMarkdownGenerator', () => {
       expect(result.success).toBe(true);
     });
 
-    test('returns failure when specPath does not exist', async () => {
+    test('returns failure when specPath does not exist', async() => {
       generator.options.specPath = '/no/such/spec.json';
       const result = await generator.generate();
       expect(result.success).toBe(false);
     });
 
-    test('returns failure when spec causes a processing error', async () => {
+    test('returns failure when spec causes a processing error', async() => {
       const specPath = path.join(testDir, 'bad-spec.json');
       const badSpec = {
         openapi: '3.0.3',
@@ -121,7 +121,7 @@ describe('StandaloneMarkdownGenerator', () => {
   });
 
   describe('_loadTemplate()', () => {
-    test('returns same content on second call (cache hit)', async () => {
+    test('returns same content on second call (cache hit)', async() => {
       const specPath = path.join(testDir, 'spec.json');
       fs.writeFileSync(specPath, JSON.stringify(minimalSpec));
       generator.options.specPath = specPath;
