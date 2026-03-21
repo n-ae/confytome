@@ -61,10 +61,10 @@
   "dependencies": {
     "@confytome/core": "^2.0.9",
     "@confytome/markdown": "^2.0.9",
-    "clipboardy": "^5.0.0",
+    "clipboardy": "^5.1.0",
     "commander": "^14.0.1",
     "mustache": "^4.2.0",
-    "swagger-ui-dist": "^5.29.2"
+    "swagger-ui-dist": "^5.31.0"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
