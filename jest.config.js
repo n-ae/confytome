@@ -17,8 +17,6 @@ export default {
       collectCoverageFrom: [
         'generate-*.js',
         'utils/**/*.js',
-        '!utils/OpenApiProcessor.js',
-        '!utils/StandaloneBase.js',
         'services/**/*.js',
         'cli.js'
       ],
@@ -50,6 +48,7 @@ export default {
         'html/**/*.js',
         'swagger/**/*.js',
         'postman/**/*.js',
+        'confluence/**/*.js',
         '!**/node_modules/**',
         '!**/test/**',
         '!**/docs/**'
