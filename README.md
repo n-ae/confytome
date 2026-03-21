@@ -100,7 +100,7 @@ npx @confytome/markdown --spec ./docs/api-spec.json --output ./dist/docs
 
 ```mermaid
 graph TB
-    CLI[CLI Commands] --> Core[@confytome/core]
+    CLI[CLI Commands] --> Core["@confytome/core"]
     Core --> Registry[Generator Registry]
     Registry --> Factory[Generator Factory]
     Factory --> Services[Service Layer]
