@@ -42,14 +42,8 @@ jobs:
 
       - run: npm ci
 
-      - name: Debug npm auth
-        run: |
-          echo "npm version: $(npm --version)"
-          echo "node version: $(node --version)"
-          npm config list
-          echo "OIDC URL set: $([ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ] && echo yes || echo no)"
+      - name: Upgrade npm for OIDC Trusted Publishing support
+        run: npm install -g npm@latest
 
       - name: Publish all packages
-        run: npm publish --workspaces --access public --provenance --loglevel=verbose
-        env:
-          NODE_AUTH_TOKEN: ''
+        run: npm publish --workspaces --access public --provenance
