@@ -1,0 +1,140 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@6
+
+jobs:
+  test-and-lint:
+    parameters:
+      node-version:
+        type: string
+    docker:
+      - image: cimg/node:<< parameters.node-version >>
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Clean
+          command: npm run clean
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Test with coverage
+          command: npm run test:coverage
+      - store_artifacts:
+          path: coverage
+          destination: coverage
+
+  security-audit:
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Security audit
+          command: npm audit --audit-level high
+      - run:
+          name: Workspace security audit
+          command: npm audit --workspaces --audit-level high
+
+  package-validation:
+    parameters:
+      package:
+        type: string
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Validate << parameters.package >>
+          command: |
+            cd packages/<< parameters.package >>
+            node -e "
+              import('./package.json', { assert: { type: 'json' } }).then(({ default: pkg }) => {
+                if (!pkg.name || !pkg.version || !pkg.description) {
+                  throw new Error('Missing required package.json fields');
+                }
+                console.log('Package:', pkg.name, 'v' + pkg.version);
+              });
+            "
+            test -f package.json || { echo "Missing package.json"; exit 1; }
+            test -f README.md || { echo "Missing README.md"; exit 1; }
+            npm run build --if-present
+            npm run prepare --if-present
+            npm pack --dry-run
+
+  performance-test:
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Performance regression test
+          command: |
+            node -e "
+              import('./packages/core/utils/OpenApiProcessor.js').then(({ OpenApiProcessor }) => {
+                const processor = new OpenApiProcessor();
+                const testSpec = {
+                  paths: {
+                    '/test': {
+                      get: {
+                        summary: 'Test',
+                        tags: ['Test'],
+                        responses: {
+                          '200': {
+                            description: 'OK',
+                            content: {
+                              'application/json': {
+                                schema: {
+                                  type: 'object',
+                                  properties: {
+                                    id: { type: 'integer', example: 1 }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                };
+
+                const start = performance.now();
+                const result = processor.process(testSpec);
+                const end = performance.now();
+
+                console.log('Processed in', (end - start).toFixed(2) + 'ms');
+                console.log('Resources:', result.resources.length);
+
+                if (end - start > 100) {
+                  throw new Error('Performance regression: ' + (end - start).toFixed(2) + 'ms');
+                }
+                console.log('Performance test passed');
+              }).catch(err => {
+                console.error('Performance test failed:', err.message);
+                process.exit(1);
+              });
+            "
+
+workflows:
+  ci:
+    jobs:
+      - test-and-lint:
+          matrix:
+            parameters:
+              node-version: ['20.18', '22.14', '24.0']
+      - security-audit
+      - performance-test
+      - package-validation:
+          matrix:
+            parameters:
+              package: [core, markdown, html, swagger, postman, generator]
