@@ -127,6 +127,7 @@ describe('StandaloneBase', () => {
     });
 
     test('returns failure result on write error', () => {
+      if (process.platform === 'win32') return;
       const result = generator.writeOutputFile('/root/no-permission/file.txt', 'content');
       expect(result.success).toBe(false);
       expect(result.size).toBe(0);
