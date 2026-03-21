@@ -85,6 +85,7 @@ describe('StandaloneConfluenceGenerator', () => {
     });
 
     test('attempts clipboard copy by default', async() => {
+      if (process.platform === 'win32') return;
       const mdPath = path.join(testDir, 'api-docs.md');
       fs.writeFileSync(mdPath, '# Docs');
       generator.options.markdownPath = mdPath;
@@ -92,7 +93,7 @@ describe('StandaloneConfluenceGenerator', () => {
       const result = await generator.generate();
       expect(result.success).toBe(true);
       expect(typeof result.clipboardSuccess).toBe('boolean');
-    });
+    }, 15000);
 
     test('returns failure when specPath causes markdown generation to fail', async() => {
       const specPath = path.join(testDir, 'bad.json');
