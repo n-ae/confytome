@@ -182,6 +182,7 @@ jobs:
                   '/test': {
                     get: {
                       summary: 'Test',
+                      tags: ['Test'],
                       responses: {
                         '200': {
                           description: 'OK',
