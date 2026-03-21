@@ -5,7 +5,7 @@
 [![Security](https://snyk.io/test/github/n-ae/confytome/badge.svg)](https://snyk.io/test/github/n-ae/confytome)
 [![GitHub issues](https://img.shields.io/github/issues/n-ae/confytome)](https://github.com/n-ae/confytome/issues)
 [![Dependabot](https://img.shields.io/badge/dependabot-enabled-025E8C?logo=dependabot)](https://github.com/n-ae/confytome/network/updates)
-[![Node](https://img.shields.io/node/v/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
+[![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://www.npmjs.com/package/@confytome/core)
 [![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)
 [![Downloads](https://img.shields.io/npm/dw/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
 [![License](https://img.shields.io/npm/l/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
