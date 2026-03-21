@@ -57,6 +57,7 @@ npx @confytome/html --spec ./path/to/your-spec.json --output ./docs
 | **[@confytome/html](https://npmjs.com/package/@confytome/html)** | Professional HTML docs | `npm i -g @confytome/html` | [📚 Docs](./packages/html/README.md) |
 | **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** | Interactive Swagger UI | `npm i -g @confytome/swagger` | [📚 Docs](./packages/swagger/README.md) |
 | **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** | Postman collections | `npm i -g @confytome/postman` | [📚 Docs](./packages/postman/README.md) |
+| **[@confytome/confluence](https://npmjs.com/package/@confytome/confluence)** | Confluence-ready Markdown | `npm i -g @confytome/confluence` | [📚 Docs](./packages/confluence/README.md) |
 
 ## 🎯 Usage Scenarios
 
@@ -114,6 +115,7 @@ graph TB
     Generators --> Markdown[Markdown Generator]
     Generators --> Swagger[Swagger Generator]
     Generators --> Postman[Postman Generator]
+    Generators --> Confluence[Confluence Generator]
 ```
 
 ### Plugin System Features
@@ -170,6 +172,7 @@ router.get('/api/users', (req, res) => {
 - `api-docs.md` - Confluence-friendly Markdown
 - `api-swagger.html` - Interactive Swagger UI
 - `api-postman.json` - Postman collection
+- `api-confluence.md` - Confluence-ready Markdown
 
 ### Project Structure
 
@@ -189,7 +192,7 @@ your-project/
 ## 🛠️ Development
 
 ### Requirements
-- Node.js ≥ 18
+- Node.js ≥ 20
 - npm or yarn
 - ESM module support
 
