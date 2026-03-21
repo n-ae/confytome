@@ -7,6 +7,7 @@ on:
       - develop
   push:
     branches:
+      - main
       - develop
       - 'feature/*'
       - 'fix/*'
@@ -45,7 +46,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload coverage to Codecov
-        if: matrix.node-version == 18
+        if: matrix.node-version == 20
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -174,7 +175,7 @@ jobs:
         run: |
           echo "Testing performance optimizations..."
           node -e "
-            import('./packages/markdown/utils/OpenApiProcessor.js').then(({ OpenApiProcessor }) => {
+            import('./packages/core/utils/OpenApiProcessor.js').then(({ OpenApiProcessor }) => {
               const processor = new OpenApiProcessor();
               const testSpec = {
                 paths: {
