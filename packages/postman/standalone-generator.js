@@ -6,8 +6,11 @@
  * Generates Postman collections and environment variables from OpenAPI specs.
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import { StandaloneBase } from '@confytome/core/utils/StandaloneBase.js';
+
+const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
 export class StandalonePostmanGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {
@@ -22,7 +25,7 @@ export class StandalonePostmanGenerator extends StandaloneBase {
     return {
       name: 'postman',
       description: 'Postman collection and environment generator for API testing',
-      version: '1.9.9',
+      version: pkg.version,
       packageName: '@confytome/postman',
       cliCommand: 'confytome-postman',
       inputs: ['api-spec.json'],

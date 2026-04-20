@@ -1,157 +1,179 @@
 # @confytome/confluence
 
-Cross-platform Pandoc-style Markdown generator for Confluence with clipboard integration. Generates clean markdown from OpenAPI specifications and copies it directly to your clipboard for seamless pasting into Confluence pages.
+Confluence-ready Markdown generator for confytome. Generates Pandoc-style Markdown from OpenAPI specifications and copies it to your clipboard for direct paste into Confluence pages.
 
-## What It Does
+## ✨ Features
 
-**@confytome/confluence** generates Confluence-ready markdown documentation from OpenAPI specifications and automatically copies the result to your clipboard. Simply run the command, then paste directly into any Confluence page editor.
+- 📋 **Clipboard Integration** - Generated markdown copied to clipboard automatically
+- 📝 **Pandoc-style Markdown** - Clean formatting compatible with Confluence editor
+- 🔧 **Automatic OpenAPI Integration** - Generate spec from JSDoc or use existing
+- 🌍 **Unicode Support** - Full Turkish and international character support
+- 🔗 **Anchor Link Control** - Optional URL encoding for anchor links
+- ⚡ **Standalone Operation** - Works with existing OpenAPI specs
+- 🕐 **Timestamped Documentation** - Generation metadata included
 
-## Key Features
-
-- 🔄 **Cross-platform** - Works on Windows, macOS, and Linux
-- 📋 **Clipboard Integration** - Automatically copies generated content to clipboard
-- 🎯 **Confluence Optimized** - Produces clean markdown optimized for Confluence editors
-- 🏷️ **Tag-based Organization** - Groups endpoints by OpenAPI tags for logical structure
-- 📖 **Parameter Examples** - Displays multiple parameter examples with descriptions
-- 🔗 **Hierarchical Navigation** - Creates nested Quick Reference with proper anchor links
-- 🔐 **Authentication First** - Prioritizes authentication sections in documentation
-- 🌍 **Unicode Support** - Full UTF-8 support including Turkish characters
-- 🚀 **Standalone** - Works independently with minimal dependencies
-
-## Installation
+## 📦 Installation
 
 ```bash
-npm install @confytome/confluence
+# Global installation
+npm install -g @confytome/confluence
+
+# Or use with npx (no installation)
+npx @confytome/confluence generate --help
 ```
 
-## Quick Start
+## 🚀 Usage
 
-### Generate from OpenAPI Specification
+### Standalone Usage (Recommended)
+```bash
+# Use existing OpenAPI spec - No additional dependencies required
+npx @confytome/confluence generate --spec ./confytome/api-spec.json --output ./confytome
+```
+
+### With confytome.json Configuration
+```bash
+# Generate spec from JSDoc and produce docs in one step - Requires @confytome/core
+npx @confytome/confluence generate --config ./confytome.json --output ./confytome
+```
+
+## ⚙️ Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|---------|
+| `--spec` | `-s` | Path to OpenAPI spec file | `./confytome/api-spec.json` |
+| `--output` | `-o` | Output directory for generated files | `./confytome` |
+| `--version` | `-V` | Show version number |  |
+| `--help` | `-h` | Show help information |  |
+| `--config` | `-c` | Server config JSON file (for generating spec from JSDoc) |  |
+| `--files` | `-f` | JSDoc files to process |  |
+| `--no-brand` |  | Exclude confytome branding from documentation |  |
+| `--no-url-encode` |  | Disable URL encoding for anchor links |  |
+| `--no-clipboard` |  | Skip copying markdown to clipboard |  |
+
+## 🎯 Usage Scenarios
+
+### ✅ Scenario 1: Standalone with Existing Spec
+**Perfect when you already have an OpenAPI specification file.**
 
 ```bash
-# Generate from existing OpenAPI spec
-npx @confytome/confluence --spec api-spec.json
-
-# Generate from JSDoc comments
-npx @confytome/confluence --config confytome.json
-
-# Skip clipboard and save to file only
-npx @confytome/confluence --spec api-spec.json --no-clipboard
+npx @confytome/confluence generate --spec ./confytome/api-spec.json
 ```
 
-### Workflow
+- ✅ **No additional dependencies**
+- ✅ **Works immediately**
+- ✅ **Perfect for CI/CD pipelines**
 
-1. **Generate**: Run the confluence generator with your OpenAPI spec
-2. **Copy**: Markdown is automatically copied to your clipboard
-3. **Paste**: Open Confluence page editor and paste (Ctrl+V / Cmd+V)
-4. **Done**: Content appears with proper formatting, navigation, and examples
+### ⚙️ Scenario 2: Generate from Code
+**When you want to generate the OpenAPI spec from your API code first.**
 
-## CLI Options
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `-s, --spec <path>` | OpenAPI specification file | `./api-spec.json` |
-| `-c, --config <path>` | Config file for generating spec from JSDoc | |
-| `-o, --output <dir>` | Output directory | `./confytome` |
-| `--no-clipboard` | Skip copying to clipboard | |
-| `--no-brand` | Exclude confytome branding | |
-| `--no-url-encode` | Disable URL encoding of anchors | |
-
-## Generated Documentation Structure
-
-The generator creates well-organized documentation with:
-
-- **Title and Version** - API name and version from OpenAPI spec
-- **Quick Reference** - Hierarchical navigation with nested endpoints
-- **Tag-based Sections** - Endpoints grouped by OpenAPI tags
-- **Parameter Examples** - Multiple examples with summaries and descriptions
-- **Response Information** - Status codes and descriptions
-- **Code Samples** - curl examples for each endpoint
-
-## Architecture
-
-This package follows the Confytome dependency pattern for optimal code reuse:
-
-```
-@confytome/confluence → @confytome/markdown → @confytome/core
+```bash
+npx @confytome/confluence generate --config ./confytome.json
 ```
 
-- **@confytome/confluence** handles clipboard integration and Confluence workflow
-- **@confytome/markdown** generates the markdown content with templates
-- **@confytome/core** processes OpenAPI specifications and extracts documentation data
+- ⚠️ **Requires @confytome/core** for spec generation
+- ✅ **Full workflow from code to documentation**
+- ✅ **Automatic spec generation**
 
-## Programmatic Usage
+## 📁 Generated Output
 
-```javascript
-import { StandaloneConfluenceGenerator } from '@confytome/confluence';
+Creates `api-docs.md` in the specified output directory and copies the content to your clipboard:
 
-const generator = new StandaloneConfluenceGenerator('./output', {
-  specPath: './api-spec.json',
-  excludeBrand: false,
-  urlEncodeAnchors: true
-});
+- API overview and server information
+- All endpoints with request/response examples
+- Data models and schemas
+- Ready to paste directly into a Confluence page
 
-const result = await generator.generate({
-  copyToClipboard: true
-});
+### Generated File Structure
 
-if (result.success) {
-  console.log('Documentation generated and copied to clipboard!');
-  console.log('Output file:', result.outputPath);
-}
+```
+confytome/
+├── api-docs.md
 ```
 
-## Confluence Integration Tips
+### Content Features
+- **Quick Reference** - Table of contents with anchor links
+- **Server Information** - Base URLs and environment details
+- **Endpoint Documentation** - Complete request/response details
+- **Schema Definitions** - Data model documentation
+- **Clipboard-ready** - Paste directly into Confluence
 
-- **Pasting**: Use Ctrl+V (Windows/Linux) or Cmd+V (macOS) to paste
-- **Headers**: Confluence automatically formats markdown headers
-- **Code Blocks**: Markdown code blocks render as Confluence code macros
-- **Links**: Anchor links work within the same page
-- **Tables**: Parameter tables render as native Confluence tables
 
-## Advanced Features
+## 🔧 Dependencies
 
-### Tag-based Organization
+- **commander**: CLI argument parsing
+- **clipboardy**: Cross-platform clipboard access
 
-Endpoints are automatically grouped by their OpenAPI tags:
+## 💡 Examples
 
-```yaml
-# OpenAPI spec
-paths:
-  /users:
-    get:
-      tags: [Users]  # Creates "Users" section
-  /auth/login:
-    post:
-      tags: [Authentication]  # Creates "Authentication" section (appears first)
+### Basic Usage
+
+```bash
+# Simple generation with existing spec
+npx @confytome/confluence generate --spec ./confytome/api-spec.json
 ```
 
-### Parameter Examples
+### CI/CD Integration
 
-Multiple examples are displayed with rich formatting:
-
-```yaml
-# OpenAPI spec
-parameters:
-  - name: userId
-    examples:
-      valid_user:
-        summary: "Valid user ID"
-        description: "A typical user ID that exists in the system"
-        value: 12345
-      admin_user:
-        summary: "Admin user ID"
-        description: "An admin user with special permissions"
-        value: 1
+```bash
+#!/bin/bash
+# Generate Confluence Markdown documentation in CI
+npx @confytome/confluence generate \
+   --spec ./confytome/api-spec.json \
+   --output ./confytome
 ```
 
-## License
+### Multiple Environments
 
-MIT
+```bash
+# Production docs
+npx @confytome/confluence generate \
+   --spec ./specs/prod-api.json \
+   --output ./docs/prod
 
-## Related Packages
+# Staging docs
+npx @confytome/confluence generate \
+   --spec ./specs/staging-api.json \
+   --output ./docs/staging
+```
 
-- [@confytome/core](../core) - Core OpenAPI generator and processing
-- [@confytome/markdown](../markdown) - Markdown documentation generator
-- [@confytome/html](../html) - HTML documentation generator
-- [@confytome/swagger](../swagger) - Interactive Swagger UI generator
+
+#### "Specified OpenAPI spec file not found"
+
+```bash
+# Check file path exists
+ls -la ./confytome/api-spec.json
+
+# Use absolute path if needed
+npx @confytome/confluence generate --spec $(pwd)/confytome/api-spec.json
+```
+
+#### "No OpenAPI spec found, generating from JSDoc files..."
+
+This is normal when using `--config` — the spec is generated automatically from your JSDoc annotations before docs are produced.
+
+```bash
+# Option 1: Use config to generate everything in one step
+npx @confytome/confluence generate --config ./confytome.json
+
+# Option 2: Use an existing spec directly
+npx @confytome/confluence generate --spec ./confytome/api-spec.json
+```
+
+## 🌟 Part of confytome Ecosystem
+
+@confytome/confluence is part of the [confytome](https://github.com/n-ae/confytome) documentation ecosystem:
+
+- **[@confytome/core](https://npmjs.com/package/@confytome/core)** - Plugin system & OpenAPI generator
+- **[@confytome/markdown](https://npmjs.com/package/@confytome/markdown)** - Confluence-friendly Markdown docs
+- **[@confytome/confluence](https://npmjs.com/package/@confytome/confluence)** - Confluence-ready Markdown with clipboard
+- **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML docs
+- **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** - Interactive Swagger UI
+- **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** - Postman collections
+
+## 📄 License
+
+MIT License - see the [LICENSE](https://github.com/n-ae/confytome/blob/main/LICENSE) file for details.
+
+---
+
+**Generate beautiful Confluence Markdown documentation from OpenAPI specifications in seconds.**

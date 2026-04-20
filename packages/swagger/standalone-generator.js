@@ -12,6 +12,7 @@ import { createRequire } from 'node:module';
 import { StandaloneBase } from '@confytome/core/utils/StandaloneBase.js';
 
 const require = createRequire(import.meta.url);
+const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
 export class StandaloneSwaggerGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {
@@ -29,7 +30,7 @@ export class StandaloneSwaggerGenerator extends StandaloneBase {
     return {
       name: 'swagger',
       description: 'Interactive, self-contained Swagger UI documentation generator',
-      version: '1.9.9',
+      version: pkg.version,
       packageName: '@confytome/swagger',
       cliCommand: 'confytome-swagger',
       inputs: ['api-spec.json'],

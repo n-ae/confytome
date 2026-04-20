@@ -15,7 +15,7 @@ program
 program
   .command('generate')
   .description('Generate HTML documentation from OpenAPI spec')
-  .option('-s, --spec <path>', 'Path to OpenAPI spec file', './api-spec.json')
+  .option('-s, --spec <path>', 'Path to OpenAPI spec file', './confytome/api-spec.json')
   .option('-o, --output <path>', 'Output directory for generated files', './confytome')
   .option('--no-brand', 'Exclude confytome branding from generated documentation')
   .action(async(options) => {

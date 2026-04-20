@@ -5,8 +5,11 @@
  * Can run via "npx @confytome/html" without any core package dependencies.
  */
 
+import fs from 'node:fs';
 import { StandaloneBase } from '@confytome/core/utils/StandaloneBase.js';
 import { OpenApiProcessor } from '@confytome/core/utils/OpenApiProcessor.js';
+
+const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
 export class StandaloneHtmlGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {
@@ -22,7 +25,7 @@ export class StandaloneHtmlGenerator extends StandaloneBase {
     return {
       name: 'html',
       description: 'Professional, responsive HTML documentation generator',
-      version: '1.9.9',
+      version: pkg.version,
       packageName: '@confytome/html',
       cliCommand: 'confytome-html',
       inputs: ['api-spec.json'],

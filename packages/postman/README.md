@@ -19,7 +19,7 @@ Postman collection generator for confytome. Generates Postman collections and en
 npm install -g @confytome/postman
 
 # Or use with npx (no installation)
-npx @confytome/postman --help
+npx @confytome/postman generate --help
 ```
 
 ## 🚀 Usage
@@ -27,57 +27,32 @@ npx @confytome/postman --help
 ### Standalone Usage (Recommended)
 ```bash
 # Use existing OpenAPI spec - No additional dependencies required
-npx @confytome/postman --spec ./path/to/your-api-spec.json --output ./docs
+npx @confytome/postman generate --spec ./confytome/api-spec.json --output ./confytome
 ```
 
-### With confytome.json Configuration
-```bash
-# Generate from API code - Requires @confytome/core
-npx @confytome/postman --config ./confytome.json --output ./api-docs
-```
 
 ## ⚙️ Options
 
 | Option | Short | Description | Default |
 |--------|-------|-------------|---------|
-| `--config` | `-c` | Path to confytome.json config file | `./confytome.json` |
-| `--output` | `-o` | Output directory for generated files | `./docs` |
-| `--spec` |  | Path to existing OpenAPI spec file |  |
+| `--spec` | `-s` | Path to OpenAPI spec file | `./confytome/api-spec.json` |
+| `--output` | `-o` | Output directory for generated files | `./confytome` |
 | `--version` | `-V` | Show version number |  |
 | `--help` | `-h` | Show help information |  |
 
-## 🎯 Two Usage Scenarios
+## 🎯 Usage Scenarios
 
 ### ✅ Scenario 1: Standalone with Existing Spec
 **Perfect when you already have an OpenAPI specification file.**
 
 ```bash
-npx @confytome/postman --spec ./my-api-spec.json
+npx @confytome/postman generate --spec ./confytome/api-spec.json
 ```
 
 - ✅ **No additional dependencies**
 - ✅ **Works immediately**
 - ✅ **Perfect for CI/CD pipelines**
 
-### ⚙️ Scenario 2: Generate from Code
-**When you need to generate the OpenAPI spec from your API code first.**
-
-```bash
-npx @confytome/postman --config ./confytome.json
-```
-
-- ⚠️ **Requires @confytome/core** for spec generation
-- ✅ **Full workflow from code to documentation**
-- ✅ **Automatic spec generation**
-
-If @confytome/core is not installed, you'll see helpful guidance:
-```
-💡 You have two options:
-   1. Install @confytome/core:
-      npm install -g @confytome/core
-   2. Provide existing OpenAPI spec:
-      npx @confytome/postman --spec path/to/spec.json
-```
 
 ## 📁 Generated Output
 
@@ -97,7 +72,7 @@ Creates two files for import into Postman:
 ### Generated File Structure
 
 ```
-docs/
+confytome/
 ├── api-postman.json
 ├── api-postman-env.json
 ├── api-spec.json
@@ -107,59 +82,56 @@ docs/
 
 ### How to Use Generated Files
 
-. 1. **Open Postman**
-. 2. **Import Collection**: File → Import → Select `api-postman.json`
-. 3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
-. 4. **Set Environment**: Select the imported environment from dropdown
-. 5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
-. 6. **Start Testing**: Run individual requests or entire collection
+1. **Open Postman**
+2. **Import Collection**: File → Import → Select `api-postman.json`
+3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
+4. **Set Environment**: Select the imported environment from dropdown
+5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
+6. **Start Testing**: Run individual requests or entire collection
 ### How to Use Generated Files
 
-. 1. **Open Postman**
-. 2. **Import Collection**: File → Import → Select `api-postman.json`
-. 3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
-. 4. **Set Environment**: Select the imported environment from dropdown
-. 5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
-. 6. **Start Testing**: Run individual requests or entire collection
+1. **Open Postman**
+2. **Import Collection**: File → Import → Select `api-postman.json`
+3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
+4. **Set Environment**: Select the imported environment from dropdown
+5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
+6. **Start Testing**: Run individual requests or entire collection
 ### How to Use Generated Files
 
-. 1. **Open Postman**
-. 2. **Import Collection**: File → Import → Select `api-postman.json`
-. 3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
-. 4. **Set Environment**: Select the imported environment from dropdown
-. 5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
-. 6. **Start Testing**: Run individual requests or entire collection
+1. **Open Postman**
+2. **Import Collection**: File → Import → Select `api-postman.json`
+3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
+4. **Set Environment**: Select the imported environment from dropdown
+5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
+6. **Start Testing**: Run individual requests or entire collection
 ### How to Use Generated Files
 
-. 1. **Open Postman**
-. 2. **Import Collection**: File → Import → Select `api-postman.json`
-. 3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
-. 4. **Set Environment**: Select the imported environment from dropdown
-. 5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
-. 6. **Start Testing**: Run individual requests or entire collection
+1. **Open Postman**
+2. **Import Collection**: File → Import → Select `api-postman.json`
+3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
+4. **Set Environment**: Select the imported environment from dropdown
+5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
+6. **Start Testing**: Run individual requests or entire collection
 ### How to Use Generated Files
 
-. 1. **Open Postman**
-. 2. **Import Collection**: File → Import → Select `api-postman.json`
-. 3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
-. 4. **Set Environment**: Select the imported environment from dropdown
-. 5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
-. 6. **Start Testing**: Run individual requests or entire collection
+1. **Open Postman**
+2. **Import Collection**: File → Import → Select `api-postman.json`
+3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
+4. **Set Environment**: Select the imported environment from dropdown
+5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
+6. **Start Testing**: Run individual requests or entire collection
 ### How to Use Generated Files
 
-. 1. **Open Postman**
-. 2. **Import Collection**: File → Import → Select `api-postman.json`
-. 3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
-. 4. **Set Environment**: Select the imported environment from dropdown
-. 5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
-. 6. **Start Testing**: Run individual requests or entire collection
+1. **Open Postman**
+2. **Import Collection**: File → Import → Select `api-postman.json`
+3. **Import Environment**: Settings (gear icon) → Import → Select `api-postman-env.json`
+4. **Set Environment**: Select the imported environment from dropdown
+5. **Configure Auth**: Edit environment to set your actual `AUTH_TOKEN`
+6. **Start Testing**: Run individual requests or entire collection
 
 ## 🔧 Dependencies
 
 - **commander**: CLI argument parsing
-
-When using `--spec` option: **No additional dependencies required**
-When using `--config` option: **Requires @confytome/core** for OpenAPI spec generation
 
 ## 💡 Examples
 
@@ -167,7 +139,7 @@ When using `--config` option: **Requires @confytome/core** for OpenAPI spec gene
 
 ```bash
 # Simple generation with existing spec
-npx @confytome/postman --spec ./docs/api-spec.json --output ./public
+npx @confytome/postman generate --spec ./confytome/api-spec.json
 ```
 
 ### CI/CD Integration
@@ -175,22 +147,22 @@ npx @confytome/postman --spec ./docs/api-spec.json --output ./public
 ```bash
 #!/bin/bash
 # Generate Postman collection documentation in CI
-npx @confytome/postman \\
-   --spec ./build/api-spec.json \\
-   --output ./dist/docs
+npx @confytome/postman generate \
+   --spec ./confytome/api-spec.json \
+   --output ./confytome
 ```
 
 ### Multiple Environments
 
 ```bash
 # Production docs
-npx @confytome/postman \\
-   --spec ./specs/prod-api.json \\
+npx @confytome/postman generate \
+   --spec ./specs/prod-api.json \
    --output ./docs/prod
 
 # Staging docs
-npx @confytome/postman \\
-   --spec ./specs/staging-api.json \\
+npx @confytome/postman generate \
+   --spec ./specs/staging-api.json \
    --output ./docs/staging
 ```
 
@@ -206,23 +178,12 @@ This shows the number of endpoints successfully converted to Postman requests. E
 
 ```bash
 # Check file path exists
-ls -la ./path/to/your-spec.json
+ls -la ./confytome/api-spec.json
 
 # Use absolute path if needed
-npx @confytome/postman --spec $(pwd)/api-spec.json
+npx @confytome/postman generate --spec $(pwd)/confytome/api-spec.json
 ```
 
-#### "OpenAPI spec not found, generating it first"
-
-This means you're using config mode but don't have @confytome/core installed.
-
-```bash
-# Option 1: Install core
-npm install -g @confytome/core
-
-# Option 2: Use existing spec instead
-npx @confytome/postman --spec ./path/to/existing-spec.json
-```
 
 ## 🌟 Part of confytome Ecosystem
 
@@ -230,6 +191,7 @@ npx @confytome/postman --spec ./path/to/existing-spec.json
 
 - **[@confytome/core](https://npmjs.com/package/@confytome/core)** - Plugin system & OpenAPI generator
 - **[@confytome/markdown](https://npmjs.com/package/@confytome/markdown)** - Confluence-friendly Markdown docs
+- **[@confytome/confluence](https://npmjs.com/package/@confytome/confluence)** - Confluence-ready Markdown with clipboard
 - **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML docs
 - **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** - Interactive Swagger UI
 - **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** - Postman collections

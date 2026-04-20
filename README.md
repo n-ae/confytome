@@ -1,14 +1,9 @@
 # 🔌 confytome
 
-[![Build](https://github.com/n-ae/confytome/workflows/CI/badge.svg)](https://github.com/n-ae/confytome/actions)
-[![Coverage](https://codecov.io/gh/n-ae/confytome/branch/main/graph/badge.svg)](https://codecov.io/gh/n-ae/confytome)
-[![Security](https://snyk.io/test/github/n-ae/confytome/badge.svg)](https://snyk.io/test/github/n-ae/confytome)
-[![GitHub issues](https://img.shields.io/github/issues/n-ae/confytome)](https://github.com/n-ae/confytome/issues)
-[![Dependabot](https://img.shields.io/badge/dependabot-enabled-025E8C?logo=dependabot)](https://github.com/n-ae/confytome/network/updates)
-[![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://www.npmjs.com/package/@confytome/core)
 [![npm version](https://badge.fury.io/js/%40confytome%2Fcore.svg)](https://badge.fury.io/js/@confytome/core)
-[![Downloads](https://img.shields.io/npm/dw/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
-[![License](https://img.shields.io/npm/l/@confytome/core.svg)](https://www.npmjs.com/package/@confytome/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+[![Code Style: ESM](https://img.shields.io/badge/code%20style-ESM-blue)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 
 Plugin-based API documentation generator with OpenAPI-first architecture. Generates multiple formats from JSDoc comments through an extensible generator registry system.
 
@@ -57,7 +52,6 @@ npx @confytome/html --spec ./path/to/your-spec.json --output ./docs
 | **[@confytome/html](https://npmjs.com/package/@confytome/html)** | Professional HTML docs | `npm i -g @confytome/html` | [📚 Docs](./packages/html/README.md) |
 | **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** | Interactive Swagger UI | `npm i -g @confytome/swagger` | [📚 Docs](./packages/swagger/README.md) |
 | **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** | Postman collections | `npm i -g @confytome/postman` | [📚 Docs](./packages/postman/README.md) |
-| **[@confytome/confluence](https://npmjs.com/package/@confytome/confluence)** | Confluence-ready Markdown | `npm i -g @confytome/confluence` | [📚 Docs](./packages/confluence/README.md) |
 
 ## 🎯 Usage Scenarios
 
@@ -101,7 +95,7 @@ npx @confytome/markdown --spec ./docs/api-spec.json --output ./dist/docs
 
 ```mermaid
 graph TB
-    CLI[CLI Commands] --> Core["@confytome/core"]
+    CLI[CLI Commands] --> Core[@confytome/core]
     Core --> Registry[Generator Registry]
     Registry --> Factory[Generator Factory]
     Factory --> Services[Service Layer]
@@ -115,7 +109,6 @@ graph TB
     Generators --> Markdown[Markdown Generator]
     Generators --> Swagger[Swagger Generator]
     Generators --> Postman[Postman Generator]
-    Generators --> Confluence[Confluence Generator]
 ```
 
 ### Plugin System Features
@@ -172,7 +165,6 @@ router.get('/api/users', (req, res) => {
 - `api-docs.md` - Confluence-friendly Markdown
 - `api-swagger.html` - Interactive Swagger UI
 - `api-postman.json` - Postman collection
-- `api-confluence.md` - Confluence-ready Markdown
 
 ### Project Structure
 
@@ -192,7 +184,7 @@ your-project/
 ## 🛠️ Development
 
 ### Requirements
-- Node.js ≥ 20
+- Node.js ≥ 18
 - npm or yarn
 - ESM module support
 

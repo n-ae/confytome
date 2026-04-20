@@ -80,9 +80,8 @@ export const README_TEMPLATE_DATA = {
  */
 export function getREADMETemplateData(generatorType) {
   const commonOptions = [
-    { flag: '--config', short: '-c', description: 'Path to confytome.json config file', default: './confytome.json' },
-    { flag: '--output', short: '-o', description: 'Output directory for generated files', default: './docs' },
-    { flag: '--spec', short: '', description: 'Path to existing OpenAPI spec file', default: '' },
+    { flag: '--spec', short: '-s', description: 'Path to OpenAPI spec file', default: './confytome/api-spec.json' },
+    { flag: '--output', short: '-o', description: 'Output directory for generated files', default: './confytome' },
     { flag: '--version', short: '-V', description: 'Show version number', default: '' },
     { flag: '--help', short: '-h', description: 'Show help information', default: '' }
   ];
@@ -92,6 +91,7 @@ export function getREADMETemplateData(generatorType) {
       packageName: '@confytome/html',
       description: 'Professional styled HTML documentation generator for confytome. Generates clean, responsive HTML documentation from OpenAPI specifications with modern styling and navigation.',
       packageType: 'HTML',
+      supportsConfig: false,
       features: [
         '🎨 **Professional Styling** - Clean, modern design with responsive layout',
         '📱 **Mobile-First Design** - Works perfectly on desktop, tablet, and mobile',
@@ -127,6 +127,7 @@ export function getREADMETemplateData(generatorType) {
       packageName: '@confytome/markdown',
       description: 'Standalone Markdown documentation generator for confytome. Generates Confluence-friendly documentation from OpenAPI specifications using custom Mustache templates with Turkish Unicode support.',
       packageType: 'Markdown',
+      supportsConfig: true,
       features: [
         '📝 **Confluence-friendly Markdown** - Clean formatting without HTML tags',
         '🎨 **Custom Mustache Templates** - Professional styling with logic-less templates',
@@ -142,7 +143,10 @@ export function getREADMETemplateData(generatorType) {
         { name: 'mustache', description: 'Markdown template processing engine' }
       ],
       additionalOptions: [
-        { flag: '--no-brand', short: '', description: 'Exclude confytome branding from documentation', default: '' }
+        { flag: '--config', short: '-c', description: 'Server config JSON file (for generating spec from JSDoc)', default: '' },
+        { flag: '--files', short: '-f', description: 'JSDoc files to process', default: '' },
+        { flag: '--no-brand', short: '', description: 'Exclude confytome branding from documentation', default: '' },
+        { flag: '--no-url-encode', short: '', description: 'Disable URL encoding for anchor links', default: '' }
       ],
       outputExamples: {
         fileStructure: [
@@ -169,6 +173,7 @@ export function getREADMETemplateData(generatorType) {
       packageName: '@confytome/swagger',
       description: 'Interactive Swagger UI generator for confytome. Generates self-contained Swagger UI documentation from OpenAPI specifications with responsive design and embedded assets.',
       packageType: 'Swagger UI',
+      supportsConfig: false,
       features: [
         '🎨 **Interactive Swagger UI** - Full-featured API explorer interface',
         '📱 **Responsive Design** - Works on desktop, tablet, and mobile devices',
@@ -211,6 +216,7 @@ export function getREADMETemplateData(generatorType) {
       packageName: '@confytome/postman',
       description: 'Postman collection generator for confytome. Generates Postman collections and environment variables from OpenAPI specifications for comprehensive API testing and development workflows.',
       packageType: 'Postman collection',
+      supportsConfig: false,
       features: [
         '📥 **Complete Postman Collections** - Ready-to-import collection with all API endpoints',
         '🌍 **Environment Variables** - Pre-configured environment with base URLs and auth tokens',
@@ -246,6 +252,46 @@ export function getREADMETemplateData(generatorType) {
           solution: 'This shows the number of endpoints successfully converted to Postman requests. Each OpenAPI path/method combination becomes a Postman request.'
         }
       ]
+    },
+
+    confluence: {
+      packageName: '@confytome/confluence',
+      description: 'Confluence-ready Markdown generator for confytome. Generates Pandoc-style Markdown from OpenAPI specifications and copies it to your clipboard for direct paste into Confluence pages.',
+      packageType: 'Confluence Markdown',
+      supportsConfig: true,
+      features: [
+        '📋 **Clipboard Integration** - Generated markdown copied to clipboard automatically',
+        '📝 **Pandoc-style Markdown** - Clean formatting compatible with Confluence editor',
+        '🔧 **Automatic OpenAPI Integration** - Generate spec from JSDoc or use existing',
+        '🌍 **Unicode Support** - Full Turkish and international character support',
+        '🔗 **Anchor Link Control** - Optional URL encoding for anchor links',
+        '⚡ **Standalone Operation** - Works with existing OpenAPI specs',
+        '🕐 **Timestamped Documentation** - Generation metadata included'
+      ],
+      outputDescription: 'Creates `api-docs.md` in the specified output directory and copies the content to your clipboard:\n\n- API overview and server information\n- All endpoints with request/response examples\n- Data models and schemas\n- Ready to paste directly into a Confluence page',
+      dependencies: [
+        { name: 'commander', description: 'CLI argument parsing' },
+        { name: 'clipboardy', description: 'Cross-platform clipboard access' }
+      ],
+      additionalOptions: [
+        { flag: '--config', short: '-c', description: 'Server config JSON file (for generating spec from JSDoc)', default: '' },
+        { flag: '--files', short: '-f', description: 'JSDoc files to process', default: '' },
+        { flag: '--no-brand', short: '', description: 'Exclude confytome branding from documentation', default: '' },
+        { flag: '--no-url-encode', short: '', description: 'Disable URL encoding for anchor links', default: '' },
+        { flag: '--no-clipboard', short: '', description: 'Skip copying markdown to clipboard', default: '' }
+      ],
+      outputExamples: {
+        fileStructure: [
+          { file: 'api-docs.md', description: 'Confluence-ready Markdown documentation' }
+        ],
+        features: [
+          '**Quick Reference** - Table of contents with anchor links',
+          '**Server Information** - Base URLs and environment details',
+          '**Endpoint Documentation** - Complete request/response details',
+          '**Schema Definitions** - Data model documentation',
+          '**Clipboard-ready** - Paste directly into Confluence'
+        ]
+      }
     }
   };
 
@@ -257,11 +303,7 @@ export function getREADMETemplateData(generatorType) {
   return {
     ...data,
     options: [...commonOptions, ...(data.additionalOptions || [])],
-    hasAdditionalOptions: (data.additionalOptions || []).length > 0,
-    hasTroubleshooting: (data.troubleshooting || []).length > 0,
-    dependencyRequirement: data.dependencies.some(dep => dep.name === 'mustache')
-      ? 'When using `--spec` option: **No additional dependencies required**\nWhen using `--config` option: **Requires @confytome/core** for OpenAPI spec generation'
-      : 'When using `--spec` option: **No additional dependencies required**\nWhen using `--config` option: **Requires @confytome/core** for OpenAPI spec generation'
+    hasTroubleshooting: (data.troubleshooting || []).length > 0
   };
 }
 

@@ -14,6 +14,7 @@ import { StandaloneBase } from '@confytome/core/utils/StandaloneBase.js';
 import { OpenApiProcessor } from '@confytome/core/utils/OpenApiProcessor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
 export class StandaloneMarkdownGenerator extends StandaloneBase {
   constructor(outputDir = './confytome', options = {}) {
@@ -30,7 +31,7 @@ export class StandaloneMarkdownGenerator extends StandaloneBase {
     return {
       name: 'markdown',
       description: 'Confluence-friendly Markdown documentation generator using Mustache templates',
-      version: '1.9.9',
+      version: pkg.version,
       packageName: '@confytome/markdown',
       cliCommand: 'confytome-markdown',
       inputs: ['api-spec.json'],

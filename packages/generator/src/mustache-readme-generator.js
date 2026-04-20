@@ -92,7 +92,8 @@ export async function generateAllREADMEs(options = {}) {
     { type: 'html', path: path.join(rootDir, 'packages', 'html') },
     { type: 'markdown', path: path.join(rootDir, 'packages', 'markdown') },
     { type: 'swagger', path: path.join(rootDir, 'packages', 'swagger') },
-    { type: 'postman', path: path.join(rootDir, 'packages', 'postman') }
+    { type: 'postman', path: path.join(rootDir, 'packages', 'postman') },
+    { type: 'confluence', path: path.join(rootDir, 'packages', 'confluence') }
   ];
 
   const results = [];
