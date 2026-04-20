@@ -1,7 +1,7 @@
 # @confytome/swagger
 
 [![npm version](https://badge.fury.io/js/%40confytome%2Fswagger.svg)](https://badge.fury.io/js/@confytome/swagger)
-[![version](https://img.shields.io/badge/version-v2.1.2-blue)](https://www.npmjs.com/package/@confytome/swagger)
+[![version](https://img.shields.io/badge/version-v2.1.3-blue)](https://www.npmjs.com/package/@confytome/swagger)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
 
