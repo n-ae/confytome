@@ -291,6 +291,7 @@ confytome openapi --files "src/**/*.js" --dry-run
 @confytome/core works seamlessly with generator packages:
 
 - **[@confytome/markdown](https://npmjs.com/package/@confytome/markdown)** - Confluence-friendly Markdown
+- **[@confytome/confluence](https://npmjs.com/package/@confytome/confluence)** - Confluence-ready Markdown with clipboard
 - **[@confytome/html](https://npmjs.com/package/@confytome/html)** - Professional HTML documentation
 - **[@confytome/swagger](https://npmjs.com/package/@confytome/swagger)** - Interactive Swagger UI
 - **[@confytome/postman](https://npmjs.com/package/@confytome/postman)** - Postman collections

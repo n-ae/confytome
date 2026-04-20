@@ -35,9 +35,9 @@ const currentVersion = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.js
 if (command === 'bump') {
   const [major, minor, patch] = currentVersion.split('.').map(Number);
   const newVersion = `${major}.${minor}.${patch + 1}`;
-  updateVersion(newVersion);
+  await updateVersion(newVersion);
 } else if (command === 'set' && arg) {
-  updateVersion(arg);
+  await updateVersion(arg);
 } else {
   console.log('Usage: npm run version:bump | npm run version:set <version>');
   console.log(`Current: ${currentVersion}`);
