@@ -1,5 +1,10 @@
 # @confytome/confluence
 
+[![npm version](https://badge.fury.io/js/%40confytome%2Fconfluence.svg)](https://badge.fury.io/js/@confytome/confluence)
+[![version](https://img.shields.io/badge/version-v2.1.2-blue)](https://www.npmjs.com/package/@confytome/confluence)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
+
 Confluence-ready Markdown generator for confytome. Generates Pandoc-style Markdown from OpenAPI specifications and copies it to your clipboard for direct paste into Confluence pages.
 
 ## ✨ Features

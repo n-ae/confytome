@@ -5,6 +5,21 @@
  * with support for conditionals, loops, and structured data.
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+
+function readPackageVersion(packageName) {
+  const pkgPath = path.join(rootDir, 'packages', packageName, 'package.json');
+  try {
+    return JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
+  } catch {
+    return 'latest';
+  }
+}
+
 export const README_TEMPLATE_DATA = {
   workspace: {
     template: 'README-workspace.mustache',
@@ -300,8 +315,13 @@ export function getREADMETemplateData(generatorType) {
     throw new Error(`Unknown generator type: ${generatorType}`);
   }
 
+  const version = readPackageVersion(generatorType);
+
   return {
     ...data,
+    version,
+    encodedPackageName: encodeURIComponent(data.packageName),
+    npmBadgeLink: `https://badge.fury.io/js/${data.packageName}`,
     options: [...commonOptions, ...(data.additionalOptions || [])],
     hasTroubleshooting: (data.troubleshooting || []).length > 0
   };

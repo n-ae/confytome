@@ -1,5 +1,10 @@
 # @confytome/postman
 
+[![npm version](https://badge.fury.io/js/%40confytome%2Fpostman.svg)](https://badge.fury.io/js/@confytome/postman)
+[![version](https://img.shields.io/badge/version-v2.1.2-blue)](https://www.npmjs.com/package/@confytome/postman)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
+
 Postman collection generator for confytome. Generates Postman collections and environment variables from OpenAPI specifications for comprehensive API testing and development workflows.
 
 ## ✨ Features

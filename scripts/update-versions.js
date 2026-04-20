@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 import { glob } from 'glob';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -21,6 +22,9 @@ async function updateVersion(targetVersion) {
     fs.writeFileSync(filePath, `${JSON.stringify(content, null, 2)}\n`);
     console.log(`   ✓ ${path.basename(path.dirname(filePath))}`);
   });
+
+  console.log('📝 Regenerating READMEs...');
+  execSync('npm run regenerate:readmes', { cwd: rootDir, stdio: 'inherit' });
 
   console.log('✅ Done');
 }
