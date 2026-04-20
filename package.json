@@ -68,8 +68,8 @@
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
-    "eslint": "^10.1.0",
+    "eslint": "^10.2.1",
     "jest": "^30.3.0",
-    "npm-check-updates": "^19.6.5"
+    "npm-check-updates": "^21.0.2"
   }
 }
