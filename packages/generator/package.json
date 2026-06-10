@@ -1,13 +1,10 @@
 {
   "name": "@confytome/generator",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Template generation system for confytome CLI files, manifests, and documentation",
   "private": true,
   "type": "module",
   "main": "src/index.js",
-  "bin": {
-    "confytome-generator": "./scripts/cli.js"
-  },
   "scripts": {
     "clean": "rm -rf temp/* .cache",
     "regenerate:cli": "node scripts/regenerate-cli-files.js",
