@@ -43,7 +43,7 @@ jobs:
       - run: npm ci
 
       - name: Upgrade npm for OIDC Trusted Publishing support
-        run: npm install -g npm@latest
+        run: npm install -g npm@11
 
       - name: Publish all packages
         run: npm publish --workspaces --access public --provenance
