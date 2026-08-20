@@ -58,14 +58,6 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "dependencies": {
-    "@confytome/core": "^2.0.9",
-    "@confytome/markdown": "^2.0.9",
-    "clipboardy": "^5.3.1",
-    "commander": "^15.0.0",
-    "mustache": "^4.2.0",
-    "swagger-ui-dist": "^5.32.1"
-  },
   "devDependencies": {
     "cross-env": "^10.1.0",
     "eslint": "^10.8.0",

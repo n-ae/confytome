@@ -6,7 +6,7 @@
  */
 
 import fs from 'node:fs';
-import clipboardy from 'clipboardy';
+import { writeClipboard } from './utils/clipboard.js';
 
 export class StandaloneConfluenceGenerator {
   constructor(outputDir = './confytome', options = {}) {
@@ -78,7 +78,7 @@ export class StandaloneConfluenceGenerator {
       let clipboardSuccess = false;
       if (options.copyToClipboard !== false) {
         try {
-          await clipboardy.write(markdownContent);
+          await writeClipboard(markdownContent);
           clipboardSuccess = true;
           this.log('📋 Clean markdown copied to clipboard (Pandoc-style)');
         } catch (error) {
