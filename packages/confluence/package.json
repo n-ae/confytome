@@ -47,7 +47,7 @@
   "dependencies": {
     "@confytome/core": "^2.1.4",
     "@confytome/markdown": "^2.1.4",
-    "marked": "^18.0.2",
+    "marked": "^18.1.0",
     "commander": "^15.0.0"
   }
 }
