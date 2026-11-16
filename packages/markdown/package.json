@@ -46,6 +46,6 @@
   "dependencies": {
     "@confytome/core": "^2.1.4",
     "mustache": "^4.2.0",
-    "commander": "^15.0.0"
+    "commander": "^15.1.0"
   }
 }
