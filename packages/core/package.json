@@ -65,8 +65,8 @@
     "prepublishOnly": "npm run validate"
   },
   "dependencies": {
-    "commander": "^15.0.0",
-    "glob": "^13.0.6",
+    "commander": "^15.1.0",
+    "glob": "^14.0.6",
     "swagger-jsdoc": "^6.3.0"
   }
 }
